@@ -1,0 +1,71 @@
+# Required packages {#install .setup style="blue"}
+
+## Install packages
+
+```{r install packages, eval =FALSE}
+# Define the packages to install from CRAN and Bioconductor
+cranPkgs <- c("BiocManager", "Seurat", "cowplot", "SingleCellExperiment", "scDblFinder", "Rtsne", "hdf5r", "clustree", 
+              "tidyverse", "Signac", "SeuratObject", "hdf5r", "reticulate", "patchwork", "ggplot2", "future")
+biocPkgs <- c("celldex", "SingleR", "SeuratDisk", "clusterProfile", "preprocessCore", "EnsDb.Hsapiens.v86", "EnsDb.Hsapiens.v75", 
+              "biovizBase", "LoomExperiment", "SingleCellExperiment")
+
+# Install packages from CRAN
+install.packages(cranPkgs, ask=FALSE, update=TRUE, quietly=TRUE)
+
+# Install packages from Bioconductor
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+BiocManager::install(biocPkgs)
+
+# Install SeuratData and sceasy from GitHub
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+
+devtools::install_github('satijalab/seurat-data')
+devtools::install_github("cellgeni/sceasy")
+
+# Verify and install SeuratData from Bioconductor if necessary
+if (!requireNamespace("SeuratData", quietly = TRUE)) {
+  BiocManager::install("SeuratData")
+}
+```
+
+## Load packages
+
+```{r load packages, message=F, warning=F}
+# @title Loading and Verifying Required Packages (function)
+loadPackages = function(pkgs){
+  myrequire = function(...){
+    suppressWarnings(suppressMessages(suppressPackageStartupMessages(require(...))))
+  }
+  ok = sapply(pkgs, require, character.only=TRUE, quietly=TRUE)
+  if (!all(ok)){
+    message("There are missing packages: ", paste(pkgs[!ok], collapse=", "))
+  }
+}
+
+# @title Loading and Verifying Required Packages
+pkgs = c("Rtsne", "Seurat", "SingleCellExperiment", "scDblFinder", "tidyverse", "future",
+         "cowplot", "preprocessCore", "SingleR", "clusterProfile", "celldex", "SeuratDisk", "pheatmap", "patchwork", "ggplot2",
+         "hdf5r", "clustree", "tidyverse", "Signac", "SeuratObject", "hdf5r", "reticulate", "EnsDb.Hsapiens.v86", "EnsDb.Hsapiens.v75",
+         "biovizBase", "LoomExperiment", "SingleCellExperiment")
+# Load the packages
+loadPackages(pkgs)
+```
+
+## Workflow
+
+```{mermaid}
+flowchart LR
+
+  A[Hard edge] --> B(Round edge)
+
+  B --> C{Decision}
+
+  C --> D[Result one]
+
+  C --> E[Result two]
+
+```

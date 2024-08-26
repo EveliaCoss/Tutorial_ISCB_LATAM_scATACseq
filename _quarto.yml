@@ -1,0 +1,42 @@
+project:
+  type: book
+
+book:
+  title: "Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice"
+  output-file: "WCS_scATACseq_book"
+  author: "Evelia Coss and Diego Ramirez"
+  date: "8/23/2024"
+  page-navigation: true
+  chapters:
+    - index.qmd
+    - part: " Section 1 (45 min) - (9:45-10:30 h)"
+      chapters: 
+        - Section1_packages.qmd
+    - part: " Section 2 (2 h) - (11:00-13:00 h)"
+      chapters: 
+        - Section1_packages.qmd
+    - part: "Section 3 (14:00 - 15:30 h)"
+      chapters: 
+        - Section1_packages.qmd
+    - summary.qmd
+    - references.qmd
+  # Information
+  repo-url: https://github.com/EveliaCoss/Tutorial_ISCB_LATAM_scATACseq # link de Github
+  sharing: [twitter, facebook, linkedin]
+  favicon: "JAGUAR_logo.png" # icono de la pagina en pestana
+
+bibliography: references.bib
+
+format:
+  html:
+    toc-depth: 4
+    number-depth: 3
+  # Boton para cambiar tema de oscuro a claro
+    theme:
+      light: cosmo
+      dark: darkly
+    code-fold: show # Ocultar codigo
+    code-copy: true # Copy button
+
+editor: visual
+

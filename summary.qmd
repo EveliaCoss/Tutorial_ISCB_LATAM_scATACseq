@@ -1,0 +1,21 @@
+# Summary
+
+This is a callout block of the type "note".
+
+::: {.callout-caution collapse="true"}
+Callouts can be collapsible.
+:::
+
+::: callout-important
+# My heading
+
+The first heading used within the callout is used as the callout heading.
+:::
+
+::: {.callout-tip icon="false"}
+The icon can also be hidden, like this.
+:::
+
+::: callout
+This is a simpler callout, without specifying the "type".
+:::
