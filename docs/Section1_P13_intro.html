@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice - 2&nbsp; Practical 13: scATAC-seq Pre-Processing and Quality Control</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./Section1_P13_retos.html" rel="next">
+<link href="./Section1_intro.html" rel="prev">
+<link href="./JAGUAR_logo.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Section1_intro.html"><strong>Section 1</strong> - Introduction and Quality control</a></li><li class="breadcrumb-item"><a href="./Section1_P13_intro.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">**Practical 13:** scATAC-seq Pre-Processing and Quality Control</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/EveliaCoss/Tutorial_ISCB_LATAM_scATACseq" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+              <i class="bi bi-bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Global information</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text"><strong>Section 1</strong> - Introduction and Quality control</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section1_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section1_P13_intro.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><strong>Practical 13:</strong> scATAC-seq Pre-Processing and Quality Control</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section1_P13_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text"><strong>Section 2</strong> - scATAC-seq Downstream analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P14_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><strong>Practical 14:</strong> scATAC-seq Downstream</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P14_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P15_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P15_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text"><strong>Section 3</strong> - Motif analysis and results</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P16_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><strong>Practical 16:</strong> Motif analysis with Signac</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P16_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P17_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title"><strong>Practical 17:</strong> Exploring results (graphs)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P17_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P18_others.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Other tools used in scATAC-seq</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#dataset-overview" id="toc-dataset-overview" class="nav-link active" data-scroll-target="#dataset-overview"><span class="header-section-number">2.1</span> Dataset overview</a>
+  <ul>
+  <li><a href="#summary-file-metrics" id="toc-summary-file-metrics" class="nav-link" data-scroll-target="#summary-file-metrics"><span class="header-section-number">2.1.1</span> Summary file metrics</a></li>
+  <li><a href="#pbmcs" id="toc-pbmcs" class="nav-link" data-scroll-target="#pbmcs"><span class="header-section-number">2.1.2</span> PBMCs</a></li>
+  </ul></li>
+  <li><a href="#seurat-signac-workflow" id="toc-seurat-signac-workflow" class="nav-link" data-scroll-target="#seurat-signac-workflow"><span class="header-section-number">2.2</span> Seurat + Signac Workflow</a>
+  <ul>
+  <li><a href="#pre-processing-workflow" id="toc-pre-processing-workflow" class="nav-link" data-scroll-target="#pre-processing-workflow"><strong>Pre-processing workflow</strong></a></li>
+  </ul></li>
+  <li><a href="#step-1-import-data" id="toc-step-1-import-data" class="nav-link" data-scroll-target="#step-1-import-data"><span class="header-section-number">2.3</span> 📗 Step 1: Import Data</a>
+  <ul>
+  <li><a href="#create-chromatinassay" id="toc-create-chromatinassay" class="nav-link" data-scroll-target="#create-chromatinassay"><span class="header-section-number">2.3.1</span> Create <code>ChromatinAssay</code></a></li>
+  </ul></li>
+  <li><a href="#step-2-annotation" id="toc-step-2-annotation" class="nav-link" data-scroll-target="#step-2-annotation"><span class="header-section-number">2.4</span> ✒️ Step 2: Annotation</a>
+  <ul>
+  <li><a href="#before-annotation" id="toc-before-annotation" class="nav-link" data-scroll-target="#before-annotation"><strong>Before annotation</strong></a></li>
+  <li><a href="#get-gene-annotations-for-the-peaks-and-add-to-the-object" id="toc-get-gene-annotations-for-the-peaks-and-add-to-the-object" class="nav-link" data-scroll-target="#get-gene-annotations-for-the-peaks-and-add-to-the-object"><span class="header-section-number">2.4.1</span> Get gene annotations for the peaks and add to the object</a>
+  <ul class="collapse">
+  <li><a href="#other-options" id="toc-other-options" class="nav-link" data-scroll-target="#other-options">Other options</a></li>
+  <li><a href="#older-version-hg19" id="toc-older-version-hg19" class="nav-link" data-scroll-target="#older-version-hg19">Older version (hg19)</a></li>
+  <li><a href="#older-version-hg19-1" id="toc-older-version-hg19-1" class="nav-link" data-scroll-target="#older-version-hg19-1">Older version (hg19)</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#step-3-computing-qc-metrics" id="toc-step-3-computing-qc-metrics" class="nav-link" data-scroll-target="#step-3-computing-qc-metrics"><span class="header-section-number">2.5</span> 📕 Step 3: Computing QC metrics</a>
+  <ul>
+  <li><a href="#bioanalyzer-results-and-tss-region" id="toc-bioanalyzer-results-and-tss-region" class="nav-link" data-scroll-target="#bioanalyzer-results-and-tss-region"><span class="header-section-number">2.5.1</span> Bioanalyzer results and TSS region</a></li>
+  <li><a href="#impact-of-sample-type-on-fragment-yield-and-sequencing-quality" id="toc-impact-of-sample-type-on-fragment-yield-and-sequencing-quality" class="nav-link" data-scroll-target="#impact-of-sample-type-on-fragment-yield-and-sequencing-quality"><span class="header-section-number">2.5.2</span> Impact of Sample Type on Fragment Yield and Sequencing Quality</a></li>
+  <li><a href="#atac-seq-insert-sizes-disclose-nucleosome-positions" id="toc-atac-seq-insert-sizes-disclose-nucleosome-positions" class="nav-link" data-scroll-target="#atac-seq-insert-sizes-disclose-nucleosome-positions"><span class="header-section-number">2.5.3</span> ATAC-seq insert sizes disclose nucleosome positions</a></li>
+  <li><a href="#fragment-size-distribution" id="toc-fragment-size-distribution" class="nav-link" data-scroll-target="#fragment-size-distribution"><span class="header-section-number">2.5.4</span> Fragment size distribution</a></li>
+  </ul></li>
+  <li><a href="#step-4-normalization-and-linear-dimensional-reduction-lsi" id="toc-step-4-normalization-and-linear-dimensional-reduction-lsi" class="nav-link" data-scroll-target="#step-4-normalization-and-linear-dimensional-reduction-lsi"><span class="header-section-number">2.6</span> 📘 Step 4: Normalization and linear dimensional reduction (LSI)</a></li>
+  <li><a href="#step-5-non-linear-dimensional-reduction-and-clustering" id="toc-step-5-non-linear-dimensional-reduction-and-clustering" class="nav-link" data-scroll-target="#step-5-non-linear-dimensional-reduction-and-clustering"><span class="header-section-number">2.7</span> 📙 Step 5: Non-linear dimensional reduction and clustering</a>
+  <ul>
+  <li><a href="#perform-umap" id="toc-perform-umap" class="nav-link" data-scroll-target="#perform-umap"><span class="header-section-number">2.7.1</span> Perform UMAP</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">2.8</span> References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="preprocessingQC" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><strong>Practical 13:</strong> scATAC-seq Pre-Processing and Quality Control</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In this step, we will demonstrate the following:</p>
+<ul>
+<li>Import data generated by 10x Cell Ranger ATAC.</li>
+<li>Understand the format and structure of scATAC-seq files.</li>
+<li>Generate the corresponding annotations in the scATAC-seq dataset.</li>
+<li>Perform quality control on the obtained sequences.</li>
+<li>Apply normalization and dimensionality reduction to the dataset.</li>
+<li>Implement non-linear dimensionality reduction and perform clustering of the cells.</li>
+</ul>
+<section id="dataset-overview" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">2.1</span> Dataset overview</h2>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of human peripheral blood mononuclear cells (PBMCs) provided by 10x Genomics. The following files are used in this course, all available through the 10x Genomics website:</p>
+<ul>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5">Raw data</a>: Filtered peak barcode matrix. File name: <code>Peak by cell matrix HDF5 (filtered)</code>. Format: h5 / hdf5.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv">Metadata</a>: Per-barcode fragment counts &amp; metrics. <code>Per Barcode metrics</code> . Format: csv.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file. File name: <code>Fragments</code>. Format: tsv.gz.</p></li>
+<li><p>The fragments file <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz.tbi">index</a>: Fragments file index. File name: <code>Fragments index</code>. Format: tbi.</p></li>
+</ul>
+<p>Our starting points is the <a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/using/count">output</a> of <code>cellranger-atac</code> (v2.1.0), a 10x Genomics software used for alignment peak calling and initial quality control (QC) of the assay on <a href="https://www.10xgenomics.com/datasets/10k-human-pbmcs-atac-v2-chromium-controller-2-standard">10x PBMCs from healthy donor</a> (unimodal scATAC-seq assay).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+View data download code
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Total 2.7 Gb</p>
+<div class="sourceCode" id="cb1" data-code-copy="true" data-eval="false"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># metadata</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments file</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments index</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz.tbi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<section id="summary-file-metrics" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="summary-file-metrics"><span class="header-section-number">2.1.1</span> Summary file metrics</h3>
+<p>According to the <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_web_summary.html">data report</a>, we observed <strong>10,246 PBMC</strong> nuclei were recovered. ATAC libraries were generated as described in the Chromium Single Cell ATAC Reagent Kits User Guide (v2 chemistry) using the Chromium Controller and sequenced on Illumina NovaSeq 6000 to approximately 55 k read pairs per cell.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_web_summary.html"><img src="img/summary.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Green text</strong> indicates that the key metrics are in the expected range while <em>red/yellow</em> text indicates errors/warnings. Descriptions of the metrics can also be found by clicking the icon <code>?</code> next to the section header. The summary tab reports various metrics including sample, sequencing, cells, cell clustering, insert sizes, targeting, and library complexity.</p>
+</div>
+</div>
+<p>If you want to know more information about how to analyze the report check this <a href="https://cdn.10xgenomics.com/image/upload/v1660261285/support-documents/CG000202_TechnicalNote_InterpretingCellRangerATACWebSummaryFiles_RevB.pdf">information</a> or check this <a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/summary">web page</a>.</p>
+</section>
+<section id="pbmcs" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="pbmcs"><span class="header-section-number">2.1.2</span> PBMCs</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Peripheral Blood Mononuclear Cells (PBMCs) are <strong>all blood cells with a single nucleus</strong>, including lymphocytes (T cells, B cells, and NK cells) and monocytes. Erythrocytes, platelets, and granulocytes are not considered PBMCs because they have either no nuclei or multiple nuclei. PBMCs play a crucial role in the immune system and serve as important tools for immunological research.</p>
+</div>
+</div>
+<div id="fig-pbmcs" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.jpt.com/support-contact/resources/pbmc/"><img src="https://www.jpt.com/media/2e/78/79/1720076346/PBMCs-518x218.png" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;2.1: Expected cell types in PBMCs</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="seurat-signac-workflow" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="seurat-signac-workflow"><span class="header-section-number">2.2</span> Seurat + Signac Workflow</h2>
+<div id="fig-signac" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="img/FigureSignac.jpg" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure&nbsp;2.2: Single-cell chromatin analysis workflow with Signac.</figcaption>
+</figure>
+</div>
+<section id="pre-processing-workflow" class="level4">
+<h4 class="anchored" data-anchor-id="pre-processing-workflow"><strong>Pre-processing workflow</strong></h4>
+<div class="cell" data-fig-width="15">
+<div class="cell-output-display">
+<div>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+
+  A(Import Data) --&gt; B(Annotation)
+ 
+  B --&gt; C(Computing QC metrics)
+ 
+  C --&gt; D(Normalization and linear \ndimensional reduction)
+  
+  D --&gt; E(Non-linear dimensional \nreduction and clustering)
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="step-1-import-data" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="step-1-import-data"><span class="header-section-number">2.3</span> 📗 Step 1: Import Data</h2>
+<p>When pre-processing chromatin data, <code>Signac</code> uses information from 4 related <strong>input files</strong>, both of which can be created using Cell Ranger ATAC:</p>
+<div>
+<ul>
+<li><p><strong>Peak/Cell Matrix (raw data)</strong>: Similar to the gene expression count matrix used in single-cell RNA-seq, but instead of genes, the <em>rows represent regions of the genome (peaks)</em> that indicate areas of <em>open chromatin</em>. Each value in the matrix represents the number of Tn5 integration sites for each barcode (cell) that map within each peak. More information about this file on the <a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/peaks">10x Genomics website</a>.</p></li>
+<li><p><strong>Metadata:</strong> Cell Ranger ATAC identifies cells by determining whether each barcode corresponds to a cell from any species in the reference. It also generates QC data, including the number of fragments per barcode and ATAC signal, based on metrics like the overlap of fragments with transcription start sites (TSS) from the reference. This barcode-level information is compiled into a single output table. More information about this file on the <a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/singlecell">10x Genomics website</a>.</p></li>
+<li><p><strong>Fragment File</strong>: Contains a complete list of all <em>unique fragments across all single cells</em>. Although it is larger and slower to process, and is stored on-disk (instead of in memory), its advantage is that it <em>includes all fragments associated with each cell, not just those that map to peaks</em>. More information about the fragment file can be found on the 10x Genomics <a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/fragments">website</a> or on the <a href="https://timoast.github.io/sinto/basic_usage.html#create-scatac-seq-fragments-file">sinto website</a>.</p></li>
+<li><p><strong>Fragment index file:</strong> The fragment index file enables fast access to specific fragments in a sequencing file by indexing their positions. This speeds up retrieval and improves analysis efficiency.</p></li>
+</ul>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What if I don’t have a H5 file?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Then you can use other outputs from cellranger:</p>
+<ul>
+<li><p>counts: <code>matrix.mtx</code></p></li>
+<li><p>barcodes: <code>barcodes.tsv</code></p></li>
+<li><p>peaks: <code>peaks.bed</code></p></li>
+</ul>
+<p>Alternatively, you might only have a <code>fragment file</code>. In this case you can create a count matrix using the&nbsp;<a href="https://stuartlab.org/signac/reference/featurematrix"><code>FeatureMatrix()</code></a>&nbsp;function. If you want to know about this check the <a href="https://stuartlab.org/signac/articles/pbmc_vignette">Signac tutorial</a>.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Signac)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat) </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GenomicRanges) <span class="co"># genomic data manipulation</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co">#vizualization</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork) <span class="co"># Vizualization </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Hsapiens.v86) <span class="co"># human genome hg38</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(future) <span class="co"># parallelization in Signac</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>R version: R version 4.4.1 (2024-06-14 ucrt) </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of cores: 8 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] '1.14.0'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>multicore:
+- args: function (..., workers = 8, envir = parent.frame())
+- tweaked: TRUE
+- call: plan("multicore", workers = 8)</code></pre>
+</div>
+</div>
+<section id="create-chromatinassay" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="create-chromatinassay"><span class="header-section-number">2.3.1</span> Create <code>ChromatinAssay</code></h3>
+<p>The ATAC-seq data is stored using a custom assay, the&nbsp;<code>ChromatinAssay</code>. This enables some specialized functions for analysing genomic single-cell assays such as scATAC-seq. By printing the assay we can see some of the additional information that can be contained in the&nbsp;<code>ChromatinAssay</code>, including motif information, gene annotations, and genome information.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">Read10X_h5</span>(<span class="at">filename =</span> <span class="st">"data/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="dv">1</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>chrom_assay <span class="ot">&lt;-</span> <span class="fu">CreateChromatinAssay</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> counts,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="fu">c</span>(<span class="st">":"</span>, <span class="st">"-"</span>),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">fragments =</span> <span class="st">"data/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.cells =</span> <span class="dv">10</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.features =</span> <span class="dv">200</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Computing hash</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> chrom_assay,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">"peaks"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">meta.data =</span> metadata</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Check global information</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pbmc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>An object of class Seurat 
+165434 features across 10246 samples within 1 assay 
+Active assay: peaks (165434 features, 0 variable features)
+ 2 layers present: counts, data</code></pre>
+</div>
+</div>
+<p>Check ATAC information</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pbmc[[<span class="st">'peaks'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>ChromatinAssay data with 165434 features for 10246 cells
+Variable features: 0 
+Genome: 
+Annotation present: FALSE 
+Motifs present: FALSE 
+Fragment files: 1 </code></pre>
+</div>
+</div>
+<p>We then remove features that correspond to chromosome scaffolds (e.g., <code>KI270713.1</code>) or any other sequences that are not part of the 22 standard autosomes or the two sex chromosomes (X and Y), ensuring that only well-characterized and fully assembled chromosomal regions are included in the analysis.We then remove the features that correspond to chromosome scaffolds e.g.&nbsp;(KI270713.1) or other sequences instead of the (22+2) standard chromosomes.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>peaks.keep <span class="ot">&lt;-</span> <span class="fu">seqnames</span>(<span class="fu">granges</span>(pbmc)) <span class="sc">%in%</span> <span class="fu">standardChromosomes</span>(<span class="fu">granges</span>(pbmc))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> pbmc[<span class="fu">as.vector</span>(peaks.keep), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="step-2-annotation" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="step-2-annotation"><span class="header-section-number">2.4</span> ✒️ Step 2: Annotation</h2>
+<p>We can also add gene annotations to the&nbsp;<code>pbmc</code>&nbsp;object for the human genome. This will allow downstream functions to pull the gene annotation information directly from the object.</p>
+<section id="before-annotation" class="level4">
+<h4 class="anchored" data-anchor-id="before-annotation"><strong>Before annotation</strong></h4>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">@</span>assays<span class="sc">$</span>peaks<span class="sc">@</span>annotation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>NULL</code></pre>
+</div>
+</div>
+</section>
+<section id="get-gene-annotations-for-the-peaks-and-add-to-the-object" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="get-gene-annotations-for-the-peaks-and-add-to-the-object"><span class="header-section-number">2.4.1</span> Get gene annotations for the peaks and add to the object</h3>
+<p>From the&nbsp;<a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_web_summary.html">dataset summary</a>, we can see that the reference package 10x Genomics used to perform the mapping was “GRCh38-2020-A”, which&nbsp;<a href="https://www.10xgenomics.com/support/software/cell-ranger/downloads/cr-ref-build-steps#ref-2020-a">corresponds to</a>&nbsp;the Ensembl v98 (hg38) patch release.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract gene annotations from EnsDb</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>annotations <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> EnsDb.Hsapiens.v86)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># change to UCSC style since the data was mapped to hg38</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevelsStyle</span>(annotations) <span class="ot">&lt;-</span> <span class="st">'UCSC'</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">genome</span>(annotations) <span class="ot">&lt;-</span> <span class="st">"hg38"</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  Check chromosomes</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevels</span>(annotations)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "chrX"  "chr20" "chr1"  "chr6"  "chr3"  "chr7"  "chr12" "chr11" "chr4" 
+[10] "chr17" "chr2"  "chr16" "chr8"  "chr19" "chr9"  "chr13" "chr14" "chr5" 
+[19] "chr22" "chr10" "chrY"  "chr18" "chr15" "chr21" "chrM" </code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add the gene information to the object</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Annotation</span>(pbmc) <span class="ot">&lt;-</span> annotations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="other-options" class="level4">
+<h4 class="anchored" data-anchor-id="other-options">Other options</h4>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AnnotationHub)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>ah <span class="ot">&lt;-</span> <span class="fu">AnnotationHub</span>()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Search for the Ensembl 98 EnsDb for Homo sapiens on AnnotationHub</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">query</span>(ah, <span class="st">"EnsDb.Hsapiens.v98"</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>ensdb_v98 <span class="ot">&lt;-</span> ah[[<span class="st">"AH75011"</span>]]</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># extract gene annotations from EnsDb</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>annotations <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> ensdb_v98)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># change to UCSC style since the data was mapped to hg38</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevels</span>(annotations) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'chr'</span>, <span class="fu">seqlevels</span>(annotations))</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="fu">genome</span>(annotations) <span class="ot">&lt;-</span> <span class="st">"hg38"</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="co"># add the gene information to the object</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="fu">Annotation</span>(pbmc) <span class="ot">&lt;-</span> annotations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="older-version-hg19" class="level4">
+<h4 class="anchored" data-anchor-id="older-version-hg19">Older version (hg19)</h4>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install(c('BSgenome.Hsapiens.UCSC.hg19', 'EnsDb.Hsapiens.v75'))</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># first get some gene annotations for hg19</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Hsapiens.v75)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># convert EnsDb to GRanges</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> EnsDb.Hsapiens.v75)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to UCSC style</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevels</span>(annotation) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'chr'</span>, <span class="fu">seqlevels</span>(annotation))</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="fu">genome</span>(annotation) <span class="ot">&lt;-</span> <span class="st">"hg19"</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># set gene annotations</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="fu">Annotation</span>(pbmc) <span class="ot">&lt;-</span> annotation</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># get gene annotation information</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="fu">Annotation</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="older-version-hg19-1" class="level4">
+<h4 class="anchored" data-anchor-id="older-version-hg19-1">Older version (hg19)</h4>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Hsapiens.v75)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># extract gene annotations from EnsDb</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> EnsDb.Hsapiens.v75)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># change to UCSC style since the data was mapped to hg19</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevelsStyle</span>(annotation) <span class="ot">&lt;-</span> <span class="st">'UCSC'</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co"># add the gene information to the object</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="fu">Annotation</span>(pbmc) <span class="ot">&lt;-</span> annotation</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># check</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">seqlevels</span>(pbmc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>For more details on <a href="https://stuartlab.org/signac/articles/data_structures">Data structures and object interaction</a> in Signac. <code>EnsDb.Hsapiens.v86</code> was used for <a href="https://stuartlab.org/signac/articles/pbmc_multiomic">Joint RNA and ATAC analysis: 10x multiomic</a>. Informations about genome version can be found at this <a href="https://stuartlab.org/signac/1.2.0/articles/install">link.</a></p>
+<p>After adding the gene annotation:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">@</span>assays<span class="sc">$</span>peaks<span class="sc">@</span>annotation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>GRanges object with 3021151 ranges and 5 metadata columns:
+                  seqnames        ranges strand |           tx_id   gene_name
+                     &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; |     &lt;character&gt; &lt;character&gt;
+  ENSE00001489430     chrX 276322-276394      + | ENST00000399012      PLCXD1
+  ENSE00001536003     chrX 276324-276394      + | ENST00000484611      PLCXD1
+  ENSE00002160563     chrX 276353-276394      + | ENST00000430923      PLCXD1
+  ENSE00001750899     chrX 281055-281121      + | ENST00000445062      PLCXD1
+  ENSE00001489388     chrX 281192-281684      + | ENST00000381657      PLCXD1
+              ...      ...           ...    ... .             ...         ...
+  ENST00000361739     chrM     7586-8269      + | ENST00000361739      MT-CO2
+  ENST00000361789     chrM   14747-15887      + | ENST00000361789      MT-CYB
+  ENST00000361851     chrM     8366-8572      + | ENST00000361851     MT-ATP8
+  ENST00000361899     chrM     8527-9207      + | ENST00000361899     MT-ATP6
+  ENST00000362079     chrM     9207-9990      + | ENST00000362079      MT-CO3
+                          gene_id   gene_biotype     type
+                      &lt;character&gt;    &lt;character&gt; &lt;factor&gt;
+  ENSE00001489430 ENSG00000182378 protein_coding     exon
+  ENSE00001536003 ENSG00000182378 protein_coding     exon
+  ENSE00002160563 ENSG00000182378 protein_coding     exon
+  ENSE00001750899 ENSG00000182378 protein_coding     exon
+  ENSE00001489388 ENSG00000182378 protein_coding     exon
+              ...             ...            ...      ...
+  ENST00000361739 ENSG00000198712 protein_coding      cds
+  ENST00000361789 ENSG00000198727 protein_coding      cds
+  ENST00000361851 ENSG00000228253 protein_coding      cds
+  ENST00000361899 ENSG00000198899 protein_coding      cds
+  ENST00000362079 ENSG00000198938 protein_coding      cds
+  -------
+  seqinfo: 25 sequences (1 circular) from hg38 genome</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="step-3-computing-qc-metrics" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="step-3-computing-qc-metrics"><span class="header-section-number">2.5</span> 📕 Step 3: Computing QC metrics</h2>
+<p>We can now compute QC metrics for the scATAC-seq experiment. Below are the recommended metrics for assessing data quality. As with scRNA-seq, expected values may vary depending on factors such as biological system and cell viability.</p>
+<ul>
+<li><p><strong>Nucleosome banding pattern:</strong> The DNA fragment size histogram should show a distinct nucleosome banding pattern, indicating DNA wrapped around nucleosomes. We calculate this per cell and quantify the ratio of mononucleosomal to nucleosome-free fragments (stored as <code>nucleosome_signal</code>).</p>
+<ul>
+<li><p>ratio of nucleosome size fragments (147-294 nucleotides)</p></li>
+<li><p>nucleosome-free fragments (&lt;147 nucleotides)</p></li>
+</ul></li>
+<li><p><strong>TSS enrichment score:</strong> Defined by ENCODE, this score measures the ratio of fragments centered at transcription start sites (TSS) compared to flanking regions. <em>Poor experiments tend to have low TSS enrichment.</em> You can calculate it per cell using <code>TSSEnrichment()</code>, with results stored in the <code>TSS.enrichment</code> metadata column.</p></li>
+<li><p><strong>Total fragments in peaks:</strong> A measure of sequencing depth. Cells with very few reads may need to be excluded, while those with excessively high reads might indicate <em>doublets or artifacts</em>.</p></li>
+<li><p><strong>Fraction of fragments in peaks:</strong> This is the proportion of fragments falling within ATAC-seq peaks. Cells with low values (&lt;15-20%) may indicate low quality or technical artifacts and should be removed.</p></li>
+<li><p><strong>Ratio of reads in blacklist regions:</strong> The <a href="https://github.com/Boyle-Lab/Blacklist">ENCODE blacklist</a> identifies regions prone to artefactual signal. Cells with a <em>high fraction of reads mapping to these regions should be excluded</em>. You can calculate this using <code>FractionCountsInRegion()</code> with the blacklist regions included in Signac.</p></li>
+</ul>
+<p>These metrics can be obtained from Cell Ranger output or calculated for non-10x datasets using <code>Signac</code>.</p>
+<div id="fig-QC" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.nature.com/articles/s41596-022-00692-9"><img src="img/QC1.png" class="img-fluid figure-img" alt="Assessing ATAC-seq library quality. From: Grandi, et al. 2022. Nature Protocols."></a></p>
+<figcaption class="figure-caption">Figure&nbsp;2.3: Assessing ATAC-seq library quality. The schematic shows transposition events near genes, with TSS regions (±2 kb) aligned across the genome. Reads are aggregated into a ‘meta-TSS’ to calculate per-base enrichment scores, plotted along the ±2 kb region. From: Grandi, et al.&nbsp;2022. Nature Protocols.</figcaption>
+</figure>
+</div>
+<section id="bioanalyzer-results-and-tss-region" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="bioanalyzer-results-and-tss-region"><span class="header-section-number">2.5.1</span> Bioanalyzer results and TSS region</h3>
+<div id="fig-bioanalyzer" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.nature.com/articles/s41596-022-00692-9"><img src="img/QC2.png" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;2.4: Bioanalyzer results and QC graph. d–f.&nbsp;Left: Bioanalyzer trace and gel. Middle: TSS enrichment plot. Right: fragment size distribution. From: Grandi, et al.&nbsp;2022. Nature Protocols.</figcaption>
+</figure>
+</div>
+<ul>
+<li><p><strong>d.</strong> Successful library (TSS score: 8.3) with clear nucleosomal periodicity.</p></li>
+<li><p><strong>e.</strong> Successful library (TSS score: 8.8) with minimal nucleosomal periodicity.</p></li>
+<li><p><strong>f.</strong> Unsuccessful library (TSS score: 1.7) with poor signal-to-background and low quality.</p></li>
+</ul>
+<p>Large fragments (&gt;2,000 bp) appear in Bioanalyzer traces but not in sequencing data.</p>
+</section>
+<section id="impact-of-sample-type-on-fragment-yield-and-sequencing-quality" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="impact-of-sample-type-on-fragment-yield-and-sequencing-quality"><span class="header-section-number">2.5.2</span> Impact of Sample Type on Fragment Yield and Sequencing Quality</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><strong>Scatterplot colored by point density:</strong> This plot shows the <code>log10(unique nuclear fragments)</code> vs TSS enrichment score and indicates the thresholds used with dotted lines.</p></li>
+<li><p><strong>Histogram:</strong> These plot shows the fragment size distribution.</p></li>
+</ul>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.archrproject.com/bookdown/per-cell-quality-control.html"><img src="img/scATAC_BMMC_R1-TSS_by_Unique_Frags_1.png" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">BMMC QC graphs. From: ArchR tutorial</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.archrproject.com/bookdown/per-cell-quality-control.html"><img src="img/scATAC_PBMC_R1-TSS_by_Unique_Frags_1.png" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">PBMCs QC graphs. From: ArchR tutorial</figcaption>
+</figure>
+</div>
+</section>
+<section id="atac-seq-insert-sizes-disclose-nucleosome-positions" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" class="anchored" data-anchor-id="atac-seq-insert-sizes-disclose-nucleosome-positions"><span class="header-section-number">2.5.3</span> ATAC-seq insert sizes disclose nucleosome positions</h3>
+<p>ATAC-seq paired-end reads provided detailed insights into nucleosome packing and positioning. The fragment size distribution from human chromatin showed clear 200 bp periodicity, indicating fragments protected by multiple nucleosomes.</p>
+<div id="fig-nucleosomes" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.nature.com/articles/nmeth.2688"><img src="img/nucleosomes.jpg" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;2.5: ATAC-seq provides genome-wide information on chromatin compaction. Inset, log-transformed histogram shows clear periodicity persists to six nucleosomes. From: Buenrostro, et al.&nbsp;2013. Nature.</figcaption>
+</figure>
+</div>
+<p>Again in the code:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute nucleosome signal score per cell</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">NucleosomeSignal</span>(<span class="at">object =</span> pbmc)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># compute TSS enrichment score per cell</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">TSSEnrichment</span>(<span class="at">object =</span> pbmc)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># add fraction of reads in peaks</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>pct_reads_in_peaks <span class="ot">&lt;-</span> pbmc<span class="sc">$</span>peak_region_fragments <span class="sc">/</span> pbmc<span class="sc">$</span>passed_filters <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># add blacklist ratio</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>blacklist_ratio <span class="ot">&lt;-</span> <span class="fu">FractionCountsInRegion</span>(</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc, </span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">'peaks'</span>,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">regions =</span> blacklist_hg38_unified</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The relationship between variables stored in the object metadata can be visualized using the&nbsp;<a href="https://stuartlab.org/signac/reference/densityscatter"><code>DensityScatter()</code></a>&nbsp;function. This can also be used to quickly find suitable cutoff values for different QC metrics by setting&nbsp;<code>quantiles=TRUE</code>:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DensityScatter</span>(pbmc, <span class="at">x =</span> <span class="st">'nCount_peaks'</span>, <span class="at">y =</span> <span class="st">'TSS.enrichment'</span>, <span class="at">log_x =</span> <span class="cn">TRUE</span>, <span class="at">quantiles =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section1_P13_intro_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can also look at the fragment length periodicity for all the cells, and group by cells with high or low nucleosomal signal strength. You can see that cells that are outliers for the mononucleosomal / nucleosome-free ratio (based on the plots above) have different nucleosomal banding patterns. The remaining cells exhibit a pattern that is typical for a successful ATAC-seq experiment.</p>
+</section>
+<section id="fragment-size-distribution" class="level3" data-number="2.5.4">
+<h3 data-number="2.5.4" class="anchored" data-anchor-id="fragment-size-distribution"><span class="header-section-number">2.5.4</span> Fragment size distribution</h3>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>nucleosome_group <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(pbmc<span class="sc">$</span>nucleosome_signal <span class="sc">&gt;</span> <span class="dv">4</span>, <span class="st">'NS &gt; 4'</span>, <span class="st">'NS &lt; 4'</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">FragmentHistogram</span>(<span class="at">object =</span> pbmc, <span class="at">group.by =</span> <span class="st">'nucleosome_group'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section1_P13_intro_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can plot the distribution of each QC metric separately using a violin plot:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VlnPlot</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">c</span>(<span class="st">'nCount_peaks'</span>, <span class="st">'TSS.enrichment'</span>, <span class="st">'blacklist_ratio'</span>, <span class="st">'nucleosome_signal'</span>, <span class="st">'pct_reads_in_peaks'</span>),</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="fl">0.1</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">5</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section1_P13_intro_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Finally we remove cells that are outliers for these QC metrics. The exact QC thresholds used will need to be adjusted according to your dataset.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">subset</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> pbmc,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">subset =</span> nCount_peaks <span class="sc">&gt;</span> <span class="dv">9000</span> <span class="sc">&amp;</span> </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    nCount_peaks <span class="sc">&lt;</span> <span class="dv">100000</span> <span class="sc">&amp;</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    pct_reads_in_peaks <span class="sc">&gt;</span> <span class="dv">40</span> <span class="sc">&amp;</span> <span class="co"># 40 % of the reads in the peaks</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    blacklist_ratio <span class="sc">&lt;</span> <span class="fl">0.01</span> <span class="sc">&amp;</span> <span class="co"># more of 1 % of the reads mapeaning in blacklist ratio</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    nucleosome_signal <span class="sc">&lt;</span> <span class="dv">4</span> <span class="sc">&amp;</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    TSS.enrichment <span class="sc">&gt;</span> <span class="dv">4</span> <span class="co"># enrichment score</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>pbmc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>An object of class Seurat 
+165376 features across 9649 samples within 1 assay 
+Active assay: peaks (165376 features, 0 variable features)
+ 2 layers present: counts, data</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>            used   (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells  14848910  793.1   44127650 2356.7   44127650 2356.7
+Vcells 585590329 4467.7 1160573644 8854.5 1160573644 8854.5</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This code filters the <code>pbmc</code> object to retain only high-quality cells based on specific criteria:</p>
+<ul>
+<li><p><strong><code>nCount_peaks &gt; 9000</code></strong>: Keeps cells with more than 9000 reads in accessible regions.</p></li>
+<li><p><strong><code>nCount_peaks &lt; 100000</code></strong>: Removes cells with an excessive number of reads, likely artifacts.</p></li>
+<li><p><strong><code>pct_reads_in_peaks &gt; 40</code></strong>: Retains cells where over 40% of reads fall within peaks (high-quality signal).</p></li>
+<li><p><strong><code>blacklist_ratio &lt; 0.01</code></strong>: Excludes cells with more than 1% of reads in blacklisted regions (unreliable areas).</p></li>
+<li><p><strong><code>nucleosome_signal &lt; 4</code></strong>: Keeps cells with low nucleosome signal, indicating accessible chromatin.</p></li>
+<li><p><strong><code>TSS.enrichment &gt; 4</code></strong>: Retains cells with strong enrichment near transcription start sites (good data quality).</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="step-4-normalization-and-linear-dimensional-reduction-lsi" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="step-4-normalization-and-linear-dimensional-reduction-lsi"><span class="header-section-number">2.6</span> 📘 Step 4: Normalization and linear dimensional reduction (LSI)</h2>
+<ul>
+<li><p>✅ <strong>Normalization:</strong> <code>Signac</code> performs <em>term frequency-inverse document frecuency</em> (TF-IDF) normalization, a two-step process that <strong>adjusts for differences in sequencing depth across cells and assigns higher values to rare peaks</strong><em>.</em> Run term frequency inverse document frequency (TF-IDF) normalization on a matrix using <a href="https://stuartlab.org/signac/reference/runtfidf"><code>RunTFIDF()</code></a>.</p>
+<div id="fig-method" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://ieeexplore.ieee.org/document/10343156"><img src="https://www.researchgate.net/publication/376247075/figure/fig2/AS:11431281209841725@1701888441866/TF-IDFTerm-Frequency-Inverse-Document-Frequency_W640.jpg" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;2.6: TF-IDF(term frequency-inverse document frequency). From: Almarashy, et al.&nbsp;2023. IEEE Access</figcaption>
+</figure>
+</div></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+More information
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Term-Frequency Inverse-Document-Frequency (TF-IDF)</strong> is a technique commonly used in text processing, but in the context of <strong>scATAC-seq</strong> (single-cell Assay for Transposase-Accessible Chromatin sequencing), it is adapted to quantify and normalize chromatin accessibility signals across different cells.</p>
+<p>Here’s how this concept is applied in <strong>scATAC-seq</strong>:</p>
+<ol type="1">
+<li><p><strong>Term Frequency (TF)</strong>: In scATAC-seq, “terms” correspond to <strong>peaks of chromatin accessibility</strong>, and the “document” is an individual cell. “TF” measures how frequently a given accessible site (a peak) is present in a particular cell. Essentially, it represents the frequency of accessibility of a peak within a cell.</p></li>
+<li><p><strong>Inverse Document Frequency (IDF)</strong>: “IDF” measures how common or rare a peak is across all cells. If a peak is present in many cells, its IDF will be low because it is not informative. Conversely, if a peak is present only in a few cells, its IDF will be high, reflecting its specificity.</p></li>
+<li><p><strong>Application in scATAC-seq</strong>: The purpose of using TF-IDF in scATAC-seq is to improve the representation of accessibility data. Given the high sparsity of single-cell data and the binary nature of accessibility (present or absent), applying TF-IDF helps to <strong>highlight peaks that are specific to certain cells</strong>. This enables better downstream analysis, such as dimensionality reduction or clustering, to capture biological differences between cells more accurately.</p>
+<ul>
+<li><p><strong>Summary:</strong></p>
+<ul>
+<li><p><strong>TF</strong> measures how frequently a peak is accessible in a cell.</p></li>
+<li><p><strong>IDF</strong> penalizes peaks that are accessible in many cells and gives more weight to those specific to fewer cells.</p></li>
+<li><p><strong>TF-IDF in scATAC-seq</strong> is used to normalize the data, providing a better representation of chromatin accessibility for analyses like clustering or dimensionality reduction.</p></li>
+</ul></li>
+</ul></li>
+</ol>
+</div>
+</div>
+<ul>
+<li><p>✅ <strong>Feature selection:</strong> Unlike scRNA-seq, scATAC-seq has low dynamic range, making variable feature selection difficult.</p>
+<ul>
+<li><p>A) Instead, we can choose to use only the top n% of features (peaks) for dimensional reduction, or remove features present in less than n cells with the <a href="https://stuartlab.org/signac/reference/findtopfeatures"><code>FindTopFeatures()</code></a> function.</p></li>
+<li><p>B) Features used for dimensional reduction are automatically set as <code>VariableFeatures()</code> for the Seurat object by this function.</p>
+<blockquote class="blockquote">
+<p><strong>NOTE:</strong> Even when using all features, similar results are observed, with faster runtimes when using a subset (e.g., the top 25% of peaks with min.cutoff = ‘q75’).</p>
+</blockquote></li>
+</ul></li>
+<li><p>✅ <strong>Dimension reduction:</strong> <em>Singular Value Decomposition</em> (SVD) is applied to the TF-IDF matrix using the selected peaks, generating a <strong>reduced dimensional representation</strong> similar to PCA in scRNA-seq analyses. Run singular value decomposition using <a href="https://stuartlab.org/signac/reference/runsvd">RunSVD()</a>.</p></li>
+</ul>
+<p>The combined steps of TF-IDF followed by SVD are known as <strong>latent semantic indexing (LSI)</strong>, and were first introduced for the analysis of scATAC-seq data by <a href="https://www.science.org/doi/10.1126/science.aab1601">Cusanovich et al.&nbsp;2015</a>.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunTFIDF</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Performing TF-IDF normalization</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindTopFeatures</span>(pbmc, <span class="at">min.cutoff =</span> <span class="st">'q0'</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunSVD</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running SVD</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Scaling cell embeddings</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>            used   (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells  14857990  793.6   44127650 2356.7   44127650 2356.7
+Vcells 546696312 4171.0 1160573644 8854.5 1160573644 8854.5</code></pre>
+</div>
+</div>
+<p>The first LSI component often captures sequencing depth (technical variation) rather than biological variation. If this is the case, the component should be removed from downstream analysis. We can assess the correlation between each LSI component and sequencing depth using the&nbsp;<a href="https://stuartlab.org/signac/reference/depthcor"><code>DepthCor()</code></a>&nbsp;function:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DepthCor</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section1_P13_intro_files/figure-html/Components-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Here we see there is a very strong correlation between the first LSI component and the total number of counts for the cell. We will perform downstream steps without this component as we don’t want to group cells together based on their total sequencing depth, but rather by their patterns of accessibility at cell-type-specific peaks.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why did we eliminate component 1?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Component 1 is often removed in dimensionality reduction analyses because it <em>may capture non-biological variability or technical artifacts rather than biologically relevant patterns</em>. Removing it helps focus on components that better reflect the <em>true biological structure of the data</em>.</p>
+</div>
+</div>
+</section>
+<section id="step-5-non-linear-dimensional-reduction-and-clustering" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="step-5-non-linear-dimensional-reduction-and-clustering"><span class="header-section-number">2.7</span> 📙 Step 5: Non-linear dimensional reduction and clustering</h2>
+<p>Now that the cells are embedded in a low-dimensional space we can use methods commonly applied for the analysis of scRNA-seq data to perform graph-based clustering and non-linear dimension reduction for visualization. The functions&nbsp;<a href="https://satijalab.org/seurat/reference/runumap"><code>RunUMAP()</code></a>,&nbsp;<a href="https://satijalab.org/seurat/reference/findneighbors"><code>FindNeighbors()</code></a>, and&nbsp;<a href="https://satijalab.org/seurat/reference/findclusters"><code>FindClusters()</code></a>&nbsp;all come from the <code>Seurat</code> package.</p>
+<section id="perform-umap" class="level3" data-number="2.7.1">
+<h3 data-number="2.7.1" class="anchored" data-anchor-id="perform-umap"><span class="header-section-number">2.7.1</span> Perform UMAP</h3>
+<p>Uniform Manifold Approximation and Projection (UMAP) is a dimension reduction technique that can be used for visualisation similarly to t-SNE, but also for <strong>general non-linear dimension reduction.</strong> It was proposed by <a href="https://arxiv.org/abs/1802.03426">McInnes&nbsp;<em>et al.</em> 2018</a>.</p>
+<p>This&nbsp;results in the creation of two new parameters UMAP 1 and UMAP 2. UMAP captures <strong>local relationships within a cluster</strong> as well as global relationships between distinct clusters.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>While <strong>PCA</strong> assumes that the variation of interest follows a specific distribution (generally normal), <strong>UMAP</strong> is more flexible and can learn complex, non-linear distributions directly from the data. This flexibility allows UMAP to better separate clusters, particularly when some clusters are more similar to each other. As a result, UMAP often excels at revealing nuanced relationships and improving cluster separation in datasets with intricate patterns.</p>
+<p><strong>UMAP Visualization - bulk RNA-seq</strong></p>
+<p>Also you can extract the normalized counts data from the&nbsp;<code>DESeqDataSet</code>&nbsp;object and perform UMAP on the normalized data using&nbsp;<code>umap()</code>&nbsp;from the&nbsp;<code>umap</code>&nbsp;package.</p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(<span class="at">object =</span> pbmc, <span class="at">reduction =</span> <span class="st">'lsi'</span>, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>21:55:08 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>21:55:08 Read 9649 rows and found 29 numeric columns</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>21:55:08 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>21:55:08 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[----|----|----|----|----|----|----|----|----|----|</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>**************************************************|
+21:55:09 Writing NN index file to temp file C:\Users\ecoss\AppData\Local\Temp\RtmpovQGFE\file4b7cfbb4fc9
+21:55:09 Searching Annoy index using 8 threads, search_k = 3000
+21:55:10 Annoy recall = 100%
+21:55:11 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 30
+21:55:14 Initializing from normalized Laplacian + noise (using RSpectra)
+21:55:14 Commencing optimization for 500 epochs, with 384536 positive edges
+21:55:40 Optimization finished</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindNeighbors</span>(<span class="at">object =</span> pbmc, <span class="at">reduction =</span> <span class="st">'lsi'</span>, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Computing nearest neighbor graph
+Computing SNN</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(<span class="at">object =</span> pbmc, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">algorithm =</span> <span class="dv">3</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(<span class="at">object =</span> pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section1_P13_intro_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now, we can cluster the cells to find groups that belong to the same cell types. It is possible to plot the results from the SVD, but these often are not informative. Instead, we use the UMAP algorithm, which shows a better separation between the cell types. If you are interested, the paper describing UMAP can be found&nbsp;<a href="https://arxiv.org/abs/1802.03426">here</a>.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(<span class="at">object =</span> pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">dims =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>), <span class="at">reduction =</span> <span class="st">"lsi"</span>) <span class="sc">+</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">NoLegend</span>()  <span class="sc">+</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">'SVD'</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(<span class="at">object =</span> pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">NoLegend</span>() <span class="sc">+</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">'UMAP'</span>)</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">|</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section1_P13_intro_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>            used   (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells  14904626  796.0   44127650 2356.7   44127650 2356.7
+Vcells 548217690 4182.6 1160573644 8854.5 1160573644 8854.5</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22631)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Mexico_City
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] future_1.34.0             EnsDb.Hsapiens.v86_2.99.0
+ [3] ensembldb_2.28.1          AnnotationFilter_1.28.0  
+ [5] GenomicFeatures_1.56.0    AnnotationDbi_1.66.0     
+ [7] Biobase_2.64.0            patchwork_1.2.0          
+ [9] ggplot2_3.5.1             GenomicRanges_1.56.1     
+[11] GenomeInfoDb_1.40.1       IRanges_2.38.1           
+[13] S4Vectors_0.42.1          BiocGenerics_0.50.0      
+[15] Seurat_5.1.0              SeuratObject_5.0.2       
+[17] sp_2.1-4                  Signac_1.14.0            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22            splines_4.4.1              
+  [3] later_1.3.2                 BiocIO_1.14.0              
+  [5] bitops_1.0-8                tibble_3.2.1               
+  [7] polyclip_1.10-7             rpart_4.1.23               
+  [9] XML_3.99-0.17               fastDummies_1.7.4          
+ [11] lifecycle_1.0.4             hdf5r_1.3.11               
+ [13] globals_0.16.3              lattice_0.22-6             
+ [15] MASS_7.3-60.2               backports_1.5.0            
+ [17] magrittr_2.0.3              Hmisc_5.1-3                
+ [19] plotly_4.10.4               rmarkdown_2.28             
+ [21] yaml_2.3.10                 httpuv_1.6.15              
+ [23] sctransform_0.4.1           spam_2.10-0                
+ [25] spatstat.sparse_3.1-0       reticulate_1.39.0          
+ [27] cowplot_1.1.3               pbapply_1.7-2              
+ [29] DBI_1.2.3                   RColorBrewer_1.1-3         
+ [31] abind_1.4-5                 zlibbioc_1.50.0            
+ [33] Rtsne_0.17                  purrr_1.0.2                
+ [35] biovizBase_1.52.0           RCurl_1.98-1.16            
+ [37] nnet_7.3-19                 VariantAnnotation_1.50.0   
+ [39] GenomeInfoDbData_1.2.12     ggrepel_0.9.5              
+ [41] irlba_2.3.5.1               listenv_0.9.1              
+ [43] spatstat.utils_3.1-0        goftest_1.2-3              
+ [45] RSpectra_0.16-2             spatstat.random_3.3-1      
+ [47] fitdistrplus_1.2-1          parallelly_1.38.0          
+ [49] leiden_0.4.3.1              codetools_0.2-20           
+ [51] DelayedArray_0.30.1         RcppRoll_0.3.1             
+ [53] tidyselect_1.2.1            farver_2.1.2               
+ [55] UCSC.utils_1.0.0            base64enc_0.1-3            
+ [57] matrixStats_1.4.0           spatstat.explore_3.3-2     
+ [59] GenomicAlignments_1.40.0    jsonlite_1.8.8             
+ [61] Formula_1.2-5               progressr_0.14.0           
+ [63] ggridges_0.5.6              survival_3.6-4             
+ [65] tools_4.4.1                 ica_1.0-3                  
+ [67] Rcpp_1.0.13                 glue_1.7.0                 
+ [69] SparseArray_1.4.8           gridExtra_2.3              
+ [71] xfun_0.45                   MatrixGenerics_1.16.0      
+ [73] dplyr_1.1.4                 withr_3.0.1                
+ [75] fastmap_1.2.0               fansi_1.0.6                
+ [77] digest_0.6.36               R6_2.5.1                   
+ [79] mime_0.12                   colorspace_2.1-1           
+ [81] scattermore_1.2             tensor_1.5                 
+ [83] dichromat_2.0-0.1           spatstat.data_3.1-2        
+ [85] RSQLite_2.3.7               utf8_1.2.4                 
+ [87] tidyr_1.3.1                 generics_0.1.3             
+ [89] data.table_1.16.0           rtracklayer_1.64.0         
+ [91] httr_1.4.7                  htmlwidgets_1.6.4          
+ [93] S4Arrays_1.4.1              uwot_0.2.2                 
+ [95] pkgconfig_2.0.3             gtable_0.3.5               
+ [97] blob_1.2.4                  lmtest_0.9-40              
+ [99] XVector_0.44.0              htmltools_0.5.8.1          
+[101] dotCall64_1.1-1             ProtGenerics_1.36.0        
+[103] scales_1.3.0                png_0.1-8                  
+[105] spatstat.univar_3.0-1       knitr_1.48                 
+[107] rstudioapi_0.16.0           reshape2_1.4.4             
+[109] rjson_0.2.22                checkmate_2.3.2            
+[111] nlme_3.1-164                curl_5.2.2                 
+[113] zoo_1.8-12                  cachem_1.1.0               
+[115] stringr_1.5.1               KernSmooth_2.23-24         
+[117] vipor_0.4.7                 parallel_4.4.1             
+[119] miniUI_0.1.1.1              foreign_0.8-86             
+[121] ggrastr_1.0.2               restfulr_0.0.15            
+[123] pillar_1.9.0                grid_4.4.1                 
+[125] vctrs_0.6.5                 RANN_2.6.2                 
+[127] promises_1.3.0              xtable_1.8-4               
+[129] cluster_2.1.6               beeswarm_0.4.0             
+[131] htmlTable_2.4.3             evaluate_0.24.0            
+[133] cli_3.6.2                   compiler_4.4.1             
+[135] Rsamtools_2.20.0            rlang_1.1.3                
+[137] crayon_1.5.3                future.apply_1.11.2        
+[139] labeling_0.4.3              ggbeeswarm_0.7.2           
+[141] plyr_1.8.9                  stringi_1.8.4              
+[143] viridisLite_0.4.2           deldir_2.0-4               
+[145] BiocParallel_1.38.0         munsell_0.5.1              
+[147] Biostrings_2.72.1           lazyeval_0.2.2             
+[149] spatstat.geom_3.3-2         Matrix_1.7-0               
+[151] BSgenome_1.72.0             RcppHNSW_0.6.0             
+[153] bit64_4.0.5                 KEGGREST_1.44.1            
+[155] shiny_1.9.1                 SummarizedExperiment_1.34.0
+[157] ROCR_1.0-11                 igraph_2.0.3               
+[159] memoise_2.0.1               fastmatch_1.1-4            
+[161] bit_4.0.5                  </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="references" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="references"><span class="header-section-number">2.8</span> References</h2>
+<p>https://www.jpt.com/support-contact/resources/pbmc/</p>
+<p><a href="https://stuartlab.org/signac/articles/data_structures">Data structures and object interaction</a></p>
+<p><a href="https://stuartlab.org/signac/articles/pbmc_multiomic">Joint RNA and ATAC analysis: 10x multiomic</a>.</p>
+<p>https://stuartlab.org/signac/1.2.0/articles/install</p>
+<p>https://stuartlab.org/signac/articles/pbmc_multiomic</p>
+<p>https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/metrics</p>
+<p>https://www.nature.com/articles/nmeth.2688</p>
+<p><a href="https://stuartlab.org/signac/articles/mouse_brain_vignette">Analyzing adult mouse brain scATAC-seq</a></p>
+<p>Raton https://rpubs.com/kshridevi/1176302</p>
+<p>https://ieeexplore.ieee.org/document/10343156</p>
+<p>https://stuartlab.org/signac/articles/pbmc_vignette</p>
+<p>https://arxiv.org/abs/1802.03426</p>
+<p>https://alexslemonade.github.io/refinebio-examples/03-rnaseq/dimension-reduction_rnaseq_02_umap.html#4_UMAP_Visualization_-_RNA-seq</p>
+<p><a href="https://github.com/lmcinnes/umap">UMAP Github</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Section1_intro.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./Section1_P13_retos.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Exercises</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
