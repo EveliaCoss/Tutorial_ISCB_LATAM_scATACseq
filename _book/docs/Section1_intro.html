@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice - 1&nbsp; Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./Section1_P13_intro.html" rel="next">
+<link href="./index.html" rel="prev">
+<link href="./JAGUAR_logo.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Section1_intro.html"><strong>Section 1</strong> - Introduction and Quality control</a></li><li class="breadcrumb-item"><a href="./Section1_intro.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/EveliaCoss/Tutorial_ISCB_LATAM_scATACseq" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+              <i class="bi bi-bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Global information</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text"><strong>Section 1</strong> - Introduction and Quality control</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section1_intro.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section1_P13_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><strong>Practical 13:</strong> scATAC-seq Pre-Processing and Quality Control</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section1_P13_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text"><strong>Section 2</strong> - scATAC-seq Downstream analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P14_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><strong>Practical 14:</strong> scATAC-seq Downstream</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P14_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P15_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section2_P15_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text"><strong>Section 3</strong> - Motif analysis and results</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P16_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><strong>Practical 16:</strong> Motif analysis with Signac</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P16_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P17_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title"><strong>Practical 17:</strong> Exploring results (graphs)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P17_retos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Section3_P18_others.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Other tools used in scATAC-seq</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-are-atac-seq-and-scatac-seq" id="toc-what-are-atac-seq-and-scatac-seq" class="nav-link active" data-scroll-target="#what-are-atac-seq-and-scatac-seq"><span class="header-section-number">1.1</span> What are ATAC-seq and scATAC-seq?</a></li>
+  <li><a href="#what-is-chromatin-accesibility" id="toc-what-is-chromatin-accesibility" class="nav-link" data-scroll-target="#what-is-chromatin-accesibility"><span class="header-section-number">1.2</span> What is Chromatin accesibility?</a></li>
+  <li><a href="#how-does-atac-seq-work" id="toc-how-does-atac-seq-work" class="nav-link" data-scroll-target="#how-does-atac-seq-work"><span class="header-section-number">1.3</span> How does ATAC-Seq work?</a></li>
+  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow"><span class="header-section-number">1.4</span> Workflow</a></li>
+  <li><a href="#data-structure" id="toc-data-structure" class="nav-link" data-scroll-target="#data-structure"><span class="header-section-number">1.5</span> Data Structure</a>
+  <ul>
+  <li><a href="#the-chromatinassay-class" id="toc-the-chromatinassay-class" class="nav-link" data-scroll-target="#the-chromatinassay-class"><span class="header-section-number">1.5.1</span> The <code>ChromatinAssay</code> Class</a></li>
+  <li><a href="#the-fragment-class" id="toc-the-fragment-class" class="nav-link" data-scroll-target="#the-fragment-class"><span class="header-section-number">1.5.2</span> The <code>Fragment</code> Class</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">1.6</span> <strong>References</strong></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="overview" class="quarto-section-identifier"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="what-are-atac-seq-and-scatac-seq" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="what-are-atac-seq-and-scatac-seq"><span class="header-section-number">1.1</span> What are ATAC-seq and scATAC-seq?</h2>
+<p><strong>ATAC-seq</strong> (Assay for Transposase-Accessible Chromatin with high-throughput sequencing) is a widely used, cost-effective method for <em>genome-wide profiling of chromatin accessibility</em>, utilizing the hyperactive Tn5 transposase for NGS library preparation.</p>
+<p><strong>Single-cell ATAC-seq (scATAC-seq)</strong> extends this approach to single cells, enabling the study of <em>chromatin accessibility in specific cell types</em> within heterogeneous tissue samples.</p>
+</section>
+<section id="what-is-chromatin-accesibility" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="what-is-chromatin-accesibility"><span class="header-section-number">1.2</span> What is Chromatin accesibility?</h2>
+<p><strong>Chromatin accessibility</strong> refers to the degree of physical compaction of chromatin, a structure made up of DNA and proteins, primarily histones, transcription factors (TFs), chromatin-modifying enzymes, and remodeling complexes. While eukaryotic genomes are generally organized into <strong>nucleosomes (with ~147 bp of DNA wrapped around a histone octamer</strong>), nucleosome positioning varies across tissues and cell types. Regions like <em>enhancers</em> and promoters (<em>cis-</em>regulatory elements), which interact with transcriptional regulators, tend to be nucleosome-depleted, making the chromatin more accessible.</p>
+<p>Genome-wide profiling of chromatin accessibility is a powerful method for identifying <em>potential regulatory elements specific</em> to cell types or states.</p>
+<div id="fig-global" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://doi.org/10.1038/s43586-020-00008-9"><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1038%2Fs43586-020-00008-9/MediaObjects/43586_2020_8_Fig1_HTML.png?as=webp" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;1.1: Chromatin accessibility profiling in bulk and at single-cell level reveals putative regulatory regions. H3K27ac, histone H3 acetylated at lysine 27; Pol II, polymerase II; TSS, transcription start site; TFs, transcription factors. From: Minnoye, et al.&nbsp;2021. Nat Rev Methods Primers.rimers.</figcaption>
+</figure>
+</div>
+</section>
+<section id="how-does-atac-seq-work" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="how-does-atac-seq-work"><span class="header-section-number">1.3</span> How does ATAC-Seq work?</h2>
+<p>ATAC-seq identifies open, accessible regions of chromatin across the genome. Here’s a step-by-step breakdown of how it works:</p>
+<ol type="1">
+<li><p><strong>Cell/Nuclei Isolation</strong>: Cells or nuclei are isolated, ensuring the chromatin structure remains intact, along with DNA-binding proteins such as nucleosomes and transcription factors.</p></li>
+<li><p><strong>Tn5 Transposase Treatment</strong>: The chromatin is exposed to a hyperactive Tn5 transposase enzyme, which simultaneously cuts the DNA and inserts special sequences called adapters.</p></li>
+<li><p><strong>Adapter Insertion</strong>: These adapters (i5/P5 and i7/P7) are added at both ends of the DNA fragments. Only fragments that receive both adapters can be amplified in the next steps.</p></li>
+<li><p><strong>Library Amplification</strong>: The adapter-tagged fragments are amplified through PCR, creating a library of accessible chromatin regions.</p></li>
+<li><p><strong>High-Throughput Sequencing</strong>: The amplified fragments are sequenced using next-generation sequencing (NGS) technologies.</p></li>
+<li><p><strong>Data Analysis</strong>: Sequencing reads are mapped back to the genome. Regions with high concentrations of Tn5 activity (where many fragments originate) are identified as “<em>peaks</em>”, indicating open, accessible chromatin regions, which often correspond to regulatory elements such as enhancers and promoters.</p></li>
+</ol>
+<div id="fig-tecnic" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.nature.com/articles/s41596-022-00692-9"><img src="img/Figure2.png" class="img-fluid figure-img" alt="Schematic of ATAC-seq Transposition and Library Preparation. A) Overview of ATAC-seq steps: nuclei isolation, Tn5 transposase-mediated chromatin fragmentation and adapter insertion, PCR amplification, and high-throughput sequencing. C) Toy example of hypothetical ATAC-seq data: both cell types X and Y show peaks at gene A's promoter, but cell type X has an additional peak at an upstream enhancer, driving higher expression. From: Grandi, et al. 2022. Nature Protocols."></a></p>
+<figcaption class="figure-caption">Figure&nbsp;1.2: Schematic of ATAC-seq Transposition and Library Preparation. A) Overview of ATAC-seq steps: nuclei isolation, Tn5 transposase-mediated chromatin fragmentation and adapter insertion, PCR amplification, and high-throughput sequencing. C) Toy example of hypothetical ATAC-seq data: both cell types X and Y show peaks at gene A’s promoter, but cell type X has an additional peak at an upstream enhancer, driving higher expression. From: Grandi, et al.&nbsp;2022. Nature Protocols and Footprinting with ArchR. From: ArchR tutorial.</figcaption>
+</figure>
+</div>
+<p>In a hypothetical ATAC-seq dataset, cell types <em>X</em> and <em>Y</em> both show peaks at the promoter of <em>gene A</em>, indicating shared accessibility. However, cell type <em>X</em> has an additional peak at an upstream enhancer, which drives higher <em>gene A</em> expression. This cell-type-specific peak is due to transcription factor B binding to the <em>enhancer</em>, a feature absent in cell type <em>Y</em>. ATAC-seq data also helps reveal transcription factor binding motifs, such as “GATAA” in this example, linked to differential accessibility.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.archrproject.com/bookdown/footprinting-with-archr.html"><img src="https://www.archrproject.com/bookdown/images/footprintingSchematic.png" class="img-fluid figure-img" alt="Footprinting with ArchR. From: ArchR tutorial" width="300"></a></p>
+<figcaption class="figure-caption">Footprinting with ArchR. From: ArchR tutorial</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>ATAC-seq uses a hyperactive Tn5 transposase, engineered with three mutations to boost its activity. This enzyme simultaneously cuts and tags accessible chromatin regions, similar to how DNase I identifies DNase hypersensitive sites (DHSs). The tagged DNA fragments are then amplified and sequenced, offering a powerful method to map open chromatin.</p>
+</div>
+</div>
+</section>
+<section id="workflow" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="workflow"><span class="header-section-number">1.4</span> Workflow</h2>
+<p>In the following sections, we will walk you through a standard workflow for analyzing scATAC-seq data. The accompanying summary figure outlines the different stages of the analysis and emphasizes the distinctions between commonly used frameworks. We’ll start by explaining the concepts of quality control and dimensionality reduction using R.</p>
+<div id="fig-workflow" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.nature.com/articles/s41576-023-00586-w"><img src="img/Figura_workflow.png" class="img-fluid figure-img" width="800"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;1.3: Data analysis workflow. From: Heumos, et al.&nbsp;2023. Nature review genetics</figcaption>
+</figure>
+</div>
+</section>
+<section id="data-structure" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="data-structure"><span class="header-section-number">1.5</span> Data Structure</h2>
+<section id="the-chromatinassay-class" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="the-chromatinassay-class"><span class="header-section-number">1.5.1</span> The <code>ChromatinAssay</code> Class</h3>
+<p>scATAC-seq data is stored in a <strong>ChromatinAssay</strong> object, which includes slots for additional information about motifs, gene annotations, and genome data. From this object, we create the main <strong>Seurat</strong> object for our analyses.</p>
+<p>The <code>ChromatinAssay</code> class extends the standard Seurat <code>Assay</code> class and adds several additional slots for data useful for the analysis of single-cell chromatin datasets. The class includes all the slots present in a standard Seurat <a href="https://github.com/satijalab/seurat/wiki/Assay">Assay</a>, with the following additional slots:</p>
+<ul>
+<li><p><code>ranges</code>: A <a href="https://www.rdocumentation.org/packages/GenomicRanges/versions/1.24.1/topics/GRanges-class"><code>GRanges</code></a> object containing the genomic coordinates of each feature in the <code>data</code> matrix.</p></li>
+<li><p><code>motifs</code>: A <code>Motif</code> object</p></li>
+<li><p><code>fragments</code>: A list of <code>Fragment</code> objects</p></li>
+<li><p><code>seqinfo</code>: A <a href="https://www.rdocumentation.org/packages/GenomeInfoDb/versions/1.8.3/topics/Seqinfo-class"><code>Seqinfo</code></a> object containing information about the genome that the data was mapped to</p></li>
+<li><p><code>annotation</code>: A <a href="https://www.rdocumentation.org/packages/GenomicRanges/versions/1.24.1/topics/GRanges-class"><code>GRanges</code></a> object containing gene annotations</p></li>
+<li><p><code>bias</code>: A vector containing Tn5 integration bias information (the frequency of Tn5 integration at different hexamers)</p></li>
+<li><p><code>positionEnrichment</code>: A named list of matrices containing positional enrichment scores for Tn5 integration (for example, enrichment at the TSS or at different TF motifs)</p></li>
+<li><p><code>links</code>: A <a href="https://www.rdocumentation.org/packages/GenomicRanges/versions/1.24.1/topics/GRanges-class"><code>GRanges</code></a> object describing linked genomic positions, such as co-accessible sites or enhancer-gene regulatory relationships.</p></li>
+</ul>
+<p>We can use the <code>granges()</code> function on a <strong>Seurat</strong> object with an active <strong>ChromatinAssay</strong> experiment to view the chromosomal regions associated with each gene. For more details on the <a href="https://stuartlab.org/signac/articles/data_structures"><strong>ChromatinAssay</strong> class</a>, refer to the object interaction vignette and check <a href="https://rpubs.com/gloknar/809238">this example</a>.</p>
+<div id="fig-chrassay" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9255697/"><img src="img/ChromatinAssay.jpeg" class="img-fluid figure-img" alt="Design of a custom Assay for single-cell chromatin data. We designed a specialized ChromatinAssay class with the capacity to store data required for analysis of single-cell chromatin datasets. From: Stuart, et al. 2021. Nat Methods"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;1.4: Design of a custom Assay for single-cell chromatin data. We designed a specialized ChromatinAssay class with the capacity to store data required for analysis of single-cell chromatin datasets. From: [Stuart, et al.&nbsp;2021. Nat Methods](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9255697/)</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-fragment-class" class="level3" data-number="1.5.2">
+<h3 data-number="1.5.2" class="anchored" data-anchor-id="the-fragment-class"><span class="header-section-number">1.5.2</span> The <code>Fragment</code> Class</h3>
+<p>The <code>Fragment</code> class is designed for storing and interacting with a <a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/fragments">fragment file</a> commonly used for single-cell chromatin data. It contains the path to an indexed fragment file on disk, a MD5 hash for the fragment file and the fragment file index, and a vector of cell names contained in the fragment file. Importantly, this is a named vector where the elements of the vector are the cell names as they appear in the fragment file, and the name of each element is the cell name as it appears in the <code>ChromatinAssay</code> object storing the <code>Fragment</code> object. This allows a mapping of cell names on disk to cell names in R, and avoids the need to alter fragment files on disk. This path can also be a remote file accessible by <code>http</code> or <code>ftp</code>. For more details on the <a href="https://stuartlab.org/signac/articles/data_structures#the-fragment-class"><strong>Fragment</strong> class</a>.</p>
+<table class="table">
+<caption>Column definitions from <a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/fragments">Single Cell ATAC.</a></caption>
+<thead>
+<tr class="header">
+<th>Column Number</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>chrom</td>
+<td>Reference genome chromosome of fragment.</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>chromStart</td>
+<td>Adjusted start position of fragment on chromosome.</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>chromEnd</td>
+<td>Adjusted end position of fragment on chromosome. The end position is exclusive, so represents the position immediately following the fragment interval.</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>barcode</td>
+<td>The 10x cell barcode of this fragment. This corresponds to the&nbsp;<code>CB</code>&nbsp;tag attached to the corresponding BAM file records for this fragment.</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>readSupport</td>
+<td>The total number of read pairs associated with this fragment. This includes the read pair marked unique and all duplicate read pairs.</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code>  chrom  start    end            barcode readCount 
+1  chr1  10245  10302 AAAGATGAGGCTAAAT-1         1
+2  chr1  55313  55699 AAACTCGTCTGGCACG-1         2 
+3  chr1  56455  56658 AAACTCGTCTGGCACG-1         1
+4  chr1  60687  60726 AAACTGCAGTCTGTGT-1         1
+5  chr1 235723 235936 AAACTGCTCCTATCCG-1         1</code></pre>
+</section>
+</section>
+<section id="references" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="references"><span class="header-section-number">1.6</span> <strong>References</strong></h2>
+<p>https://www.nature.com/articles/s41596-022-00692-9</p>
+<p>https://www.nature.com/articles/s43586-020-00008-9</p>
+<p>https://www.sc-best-practices.org/chromatin_accessibility/introduction.html</p>
+<p>https://www.nature.com/articles/s41576-023-00586-w</p>
+<p>https://www.archrproject.com/bookdown/footprinting-with-archr.html</p>
+<p><a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/matrices" class="uri">https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/matrices</a></p>
+<p><a href="https://stuartlab.org/signac/1.13.0/articles/peak_calling">Calling peaks</a></p>
+<p><a href="https://github.com/stuart-lab/signac/issues/560">Issue 560</a></p>
+<p><a href="https://satijalab.org/seurat/articles/get_started.html">Seuratv4</a></p>
+<p>Import data</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Global information</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./Section1_P13_intro.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><strong>Practical 13:</strong> scATAC-seq Pre-Processing and Quality Control</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
