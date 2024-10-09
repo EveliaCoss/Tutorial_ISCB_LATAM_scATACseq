@@ -1,0 +1,3 @@
+# Other tools used in scATAC-seq {#install .setup style="blue"}
+
+![Overview of the scATAC-seq analysis steps.](https://www.sc-best-practices.org/_images/overview_atac.jpeg)

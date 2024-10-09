@@ -9,15 +9,24 @@ book:
   page-navigation: true
   chapters:
     - index.qmd
-    - part: " Section 1 (45 min) - (9:45-10:30 h)"
+    - part: "**Section 1** - Introduction and Quality control"
       chapters: 
-        - Section1_packages.qmd
-    - part: " Section 2 (2 h) - (11:00-13:00 h)"
+        - Section1_intro.qmd
+        - Section1_P13_intro.qmd
+        - Section1_P13_retos.qmd
+    - part: "**Section 2** - scATAC-seq Downstream analysis"
       chapters: 
-        - Section1_packages.qmd
-    - part: "Section 3 (14:00 - 15:30 h)"
-      chapters: 
-        - Section1_packages.qmd
+        - Section2_P14_intro.qmd
+        - Section2_P14_retos.qmd
+        - Section2_P15_intro.qmd
+        - Section2_P15_retos.qmd
+    - part: "**Section 3** - Motif analysis and results "
+      chapters:
+        - Section3_P16_intro.qmd
+        - Section3_P16_retos.qmd      
+        - Section3_P17_intro.qmd
+        - Section3_P17_retos.qmd    
+        - Section3_P18_others.qmd
     - summary.qmd
     - references.qmd
   # Information

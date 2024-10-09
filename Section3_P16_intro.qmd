@@ -1,0 +1,27 @@
+# **Practical 16:** Motif analysis with Signac {#install .setup style="blue"}
+
+### **Motif analysis**
+
+We can also analyze motif occurrence in the peaks, to see how this varies between the different cell types.
+
+### The `Motif` Class
+
+The `Motif` class stores information needed for DNA sequence motif analysis, and has the following slots:
+
+-   `data`: a sparse feature by motif matrix, where entries are 1 if the feature contains the motif, and 0 otherwise
+
+-   `pwm`: A named list of position weight or position frequency matrices
+
+-   `motif.names`: a list of motif IDs and their common names
+
+-   `positions`: A `GRangesList` object containing the exact positions of each motif
+
+-   `meta.data`: Additional information about the motifs
+
+Many of these slots are optional and do not need to be filled, but are only required when running certain functions. For example, the `positions` slot will be needed if running TF footprinting. For more details on the [**Motif** class](https://stuartlab.org/signac/articles/data_structures#the-motif-class).
+
+#### **Identifying enriched motifs**
+
+First, we will look at motifs that are enriched in a set of peaks, *e.g.* in peaks that show differential accessibility between two cell types. *Do you notice anything particular about these motifs?*
+
+https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html

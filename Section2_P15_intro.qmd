@@ -1,0 +1,122 @@
+# **Practical 15:** Analyses and scRNA-seq Integration {#install .setup style="blue"}
+
+In this step, we will demonstrate the following:
+
+## Dataset overview
+
+## Merging objects
+
+diferentes numeros de celulas
+
+https://stuartlab.org/signac/articles/merging
+
+[![](https://stuartlab.org/signac/articles/merging_files/figure-html/unnamed-chunk-13-1.png)](https://stuartlab.org/signac/articles/merging)
+
+## scATAC-seq data integration / batch effect
+
+https://stuartlab.org/signac/articles/pbmc_multiomic
+
+Y si tengo muchos datos
+
+https://stuartlab.org/signac/articles/integrate_atac
+
+[![](https://stuartlab.org/signac/articles/integrate_atac_files/figure-html/unnamed-chunk-6-1.png)](https://stuartlab.org/signac/articles/integrate_atac)
+
+## Option B: Dictionary Learning for cross-modality integration
+
+[![Broad schematic of the bridge integration workflow. From: Seurat v5, Hao et al, 2023. Nature biotechnology](https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41587-023-01767-y/MediaObjects/41587_2023_1767_Fig1_HTML.png?as=webp){alt="Broad schematic of the bridge integration workflow. From: Seurat v5, Hao et al, 2023. Nature biotechnology"}](https://www.nature.com/articles/s41587-023-01767-y)
+
+### Step 1: Load the bridge, query, and reference datasets (each modality individually)
+
+Input files:
+
+-   **10x multiome dataset:** Consisting of \~12,000 PBMC from a helthy donor. The dataset measures scRNA-seq and scATAC-seq in the **same cell**, and is available for download from 10x Genomics [here](https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-10-k-1-standard-2-0-0).
+
+-   **scATAC-seq Query:** Represents \~10,000 PBMC from a healthy donor, and is available for download [here](https://www.10xgenomics.com/datasets/10k-human-pbmcs-atac-v2-chromium-controller-2-standard).
+
+-   **Reference from Azimuth:** We load the reference (download [here](https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat)) from our recent [paper](https://doi.org/10.1016/j.cell.2021.04.048). This reference is stored as an h5Seurat file, a format that enables on-disk storage of multimodal Seurat objects (more details on h5Seurat and `SeuratDisk` can be found [here](https://satijalab.github.io/seurat-disk/index.html)).
+
+### Azimuth annotation
+
+https://satijalab.github.io/azimuth/articles/run_azimuth_tutorial.html
+
+::: callout-note
+### View data download code
+
+Total 2.7 Gb
+
+``` {.bash code-copy="true" eval="false"}
+# 10x multiome dataset 
+# Raw data 
+wget https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5 
+# fragments file 
+wget https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz # fragments index 
+wget https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz.tbi  
+
+# scATAC-seq Query (Total 2.7 Gb) 
+# Raw data  
+wget https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5 # metadata 
+wget https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv 
+# fragments file 
+wget https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz 
+# fragments index 
+wget https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz.tbi  
+
+# Azimuth Reference 
+wget https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat
+```
+:::
+
+### Step 2: Annotate scATAC-seq cells via label transfer
+
+After identifying anchors, we can transfer annotations from the scRNA-seq dataset into the scATAC-seq cells. The annotations are stored in the `seurat_annotations` field, and are provided as input to the `refdata` parameter. The output will contain a matrix with predictions and confidence scores for each ATAC-seq cell.
+
+```{r, eval=FALSE}
+predicted.labels <- TransferData(
+  anchorset = transfer.anchors,
+  refdata = pbmc_rna$celltype, # pbmc.rna$seurat_annotations
+  weight.reduction = pbmc[['lsi']],
+  dims = 2:30
+)
+pbmc <- AddMetaData(object = pbmc, metadata = predicted.labels)
+```
+
+plot
+
+```{r, eval=FALSE}
+plot1 <- DimPlot(
+  object = pbmc_rna,
+  group.by = 'celltype',
+  label = TRUE,
+  repel = TRUE) + NoLegend() + ggtitle('scRNA-seq')
+
+plot2 <- DimPlot(
+  object = pbmc,
+  group.by = 'predicted.id',
+  label = TRUE,
+  repel = TRUE) + NoLegend() + ggtitle('scATAC-seq')
+
+plot1 + plot2
+```
+
+You can see that the scRNA-based classifications are consistent with the UMAP visualization that was computed using the scATAC-seq data. Notice, however, that a small population of cells are predicted to be platelets in the scATAC-seq dataset. This is unexpected as platelets are not nucleated and should not be detected by scATAC-seq. It is possible that the cells predicted to be platelets could instead be the platelet-precursors megakaryocytes, which largely reside in the bone marrow but are rarely found in the peripheral blood of healthy patients, such as the individual these PBMCs were drawn from. Given the already extreme rarity of megakaryocytes within normal bone marrow (\< 0.1%), this scenario seems unlikely.
+
+Check cell types
+
+Plotting the prediction score for the cells assigned to each label reveals that the "platelet" cells received relatively low scores (\< 0.8), indicating a low confidence in the assigned cell identity. In most cases, the next most likely cell identity predicted for these cells was "CD4 naive".
+
+```{r, eval=FALSE}
+VlnPlot(pbmc, 'prediction.score.max', group.by = 'predicted.id')
+```
+
+## **Analysis of multi-omics data**
+
+Recently, single cell multi-omics methods that run several assays on the same cells have become available. One such method is [Chromium Single Cell Multiome from 10X genomics](https://www.10xgenomics.com/products/single-cell-multiome-atac-plus-gene-expression), which simultaneously measures gene expression (RNA-seq) and chromatin accessibility (ATAC-seq) in the same nuclei. This makes it possible to identify cell types and states based on both gene expression and accessibility. It also makes it easy to use external gene expression data to annotate your cells, and at the same time study the chromatin accessibility in the cells. In this exercise, we will look at a public data set downloaded from 10X genomics, from [embyomic mouse brain](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0). You will load both the RNA-seq and ATAC-seq data into the same `Seurat` object and do some simple pre-processing as was done for the ATAC-seq data above. Then, you will run joint clustering and visuaization of the combined data set, and finally use the gene expression measurements together with a public data set to annotate the cells.
+
+https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html
+
+# Joint RNA and ATAC analysis: 10x multiomic
+
+https://stuartlab.org/signac/articles/pbmc_multiomic
+
+## Bridge integration

@@ -1,0 +1,9 @@
+# **Practical 17:** Exploring results (graphs) {#install .setup style="blue"}
+
+[![](https://media.springernature.com/lw685/springer-static/image/art%3A10.1038%2Fnature14590/MediaObjects/41586_2015_Article_BFnature14590_Fig4_HTML.jpg?as=webp)](https://www.nature.com/articles/nature14590)
+
+https://www.nature.com/articles/nature14590
+
+# CITE-seq and scATAC-seq
+
+https://broadinstitute.github.io/2019_scWorkshop/cite-seq-and-scatac-seq.html

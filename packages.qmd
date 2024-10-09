@@ -1,0 +1,80 @@
+# Required packages {#install .setup style="blue"}
+
+## Install packages
+
+```{r install packages, eval =FALSE}
+# Define the packages to install from CRAN and Bioconductor
+cranPkgs <- c("BiocManager", "Seurat", "cowplot", "SingleCellExperiment", "scDblFinder", "Rtsne", "hdf5r", "clustree", 
+              "tidyverse", "Signac", "SeuratObject", "hdf5r", "reticulate", "patchwork", "ggplot2", "future")
+biocPkgs <- c("celldex", "SingleR", "SeuratDisk", "clusterProfile", "preprocessCore", "EnsDb.Hsapiens.v86", "EnsDb.Hsapiens.v75", 
+              "biovizBase", "LoomExperiment", "SingleCellExperiment")
+
+# Install packages from CRAN
+install.packages(cranPkgs, ask=FALSE, update=TRUE, quietly=TRUE)
+
+# Install packages from Bioconductor
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+BiocManager::install(biocPkgs)
+
+# Install SeuratData and sceasy from GitHub
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+
+devtools::install_github('satijalab/seurat-data')
+devtools::install_github("cellgeni/sceasy")
+
+# Verify and install SeuratData from Bioconductor if necessary
+if (!requireNamespace("SeuratData", quietly = TRUE)) {
+  BiocManager::install("SeuratData")
+}
+```
+
+## Load packages
+
+```{r load packages, message=F, warning=F}
+# Loading and Verifying Required Packages (function)
+loadPackages = function(pkgs){
+  myrequire = function(...){
+    suppressWarnings(suppressMessages(suppressPackageStartupMessages(require(...))))
+  }
+  ok = sapply(pkgs, require, character.only=TRUE, quietly=TRUE)
+  if (!all(ok)){
+    message("There are missing packages: ", paste(pkgs[!ok], collapse=", "))
+  }
+}
+
+# Loading and Verifying Required Packages
+pkgs = c("Rtsne", "Seurat", "SingleCellExperiment", "scDblFinder", "tidyverse", "future",
+         "cowplot", "preprocessCore", "SingleR", "clusterProfile", "celldex", "SeuratDisk", "pheatmap", "patchwork", "ggplot2",
+         "hdf5r", "clustree", "tidyverse", "Signac", "SeuratObject", "hdf5r", "reticulate", "EnsDb.Hsapiens.v86", "EnsDb.Hsapiens.v75",
+         "biovizBase", "LoomExperiment", "SingleCellExperiment")
+# Load the packages
+loadPackages(pkgs)
+```
+
+## How to enable parallelization in Signac
+
+```{r}
+# Show R version
+cat("R version:", R.version$version.string, "\n")
+cat("Number of cores:", availableCores(), "\n")
+packageVersion("Signac")
+```
+
+By default the plan is set to sequential processing (no parallelization). We can change this to multicore or multisession to get asynchronous processing, and set the number of workers to change the number of cores used. Parallel computing is supported in Signac through the [future](https://stuartlab.org/signac/articles/future) package, making it easy to specify different parallelization options.
+
+```{r, eval =FALSE}
+plan("multicore", workers = 8)
+plan()
+```
+
+You might also need to increase the maximum memory usage:
+
+```{r, eval =FALSE}
+options(future.globals.maxSize = 14 * 1024^3) # 14 GB RAM
+```
+
+Note that as of future version 1.14.0, forked processing is disabled when running in RStudio. To enable parallel computing in RStudio, you will need to select the "multisession" option.

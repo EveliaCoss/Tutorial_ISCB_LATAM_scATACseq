@@ -1,0 +1,392 @@
+# **Practical 14:** scATAC-seq Downstream {#install .setup style="blue"}
+
+In this step, we will demonstrate the following:
+
+-   Utilizing predicted expression through the gene activity matrix approach
+-   Loading and pre-processing scATAC-seq, multiome, and scRNA-seq reference datasets
+-   Mapping the scATAC-seq dataset using bridge integration
+-   Exploring and evaluating the resulting annotations
+
+#### **Downstream workflow**
+
+```{mermaid}
+%%| fig-width: 15 
+flowchart LR    
+  A{Integrating with scRNA-seq data} --> B(Gene activity matrix approach)     
+  A --> C(RNA imputation)
+  B --> D[Check Biomarkers]
+  C --> D
+```
+
+## Option A: Gene activity matrix approach {.setup style="blue"}
+
+[![](https://denovosoftware.com/wp-content/uploads/Exploring-tSNE-parameter-overlays.png)](https://denovosoftware.com/faq/kb-how-can-i-explore-tsne-umap-plots/)
+
+Gene activity scores capture how much open chromatin there is in the promoter regions of each gene (by default **2000 bp (2 kb) upstream**). The assumption here is that open chromatin is a proxy for gene expression. Gene activity scores are represented as a matrix, with one row per gene and one column per cell. This makes the gene activitiy scores directly compatible with single cell RNA-seq data.
+
+::: callout-note
+Calculating the gene activity scores takes around 10 minutes for 2000 cells and all genes.
+:::
+
+We can try to quantify the activity of each gene in the genome by assessing the chromatin accessibility associated with the gene, and create a new gene activity assay derived from the scATAC-seq data. Here we will use a simple approach of summing the fragments intersecting the gene body and promoter region (we also recommend exploring the [Cicero](https://cole-trapnell-lab.github.io/cicero-release/) tool, which can accomplish a similar goal, and we provide a vignette showing how to run Cicero within a Signac workflow [here](https://stuartlab.org/signac/articles/cicero)).
+
+### Step 1: Load data
+
+We then count the number of fragments for each cell that map to each of these regions, using the using the [`FeatureMatrix()`](https://stuartlab.org/signac/reference/featurematrix) function. These steps are automatically performed by the [`GeneActivity()`](https://stuartlab.org/signac/reference/geneactivity) function:
+
+```{r check point, message=FALSE, echo=FALSE, warning=FALSE}
+library(Signac)
+library(Seurat) 
+library(GenomicRanges) # genomic data manipulation
+library(ggplot2) #vizualization
+library(patchwork) # Vizualization 
+library(EnsDb.Hsapiens.v86) # human genome hg38
+library(future) # parallelization in Signac
+# parallelization options
+plan("multicore", workers = 8)
+# Increase the maximum memory usage
+options(future.globals.maxSize = 14 * 1024^3)  # para 14 GB de RAM
+# Load data
+load("data/pbmc.RData") # scATAC
+```
+
+### Step 2: Create a expression matrix
+
+```{r, warning=FALSE}
+start <- Sys.time()
+gene.activities <- GeneActivity(pbmc)
+end <- Sys.time()
+end - start
+```
+
+Add the gene activity matrix to the Seurat object as a new assay and normalize it.
+
+```{r}
+pbmc[['RNA']] <- CreateAssayObject(counts = gene.activities)
+# normalization
+pbmc <- NormalizeData(
+  object = pbmc,
+  assay = 'RNA',
+  normalization.method = 'LogNormalize',
+  scale.factor = median(pbmc$nCount_RNA)
+)
+```
+
+### Step 3: Check biomarkers
+
+We are now able to visualize the activity of canonical biomarkers to guide our interpretation of scATAC-seq clusters. Although this new putative "scRNA-seq" experiment derived from scATAC-seq will be noisier than a canonical scRNA-seq experiment, it will still be useful. The noise arises from the assumption made when generating the gene activity matrix, which assumes a perfect correlation between promoter/ORF accessibility and gene expression---something that is not always the case.
+
+```{r}
+DefaultAssay(pbmc) <- 'RNA'
+
+FeaturePlot(
+  object = pbmc,
+  features = c('MS4A1', 'CD3D', 'LEF1', 'NKG7', 'TREM1', 'LYZ'),
+  pt.size = 0.1,
+  max.cutoff = 'q95',
+  ncol = 3
+)
+```
+
+## Signac Workflow
+
+![Single-cell chromatin analysis workflow with Signac.](img/FigureSignac.jpg){#fig-signac}
+
+## **Label transfer**
+
+After calculating the gene activity scores, we can now integrate the ATAC-seq data with the RNA-seq data.
+
+The process begins by identifying anchors, which are pairs of cells---one from ATAC-seq and one from RNA-seq. To achieve this, we project both datasets into a shared space and identify pairs of cells that are mutual nearest neighbors (MNNs), one from each dataset. These pairs are then filtered to retain the most reliable ones, which serve as the anchors.
+
+These anchors allow us to project the ATAC-seq data onto the RNA-seq data, enabling the identification of cell type annotations for nearby cells. In this way, annotations from the RNA-seq data can be transferred to the ATAC-seq data, a method commonly known as **label transfer**.
+
+### Step 4: **Integrating with scRNA-seq data (multimodal)**
+
+To help interpret the scATAC-seq data, we can classify cells based on an **scRNA-seq experiment from the same biological system** (human PBMC). We utilize methods for cross-modality integration and label transfer, described [here](https://doi.org/10.1016/j.cell.2019.05.031), with a more in-depth tutorial [here](https://satijalab.org/seurat/v3.0/atacseq_integration_vignette.html). We aim to identify shared correlation patterns in the gene activity matrix and scRNA-seq dataset to identify matched biological states across the two modalities. This procedure returns a classification score for each cell for each scRNA-seq-defined cluster label.
+
+[![Schematic Overview of Reference "Assembly" Integration in Seurat v3. From: Stuart, et al. 2019. Cell.](https://www.cell.com/cms/10.1016/j.cell.2019.05.031/asset/a55ffc75-7bc8-4e9b-8106-3f328acd1d09/main.assets/gr1.jpg){#fig-anchros}](https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867419305598%3Fshowall%3Dtrue)
+
+Here we load a pre-processed scRNA-seq dataset for human PBMCs, also provided by 10x Genomics. You can download the raw data for this experiment from the 10x [website](https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.0/pbmc_10k_v3), and view the code used to construct this object on [GitHub](https://github.com/satijalab/Integration2019/blob/master/preprocessing_scripts/pbmc_10k_v3.R). Alternatively, you can download the pre-processed Seurat object [here](https://signac-objects.s3.amazonaws.com/pbmc_10k_v3.rds).
+
+```{r RNA, message=FALSE, warning=FALSE}
+# Load the pre-processed scRNA-seq data for PBMCs
+pbmc_rna <- readRDS("data/pbmc_10k_v3.rds")
+pbmc_rna <- UpdateSeuratObject(pbmc_rna)
+# free memory
+gc()
+```
+
+### Step 5: Find transfer anchors
+
+Find a set of anchors between a reference and query object. These anchors can later be used to transfer data from the reference to query object using the [`TransferData`](https://satijalab.org/seurat/reference/transferdata) object.
+
+```{r}
+transfer.anchors <- FindTransferAnchors(
+  reference = pbmc_rna, # scRNA
+  query = pbmc, # scATAC
+  reduction = 'cca' # Perform dimensional reduction
+)
+```
+
+### Step 7: Annotate scATAC-seq cells via label transfer
+
+After identifying anchors, we can transfer annotations from the scRNA-seq dataset into the scATAC-seq cells. The annotations are stored in the `seurat_annotations` field, and are provided as input to the `refdata` parameter. The output will contain a matrix with predictions and confidence scores for each ATAC-seq cell.
+
+```{r}
+predicted.labels <- TransferData(
+  anchorset = transfer.anchors,
+  refdata = pbmc_rna$celltype,
+  weight.reduction = pbmc[['lsi']], # reduction of the original `seurat` object's dim
+  dims = 2:30
+)
+pbmc <- AddMetaData(object = pbmc, metadata = predicted.labels)
+gc()# free memory
+```
+
+**Check plot**
+
+```{r graph}
+plot1 <- DimPlot(
+  object = pbmc_rna,
+  group.by = 'celltype',
+  label = TRUE,
+  repel = TRUE) + NoLegend() + ggtitle('scRNA-seq')
+
+plot2 <- DimPlot(
+  object = pbmc,
+  group.by = 'predicted.id',
+  label = TRUE,
+  repel = TRUE) + NoLegend() + ggtitle('scATAC-seq (prediction)')
+
+plot1 | plot2 
+```
+
+### Step 8: Remove platelets
+
+The scRNA-based classifications match the UMAP visualization from the scATAC-seq data. However, a small group of cells is unexpectedly predicted to be platelets, which lack nuclei and shouldn't be detected by scATAC-seq. These cells might actually be megakaryocytes, platelet precursors usually found in the bone marrow but rarely in peripheral blood. Given the extreme rarity of megakaryocytes in normal bone marrow (\<0.1%), this seems unlikely.
+
+```{r}
+VlnPlot(pbmc, 'prediction.score.max', group.by = 'predicted.id')
+```
+
+Plotting the prediction score for the cells assigned to each label reveals that the "platelet" cells received relatively low scores (\< 0.8), indicating a low confidence in the assigned cell identity. In most cases, the next most likely cell identity predicted for these cells was "CD4 naive".
+
+```{r}
+# Identify the metadata columns that start with "prediction.score."
+metadata_attributes <- colnames(pbmc[[]])
+prediction_score_attributes <- grep("^prediction.score.", metadata_attributes, value = TRUE)
+prediction_score_attributes <- setdiff(prediction_score_attributes, "prediction.score.max")
+
+# Extract the prediction score attributes for these cells
+predicted_platelets <- which(pbmc$predicted.id == "Platelet")
+platelet_scores <- pbmc[[]][predicted_platelets, prediction_score_attributes]
+
+# Order the columns by their average values in descending order
+ordered_columns <- names(sort(colMeans(platelet_scores, na.rm = TRUE), decreasing = TRUE))
+ordered_platelet_scores_df <- platelet_scores[, ordered_columns]
+
+head(ordered_platelet_scores_df)[3]
+```
+
+As there are only a very small number of cells classified as "platelets" (\< 20), it is difficult to figure out their precise cellular identity. Larger datasets would be required to confidently identify specific peaks for this population of cells, and further analysis performed to correctly annotate them. For downstream analysis we will thus remove the extremely rare cell states that were predicted, retaining only cell annotations with \>20 cells total.
+
+```{r}
+predicted_id_counts <- table(pbmc$predicted.id)
+
+# Identify the predicted.id values that have more than 20 cells
+major_predicted_ids <- names(predicted_id_counts[predicted_id_counts > 20])
+pbmc <- pbmc[, pbmc$predicted.id %in% major_predicted_ids]
+```
+
+For downstream analyses, we can simply reassign the identities of each cell from their UMAP cluster index to the per-cell predicted labels. It is also possible to consider merging the cluster indexes and predicted labels.
+
+```{r}
+# change cell identities to the per-cell predicted labels
+Idents(pbmc) <- pbmc$predicted.id
+```
+
+### Step 9: Rename labels
+
+Replace each cluster label with its most likely predicted label
+
+```{r}
+for(i in levels(pbmc)) {
+  cells_to_reid <- WhichCells(pbmc, idents = i)
+  newid <- names(which.max(table(pbmc$predicted.id[cells_to_reid])))
+  Idents(pbmc, cells = cells_to_reid) <- newid
+}
+```
+
+### Step 10: Compare the results
+
+```{r}
+# scRNA-seq
+plot1 <- DimPlot(pbmc_rna, group.by = "celltype", label = TRUE) + NoLegend() + ggtitle("scRNA-seq")
+# Gene matrix
+plot2 <- DimPlot(pbmc, group.by = "predicted.id", label = TRUE) + NoLegend() + ggtitle("scATAC-seq (prediction)")
+# Integration
+plot3 <- DimPlot(pbmc, label = T, group.by = "ident") + NoLegend() + ggtitle("scATAC-seq (integration)")
+plot1 + plot2 + plot3
+```
+
+```{r save, echo=FALSE, message=FALSE}
+gc()
+save(pbmc, file = "data/pbmc.RData")
+```
+
+## Find differentially accessible peaks between cell types
+
+In transcriptomic studies, we analyze differentially transcribed genes, so it is logical to study in ATAC-seq the genomic regions that are differentially accessible to the Tn5 transposase. To investigate differential chromatin accessibility, logistic regressions are used, as recommended by [Ntranos *et al.* 2018](https://www.biorxiv.org/content/10.1101/258566v2), and the total number of reads is included as a latent variable to mitigate the negative impact on results when dealing with libraries/samples with different sequencing depths.
+
+A simple approach is to perform a Wilcoxon rank sum test, and the [presto](https://github.com/immunogenomics/presto) package has implemented an extremely fast Wilcoxon test that can be run on a Seurat object.
+
+```{r install presto, eval=FALSE}
+if (!requireNamespace("remotes", quietly = TRUE))
+  install.packages('remotes')
+remotes::install_github('immunogenomics/presto')
+```
+
+For sparse data like scATAC-seq, it is necessary to adjust the `min.pct` parameter of the `FindMarkers()` function to lower values, as the default value (0.1) is designed for scRNA-seq data. Here we will focus on comparing Naive CD4 cells and CD14 monocytes, but any groups of cells can be compared using these methods. We can also visualize these marker peaks on a violin plot, feature plot, dot plot, heat map, or any [visualization tool in Seurat](https://satijalab.org/seurat/articles/visualization_vignette.html).
+
+```{r, message=FALSE, warning=FALSE}
+library(presto)
+load("data/pbmc.RData")
+
+# change back to working with peaks instead of gene activities
+DefaultAssay(pbmc) <- 'peaks'
+
+# wilcox is the default option for test.use
+da_peaks <- FindMarkers(
+  object = pbmc,
+  ident.1 = "CD4 Naive",
+  ident.2 = "CD14+ Monocytes",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
+
+head(da_peaks)
+```
+
+We visualize the results of the differential accessibility test using a violin plot and over the UMAP projection.
+
+```{r plot}
+plot1 <- VlnPlot(
+  object = pbmc,
+  features = rownames(da_peaks)[1],
+  pt.size = 0.1,
+  idents = c("CD4 Naive","CD14+ Monocytes")
+)
+plot2 <- FeaturePlot(
+  object = pbmc,
+  features = rownames(da_peaks)[1],
+  pt.size = 0.1
+)
+
+plot1 | plot2
+```
+
+Peak coordinates can be difficult to interpret alone. We can find the closest gene to each of these peaks using the [`ClosestFeature()`](https://stuartlab.org/signac/reference/closestfeature) function.
+
+```{r close genes}
+open_cd4naive <- rownames(da_peaks[da_peaks$avg_log2FC > 3, ])
+open_cd14mono <- rownames(da_peaks[da_peaks$avg_log2FC < -3, ])
+
+closest_genes_cd4naive <- ClosestFeature(pbmc, regions = open_cd4naive)
+closest_genes_cd14mono <- ClosestFeature(pbmc, regions = open_cd14mono)
+# results
+head(closest_genes_cd4naive)
+head(closest_genes_cd14mono)
+```
+
+## GO enrichment analysis with clusterProfiler
+
+We could follow up with this result by doing gene ontology enrichment analysis on the gene sets returned by [`ClosestFeature()`](https://stuartlab.org/signac/reference/closestfeature),and there are many R packages that can do this (see the[`GOstats`](https://bioconductor.org/packages/release/bioc/html/GOstats.html) or [`clusterProfiler`](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) packages for example).
+
+```{r paquetes, message=FALSE, warning=FALSE}
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(enrichplot)
+```
+
+```{r}
+cd4naive_ego <- enrichGO(gene = closest_genes_cd4naive$gene_id, # like DEG
+                keyType = "ENSEMBL", 
+                OrgDb = org.Hs.eg.db, # organism
+                ont = "BP", # Biological process
+                pAdjustMethod = "BH", # Benjamini-Hochberg (BH)
+                pvalueCutoff = 0.05,
+                qvalueCutoff = 0.05,
+                readable = TRUE) # Convert the gene identifiers (ENSEMBL) to readable gene names.
+
+barplot(cd4naive_ego,showCategory = 20)
+```
+
+```{r}
+cd14mono_ego <- enrichGO(gene = closest_genes_cd14mono$gene_id,
+                keyType = "ENSEMBL",
+                OrgDb = org.Hs.eg.db,
+                ont = "BP",
+                pAdjustMethod = "BH",
+                pvalueCutoff = 0.05,
+                qvalueCutoff = 0.05,
+                readable = TRUE)
+
+barplot(cd14mono_ego,showCategory = 20)
+```
+
+## Plotting genomic regions
+
+We can visualize the frequency of Tn5 integration across genomic regions for cells grouped by cluster, cell type, or any other metadata stored in the object using the [`CoveragePlot()`](https://stuartlab.org/signac/reference/coverageplot) function. These plots represent pseudo-bulk accessibility tracks, where the **signal from all cells within a group is averaged to display DNA accessibility in a specific region.** (Credit to Andrew Hill for the inspiration behind this function, as highlighted in his excellent [blog post.](http://andrewjohnhill.com/blog/2019/04/12/streamlining-scatac-seq-visualization-and-analysis/)) In addition to accessibility tracks, we can include other key information such as gene annotations, peak coordinates, and genomic links (if available in the object). For further details, refer to the [visualization vignette](https://stuartlab.org/signac/articles/visualization).
+
+For plotting purposes, it\'s nice to have related cell types grouped together. We can automatically sort the plotting order according to similarities across the annotated cell types by running the [`SortIdents()`](https://stuartlab.org/signac/reference/sortidents) function:
+
+```{r sort}
+pbmc <- SortIdents(pbmc)
+```
+
+We can then visualize the DA peaks open in CD4 naive cells and CD14 monocytes, near some key marker genes for these cell types, CD4 and LYZ respectively. Here we\'ll highlight the DA peaks regions in grey.
+
+```{r plot coverage}
+# find DA peaks overlapping gene of interest
+regions_highlight <- subsetByOverlaps(StringToGRanges(open_cd4naive), LookupGeneCoords(pbmc, "CD4"))
+
+CoveragePlot(
+  object = pbmc,
+  region = "CD4",
+  region.highlight = regions_highlight,
+  extend.upstream = 1000,
+  extend.downstream = 1000
+)
+```
+
+# Calling peaks
+
+You can call peaks on a single-cell ATAC-seq dataset using [**MACS2**](https://github.com/macs3-project/MACS). To use this functionality in **Signac**, make sure MACS2 is installed---either through [pip](https://pypi.org/project/MACS2/) or [conda](https://anaconda.org/bioconda/macs2), or by building it from [source](https://github.com/macs3-project/MACS).
+
+For example, with scATAC-seq data from human PBMCs (as shown in our tutorial or from [Signac vignette](https://stuartlab.org/signac/articles/pbmc_vignette)), you can load the necessary packages and a pre-computed Seurat object. See the vignette for the code used to generate this object and links to the raw data.
+
+[![](https://stuartlab.org/signac/articles/peak_calling_files/figure-html/unnamed-chunk-4-1.png)](https://stuartlab.org/signac/articles/peak_calling)
+
+```{r}
+sessionInfo()
+```
+
+## References
+
+https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8?\_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867419305598%3Fshowall%3Dtrue
+
+Single-cell ATAC sequencing https://www.sc-best-practices.org/chromatin_accessibility/introduction.html
+
+Best practices for single-cell analysis across modalities https://www.nature.com/articles/s41576-023-00586-w
+
+https://stuartlab.org/signac/articles/pbmc_vignette#create-a-gene-activity-matrix
+
+https://stuartlab.org/signac/articles/integrate_atac
+
+https://satijalab.org/seurat/articles/seurat5_atacseq_integration_vignette
+
+https://stuartlab.org/signac/articles/pbmc_vignette
+
+https://rpubs.com/gloknar/809238
+
+https://stuartlab.org/signac/articles/peak_calling

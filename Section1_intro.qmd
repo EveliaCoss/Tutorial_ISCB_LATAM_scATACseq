@@ -1,71 +1,122 @@
-# Required packages {#install .setup style="blue"}
+# Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis {#overview .intro}
 
-## Install packages
+## What are ATAC-seq and scATAC-seq?
 
-```{r install packages, eval =FALSE}
-# Define the packages to install from CRAN and Bioconductor
-cranPkgs <- c("BiocManager", "Seurat", "cowplot", "SingleCellExperiment", "scDblFinder", "Rtsne", "hdf5r", "clustree", 
-              "tidyverse", "Signac", "SeuratObject", "hdf5r", "reticulate", "patchwork", "ggplot2", "future")
-biocPkgs <- c("celldex", "SingleR", "SeuratDisk", "clusterProfile", "preprocessCore", "EnsDb.Hsapiens.v86", "EnsDb.Hsapiens.v75", 
-              "biovizBase", "LoomExperiment", "SingleCellExperiment")
+**ATAC-seq** (Assay for Transposase-Accessible Chromatin with high-throughput sequencing) is a widely used, cost-effective method for *genome-wide profiling of chromatin accessibility*, utilizing the hyperactive Tn5 transposase for NGS library preparation.
 
-# Install packages from CRAN
-install.packages(cranPkgs, ask=FALSE, update=TRUE, quietly=TRUE)
+**Single-cell ATAC-seq (scATAC-seq)** extends this approach to single cells, enabling the study of *chromatin accessibility in specific cell types* within heterogeneous tissue samples.
 
-# Install packages from Bioconductor
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager")
-}
-BiocManager::install(biocPkgs)
+## What is Chromatin accesibility?
 
-# Install SeuratData and sceasy from GitHub
-if (!requireNamespace("devtools", quietly = TRUE)) {
-  install.packages("devtools")
-}
+**Chromatin accessibility** refers to the degree of physical compaction of chromatin, a structure made up of DNA and proteins, primarily histones, transcription factors (TFs), chromatin-modifying enzymes, and remodeling complexes. While eukaryotic genomes are generally organized into **nucleosomes (with \~147 bp of DNA wrapped around a histone octamer**), nucleosome positioning varies across tissues and cell types. Regions like *enhancers* and promoters (*cis-*regulatory elements), which interact with transcriptional regulators, tend to be nucleosome-depleted, making the chromatin more accessible.
 
-devtools::install_github('satijalab/seurat-data')
-devtools::install_github("cellgeni/sceasy")
+Genome-wide profiling of chromatin accessibility is a powerful method for identifying *potential regulatory elements specific* to cell types or states.
 
-# Verify and install SeuratData from Bioconductor if necessary
-if (!requireNamespace("SeuratData", quietly = TRUE)) {
-  BiocManager::install("SeuratData")
-}
-```
+[![Chromatin accessibility profiling in bulk and at single-cell level reveals putative regulatory regions. H3K27ac, histone H3 acetylated at lysine 27; Pol II, polymerase II; TSS, transcription start site; TFs, transcription factors. From: Minnoye, et al. 2021. Nat Rev Methods Primers.rimers.](https://media.springernature.com/lw685/springer-static/image/art%3A10.1038%2Fs43586-020-00008-9/MediaObjects/43586_2020_8_Fig1_HTML.png?as=webp){#fig-global}](https://doi.org/10.1038/s43586-020-00008-9)
 
-## Load packages
+## How does ATAC-Seq work?
 
-```{r load packages, message=F, warning=F}
-# @title Loading and Verifying Required Packages (function)
-loadPackages = function(pkgs){
-  myrequire = function(...){
-    suppressWarnings(suppressMessages(suppressPackageStartupMessages(require(...))))
-  }
-  ok = sapply(pkgs, require, character.only=TRUE, quietly=TRUE)
-  if (!all(ok)){
-    message("There are missing packages: ", paste(pkgs[!ok], collapse=", "))
-  }
-}
+ATAC-seq identifies open, accessible regions of chromatin across the genome. Here's a step-by-step breakdown of how it works:
 
-# @title Loading and Verifying Required Packages
-pkgs = c("Rtsne", "Seurat", "SingleCellExperiment", "scDblFinder", "tidyverse", "future",
-         "cowplot", "preprocessCore", "SingleR", "clusterProfile", "celldex", "SeuratDisk", "pheatmap", "patchwork", "ggplot2",
-         "hdf5r", "clustree", "tidyverse", "Signac", "SeuratObject", "hdf5r", "reticulate", "EnsDb.Hsapiens.v86", "EnsDb.Hsapiens.v75",
-         "biovizBase", "LoomExperiment", "SingleCellExperiment")
-# Load the packages
-loadPackages(pkgs)
-```
+1.  **Cell/Nuclei Isolation**: Cells or nuclei are isolated, ensuring the chromatin structure remains intact, along with DNA-binding proteins such as nucleosomes and transcription factors.
+
+2.  **Tn5 Transposase Treatment**: The chromatin is exposed to a hyperactive Tn5 transposase enzyme, which simultaneously cuts the DNA and inserts special sequences called adapters.
+
+3.  **Adapter Insertion**: These adapters (i5/P5 and i7/P7) are added at both ends of the DNA fragments. Only fragments that receive both adapters can be amplified in the next steps.
+
+4.  **Library Amplification**: The adapter-tagged fragments are amplified through PCR, creating a library of accessible chromatin regions.
+
+5.  **High-Throughput Sequencing**: The amplified fragments are sequenced using next-generation sequencing (NGS) technologies.
+
+6.  **Data Analysis**: Sequencing reads are mapped back to the genome. Regions with high concentrations of Tn5 activity (where many fragments originate) are identified as "*peaks*", indicating open, accessible chromatin regions, which often correspond to regulatory elements such as enhancers and promoters.
+
+[![Schematic of ATAC-seq Transposition and Library Preparation. A) Overview of ATAC-seq steps: nuclei isolation, Tn5 transposase-mediated chromatin fragmentation and adapter insertion, PCR amplification, and high-throughput sequencing. C) Toy example of hypothetical ATAC-seq data: both cell types X and Y show peaks at gene A's promoter, but cell type X has an additional peak at an upstream enhancer, driving higher expression. From: Grandi, et al. 2022. Nature Protocols and Footprinting with ArchR. From: ArchR tutorial.](img/Figure2.png){#fig-tecnic alt="Schematic of ATAC-seq Transposition and Library Preparation. A) Overview of ATAC-seq steps: nuclei isolation, Tn5 transposase-mediated chromatin fragmentation and adapter insertion, PCR amplification, and high-throughput sequencing. C) Toy example of hypothetical ATAC-seq data: both cell types X and Y show peaks at gene A's promoter, but cell type X has an additional peak at an upstream enhancer, driving higher expression. From: Grandi, et al. 2022. Nature Protocols."}](https://www.nature.com/articles/s41596-022-00692-9)
+
+In a hypothetical ATAC-seq dataset, cell types *X* and *Y* both show peaks at the promoter of *gene A*, indicating shared accessibility. However, cell type *X* has an additional peak at an upstream enhancer, which drives higher *gene A* expression. This cell-type-specific peak is due to transcription factor B binding to the *enhancer*, a feature absent in cell type *Y*. ATAC-seq data also helps reveal transcription factor binding motifs, such as "GATAA" in this example, linked to differential accessibility.
+
+[![Footprinting with ArchR. From: ArchR tutorial](https://www.archrproject.com/bookdown/images/footprintingSchematic.png){alt="Footprinting with ArchR. From: ArchR tutorial" width="300"}](https://www.archrproject.com/bookdown/footprinting-with-archr.html)
+
+::: callout-note
+ATAC-seq uses a hyperactive Tn5 transposase, engineered with three mutations to boost its activity. This enzyme simultaneously cuts and tags accessible chromatin regions, similar to how DNase I identifies DNase hypersensitive sites (DHSs). The tagged DNA fragments are then amplified and sequenced, offering a powerful method to map open chromatin.
+:::
 
 ## Workflow
 
-```{mermaid}
-flowchart LR
+In the following sections, we will walk you through a standard workflow for analyzing scATAC-seq data. The accompanying summary figure outlines the different stages of the analysis and emphasizes the distinctions between commonly used frameworks. We'll start by explaining the concepts of quality control and dimensionality reduction using R.
 
-  A[Hard edge] --> B(Round edge)
+[![Data analysis workflow. From: Heumos, et al. 2023. Nature review genetics](img/Figura_workflow.png){#fig-workflow width="800"}](https://www.nature.com/articles/s41576-023-00586-w)
 
-  B --> C{Decision}
+## Data Structure
 
-  C --> D[Result one]
+### The `ChromatinAssay` Class
 
-  C --> E[Result two]
+scATAC-seq data is stored in a **ChromatinAssay** object, which includes slots for additional information about motifs, gene annotations, and genome data. From this object, we create the main **Seurat** object for our analyses.
 
+The `ChromatinAssay` class extends the standard Seurat `Assay` class and adds several additional slots for data useful for the analysis of single-cell chromatin datasets. The class includes all the slots present in a standard Seurat [Assay](https://github.com/satijalab/seurat/wiki/Assay), with the following additional slots:
+
+-   `ranges`: A [`GRanges`](https://www.rdocumentation.org/packages/GenomicRanges/versions/1.24.1/topics/GRanges-class) object containing the genomic coordinates of each feature in the `data` matrix.
+
+-   `motifs`: A `Motif` object
+
+-   `fragments`: A list of `Fragment` objects
+
+-   `seqinfo`: A [`Seqinfo`](https://www.rdocumentation.org/packages/GenomeInfoDb/versions/1.8.3/topics/Seqinfo-class) object containing information about the genome that the data was mapped to
+
+-   `annotation`: A [`GRanges`](https://www.rdocumentation.org/packages/GenomicRanges/versions/1.24.1/topics/GRanges-class) object containing gene annotations
+
+-   `bias`: A vector containing Tn5 integration bias information (the frequency of Tn5 integration at different hexamers)
+
+-   `positionEnrichment`: A named list of matrices containing positional enrichment scores for Tn5 integration (for example, enrichment at the TSS or at different TF motifs)
+
+-   `links`: A [`GRanges`](https://www.rdocumentation.org/packages/GenomicRanges/versions/1.24.1/topics/GRanges-class) object describing linked genomic positions, such as co-accessible sites or enhancer-gene regulatory relationships.
+
+We can use the `granges()` function on a **Seurat** object with an active **ChromatinAssay** experiment to view the chromosomal regions associated with each gene. For more details on the [**ChromatinAssay** class](https://stuartlab.org/signac/articles/data_structures), refer to the object interaction vignette and check [this example](https://rpubs.com/gloknar/809238).
+
+[![Design of a custom Assay for single-cell chromatin data. We designed a specialized ChromatinAssay class with the capacity to store data required for analysis of single-cell chromatin datasets. From: \[Stuart, et al. 2021. Nat Methods\](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9255697/)](img/ChromatinAssay.jpeg){#fig-chrassay alt="Design of a custom Assay for single-cell chromatin data. We designed a specialized ChromatinAssay class with the capacity to store data required for analysis of single-cell chromatin datasets. From: Stuart, et al. 2021. Nat Methods"}](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9255697/)
+
+### The `Fragment` Class
+
+The `Fragment` class is designed for storing and interacting with a [fragment file](https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/fragments) commonly used for single-cell chromatin data. It contains the path to an indexed fragment file on disk, a MD5 hash for the fragment file and the fragment file index, and a vector of cell names contained in the fragment file. Importantly, this is a named vector where the elements of the vector are the cell names as they appear in the fragment file, and the name of each element is the cell name as it appears in the `ChromatinAssay` object storing the `Fragment` object. This allows a mapping of cell names on disk to cell names in R, and avoids the need to alter fragment files on disk. This path can also be a remote file accessible by `http` or `ftp`. For more details on the [**Fragment** class](https://stuartlab.org/signac/articles/data_structures#the-fragment-class).
+
+| Column Number | Name        | Description                                                                                                                                             |
+|---------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1             | chrom       | Reference genome chromosome of fragment.                                                                                                                |
+| 2             | chromStart  | Adjusted start position of fragment on chromosome.                                                                                                      |
+| 3             | chromEnd    | Adjusted end position of fragment on chromosome. The end position is exclusive, so represents the position immediately following the fragment interval. |
+| 4             | barcode     | The 10x cell barcode of this fragment. This corresponds to the `CB` tag attached to the corresponding BAM file records for this fragment.               |
+| 5             | readSupport | The total number of read pairs associated with this fragment. This includes the read pair marked unique and all duplicate read pairs.                   |
+
+: Column definitions from [Single Cell ATAC.](https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/fragments)
+
+Example:
+
+```         
+  chrom  start    end            barcode readCount 
+1  chr1  10245  10302 AAAGATGAGGCTAAAT-1         1
+2  chr1  55313  55699 AAACTCGTCTGGCACG-1         2 
+3  chr1  56455  56658 AAACTCGTCTGGCACG-1         1
+4  chr1  60687  60726 AAACTGCAGTCTGTGT-1         1
+5  chr1 235723 235936 AAACTGCTCCTATCCG-1         1
 ```
+
+## **References**
+
+https://www.nature.com/articles/s41596-022-00692-9
+
+https://www.nature.com/articles/s43586-020-00008-9
+
+https://www.sc-best-practices.org/chromatin_accessibility/introduction.html
+
+https://www.nature.com/articles/s41576-023-00586-w
+
+https://www.archrproject.com/bookdown/footprinting-with-archr.html
+
+<https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/matrices>
+
+[Calling peaks](https://stuartlab.org/signac/1.13.0/articles/peak_calling)
+
+[Issue 560](https://github.com/stuart-lab/signac/issues/560)
+
+[Seuratv4](https://satijalab.org/seurat/articles/get_started.html)
+
+Import data
