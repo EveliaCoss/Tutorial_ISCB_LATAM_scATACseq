@@ -1,8 +1,17 @@
 # **Practical 16:** Motif analysis with Signac {#install .setup style="blue"}
 
-### **Motif analysis**
+In this step, we will demonstrate the following:
 
-We can also analyze motif occurrence in the peaks, to see how this varies between the different cell types.
+-   Identifying enriched motifs.
+-   Obtaining motif activity scores.
+
+# **Motif analysis**
+
+The previous analysis (P14 - Find differentially accessible peaks between cell types, `da_peaks`) can help us to identify putative *cis*-regulatory elements that are critical for regulating cell type identity or cell state transitions. This is usually achieved via the binding of certain *trans*-regulators, e.g. TFs, to those open chromatin regions.
+
+The binding of most TFs have strong sequence specificity, which can be summarized into sequence motifs, i.e. the TF binding motifs. If certain TFs play important roles in those regulations, it is very likely that the cell-type-specific peaks are regions enriched for the binding, with their genomic sequences enriched for the corresponding TF binding motifs. In this case, by checking the motifs enriched in those cell-type-specific peaks, we may be then able to identify TFs responsible for establishment and maintanence of cell type identity.
+
+To do that, we also need a database of TF binding motifs. Indeed, there are several commonly used databases, including the commercial ones like [TRANSFAC](https://genexplain.com/transfac/) and open source ones like [JASPAR](https://jaspar.genereg.net/). By scanning for sequences matching those motifs, we can predict possible binding sites of the TFs with binding motif information in the databases, and then check their enrichment in the peak list of interest in relative to the other peaks.
 
 ### The `Motif` Class
 
@@ -20,8 +29,182 @@ The `Motif` class stores information needed for DNA sequence motif analysis, and
 
 Many of these slots are optional and do not need to be filled, but are only required when running certain functions. For example, the `positions` slot will be needed if running TF footprinting. For more details on the [**Motif** class](https://stuartlab.org/signac/articles/data_structures#the-motif-class).
 
-#### **Identifying enriched motifs**
+### Step 1: Adding motif information to the Seurat object
 
-First, we will look at motifs that are enriched in a set of peaks, *e.g.* in peaks that show differential accessibility between two cell types. *Do you notice anything particular about these motifs?*
+To add the DNA sequence motif information required for motif analyses, we can run the [`AddMotifs()`](https://stuartlab.org/signac/reference/addmotifs) function:
 
-https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html
+```{r load packages, message=FALSE, warning=FALSE}
+library(Signac)
+library(Seurat)
+# BiocManager::install("JASPAR2020")
+library(JASPAR2020) # Data package for JASPAR database (version 2020)
+# BiocManager::install("TFBSTools")
+library(TFBSTools) # Software Package for Transcription Factor Binding Site (TFBS) Analysis
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(patchwork)
+```
+
+```{r load data, eval=FALSE}
+# load from Section 2 P14 - STEP: Find differentially accessible peaks between cell types, da_peaks
+load(file = "data/pbmc_edited.RData")
+p1 <- DimPlot(pbmc, label = TRUE, pt.size = 0.1) + NoLegend()
+p1
+```
+
+```{r add info, eval=FALSE}
+# Get a list of motif position frequency matrices from the JASPAR database
+pfm <- getMatrixSet(
+    x = JASPAR2020,
+    opts = list(species = "Homo sapiens", all_versions = FALSE)
+)
+
+# Scan the DNA sequence of each peak for the presence of each motif
+motif.matrix <- CreateMotifMatrix(
+    features = granges(pbmc$peaks),
+    pwm = pfm,
+    genome = 'hg38',
+    use.counts = FALSE
+)
+dim(motif.matrix)
+as.matrix(motif.matrix[1:10,1:10])
+```
+
+To facilitate motif analysis in `Signac`, we have created the `Motif` class to store all the required information, including a list of position weight matrices (PWMs) or position frequency matrices (PFMs) and a motif occurrence matrix. Here, the [`AddMotifs()`](https://stuartlab.org/signac/reference/addmotifs) function constructs a `Motif` object and adds it to our mouse brain dataset, along with other information such as the base composition of each peak. A motif object can be added to any Seurat assay using the [`SetAssayData()`](https://mojaveazure.github.io/seurat-object/reference/AssayData.html) function. See the [object interaction vignette](https://stuartlab.org/signac/articles/data_structures) for more information.
+
+### Step 2: **Identifying enriched motifs /** Finding overrepresented motifs
+
+To identify potentially important cell-type-specific regulatory sequences, we can search for DNA motifs that are overrepresented in a set of peaks that are differentially accessible between cell types.
+
+Here, we find differentially accessible peaks between Pvalb and Sst inhibitory interneurons. For sparse data (such as scATAC-seq), we find it is often necessary to lower the `min.pct` threshold in [`FindMarkers()`](https://satijalab.org/seurat/reference/FindMarkers.html) from the default (0.1, which was designed for scRNA-seq data).
+
+We then perform a **hypergeometric test to test the probability of observing the motif** at the given frequency by chance, comparing with a background set of peaks matched for GC content.
+
+```{r, eval=FALSE}
+# Create a new Mofif object to store the results
+motif <- CreateMotifObject(
+    data = motif.matrix,
+    pwm = pfm
+)
+
+# Add the Motif object to the assay
+pbmc <- SetAssayData(
+    object = pbmc,
+    assay = 'peaks',
+    slot = 'motifs',
+    new.data = motif
+)
+pbmc$peaks@motifs
+
+# Calculate statistics for each peak: GC content, length, dinucleotide frequencies etc.
+# These are used in the test of motif enrichment
+pbmc$peaks <- RegionStats(object = pbmc$peaks, genome = BSgenome.Hsapiens.UCSC.hg19)
+
+# Find differentially accessible peaks in cluster 0 compared to cluster 1
+da_peaks <- FindMarkers(
+    object = pbmc,
+    ident.1 = "0",
+    ident.2 = "1",
+    only.pos = TRUE,
+    min.pct = 0.05,
+    test.use = 'LR',
+    latent.vars = 'nCount_peaks'
+)
+
+# Get the top differentially accessible peaks, with lowest p-values
+top.da.peak <- rownames(da_peaks[da_peaks$p_val < 1e-20 & da_peaks$pct.1 > 0.2,  ])
+
+# Find motifs enriched in these top differentially accessible peaks
+enriched.motifs <- FindMotifs(
+    object = pbmc,
+    features = top.da.peak
+)
+head(enriched.motifs)
+```
+
+https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html#motif-analysis
+
+https://stuartlab.org/signac/articles/motif_vignette
+
+We can also plot the position weight matrices for the motifs, so we can visualize the different motif sequences.
+
+```{r, eval=FALSE}
+MotifPlot(
+  object = pbmc,
+  motifs = head(rownames(enriched.motifs))
+)
+```
+
+#### **Step 3: Motif activity scores**
+
+We can also compute a per-cell motif activity score by running [chromVAR](https://greenleaflab.github.io/chromVAR/index.html). The motif activity score for a motif M is based on the number of reads mapping to peaks with motif M, after normalization correction for various biases: GC content, average number of reads mapping across all cells etc. You can read more about chromVar [here](https://www.nature.com/articles/nmeth.4401). Motif activity scores allow us to visualize motif activities per cell.
+
+::: callout-note
+ChromVAR identifies motifs associated with variability in chromatin accessibility between cells. See the chromVAR [paper](https://www.nature.com/articles/nmeth.4401) for a complete description of the method.
+:::
+
+It is also possible to directly test for differential activity scores between cell types, without looking at peaks with differential binding. This tends to give similar results as performing an enrichment test on differentially accessible peaks between the cell types (shown above).
+
+::: callout-caution
+This takes a while to run (around 5 minutes on Uppmax).
+:::
+
+```{r, eval=FALSE}
+# Use chromVAR to calculate the motif activities of all motifs in all cells.
+pbmc <- RunChromVAR(
+    object = pbmc,
+    genome = BSgenome.Hsapiens.UCSC.hg38,
+    verbose = TRUE
+)
+
+# Look at results
+pbmc$chromvar
+GetAssayData(pbmc$chromvar)[1:10,1:3]
+
+# Have a look at the activitiy of the FOS motif, which has id MA0476.1
+DefaultAssay(pbmc) <- 'chromvar'
+FeaturePlot(
+    object = pbmc,
+    features = "MA0476.1",
+    min.cutoff = 'q10',
+    max.cutoff = 'q90',
+    pt.size = 0.1
+)
+p1 + p2
+```
+
+We can also directly test for differential activity scores between cell types. This tends to give similar results as performing an enrichment test on differentially accessible peaks between the cell types (shown above).
+
+When performing differential testing on the chromVAR z-score, we can set `mean.fxn=rowMeans` and `fc.name="avg_diff"` in the [`FindMarkers()`](https://satijalab.org/seurat/reference/FindMarkers.html) function so that the fold-change calculation computes the average difference in z-score between the groups.
+
+```{r, eval=FALSE}
+# Look for motifs that have differential activity between clusters 0 and 1.
+differential.activity <- FindMarkers(
+    object = pbmc,
+    ident.1 = '0',
+    ident.2 = '1',
+    only.pos = TRUE,
+    test.use = 'LR',
+    min.pct = 0.2,
+    latent.vars = 'nCount_peaks'
+)
+
+MotifPlot(
+    object = pbmc,
+    motifs = head(rownames(differential.activity)),
+    assay = 'peaks'
+)
+```
+
+# Transcription factor footprinting
+
+https://stuartlab.org/signac/articles/footprint
+
+```{r information}
+sessionInfo()
+```
+
+## References
+
+-   Signac - tutorial [Motif analysis with Signac](https://stuartlab.org/signac/articles/motif_vignette)
+-   Epigenomic workshop 2024 - [Motif analysis](https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html)
+-   Signac - tutorial [Transcription factor footprinting](https://stuartlab.org/signac/articles/footprint)

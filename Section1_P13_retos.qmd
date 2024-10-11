@@ -305,6 +305,5 @@ DimPlot(object = pbmc, label = TRUE) + NoLegend()
 
 ## References
 
-[Analyzing PBMC scATAC-seq (Signac tutorial)](https://stuartlab.org/signac/articles/pbmc_vignette)
-
-[Analyzing PBMC scATAC-seq](https://rpubs.com/qshenfeng/signac_pbmc10k)
+-   Signac tutorial - [Analyzing PBMC scATAC-seq (Signac tutorial)](https://stuartlab.org/signac/articles/pbmc_vignette)
+-   Signac tutorial - [Analyzing PBMC scATAC-seq](https://rpubs.com/qshenfeng/signac_pbmc10k)

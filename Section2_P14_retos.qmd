@@ -1,3 +1,33 @@
 # Exercises {#install .setup style="blue"}
 
-## 
+```{r DA peaks, eval=FALSE, message=FALSE, warning=FALSE}
+library(presto)
+load("data/pbmc_edited.RData")
+# change back to working with peaks instead of gene activities
+DefaultAssay(pbmc) <- 'peaks'
+
+# wilcox is the default option for test.use
+da_peaks <- FindMarkers(
+  object = pbmc,
+  ident.1 = "CD4 Naive",
+  ident.2 = "CD14+ Monocytes",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
+
+head(da_peaks)
+
+plot1 <- VlnPlot(
+  object = pbmc,
+  features = rownames(da_peaks)[1],
+  pt.size = 0.1,
+  idents = c("CD4 Naive","CD14+ Monocytes")
+)
+plot2 <- FeaturePlot(
+  object = pbmc,
+  features = rownames(da_peaks)[1],
+  pt.size = 0.1
+)
+
+plot1 | plot2
+```

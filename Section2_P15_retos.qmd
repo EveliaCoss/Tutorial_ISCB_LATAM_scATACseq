@@ -1,3 +1,19 @@
 # Exercises {#install .setup style="blue"}
 
-## 
+::: callout-note
+## Exercise in Google Colab
+
+1.  Create a copy of the [Google colab notebook part 1](https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing) on your one drive.
+2.  Run the exercise.
+:::
+
+```{r load output and plot, eval=FALSE}
+# load output
+obj.atac <- readRDS(file = "data/obj_atac_final.rds")
+
+# plot
+DimPlot(
+  obj.atac, group.by = "predicted.l2",
+  reduction = "ref.umap", label = TRUE
+) + ggtitle("ATAC") + NoLegend()
+```

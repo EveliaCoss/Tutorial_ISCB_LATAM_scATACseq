@@ -204,7 +204,6 @@ seqlevels(annotations)
 
 # add the gene information to the object
 Annotation(pbmc) <- annotations
-
 ```
 
 #### Other options
@@ -433,6 +432,8 @@ Here's how this concept is applied in **scATAC-seq**:
         -   **IDF** penalizes peaks that are accessible in many cells and gives more weight to those specific to fewer cells.
 
         -   **TF-IDF in scATAC-seq** is used to normalize the data, providing a better representation of chromatin accessibility for analyses like clustering or dimensionality reduction.
+
+        -   By default, the TF-IDF is then defined as TF times IDF followed by log-transformation (`method = 1`). There are also other options, for instance, TF times log-transformed IDF (`method = 2`), and log-transformed TF times log-transformed IDF (`method = 3`).
 :::
 
 -   ✅ **Feature selection:** Unlike scRNA-seq, scATAC-seq has low dynamic range, making variable feature selection difficult.
@@ -456,6 +457,10 @@ pbmc <- RunSVD(pbmc)
 ```{r, echo=FALSE, message=FALSE}
 gc()
 ```
+
+::: callout-note
+Another reason of using TF-IDF for ATAC-seq data is that its scales of different peaks, regardless the size of the peaks, should be comparable, and therefore the further data scaling becomes unnecessary. Computationally this is very important. **From the definition it is clear that for peaks with no fragment detected in a cell, its TF-IDF value remains zero.** Therefore, the TF-IDF matrix can be still represented by a sparse matrix, and then is directly used as the input for the next analysis without the need to generating a scaled data matrix which is likely a high-dimensional dense matrix that needs huge amount of memory to store.
+:::
 
 The first LSI component often captures sequencing depth (technical variation) rather than biological variation. If this is the case, the component should be removed from downstream analysis. We can assess the correlation between each LSI component and sequencing depth using the [`DepthCor()`](https://stuartlab.org/signac/reference/depthcor) function:
 
@@ -493,6 +498,11 @@ Also you can extract the normalized counts data from the `DESeqDataSet` object
 pbmc <- RunUMAP(object = pbmc, reduction = 'lsi', dims = 2:30)
 pbmc <- FindNeighbors(object = pbmc, reduction = 'lsi', dims = 2:30)
 pbmc <- FindClusters(object = pbmc, verbose = FALSE, algorithm = 3)
+
+# save
+save(pbmc, file = "data/pbmc.RData")
+
+# plot
 DimPlot(object = pbmc, label = TRUE) + NoLegend()
 ```
 
@@ -510,9 +520,11 @@ p2 <- DimPlot(object = pbmc, label = TRUE) +
 p1 | p2
 ```
 
-```{r save, echo=FALSE, message=FALSE}
+```{r save, message=FALSE}
+# Remove ALL objects from workspace
+rm(list = ls())
+# free memory
 gc()
-save(pbmc, file = "data/pbmc.RData")
 ```
 
 ```{r}
@@ -521,30 +533,16 @@ sessionInfo()
 
 ## References
 
-https://www.jpt.com/support-contact/resources/pbmc/
-
-[Data structures and object interaction](https://stuartlab.org/signac/articles/data_structures)
-
-[Joint RNA and ATAC analysis: 10x multiomic](https://stuartlab.org/signac/articles/pbmc_multiomic).
-
-https://stuartlab.org/signac/1.2.0/articles/install
-
-https://stuartlab.org/signac/articles/pbmc_multiomic
-
-https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/metrics
-
-https://www.nature.com/articles/nmeth.2688
-
-[Analyzing adult mouse brain scATAC-seq](https://stuartlab.org/signac/articles/mouse_brain_vignette)
-
-Raton https://rpubs.com/kshridevi/1176302
-
-https://ieeexplore.ieee.org/document/10343156
-
-https://stuartlab.org/signac/articles/pbmc_vignette
-
-https://arxiv.org/abs/1802.03426
-
-https://alexslemonade.github.io/refinebio-examples/03-rnaseq/dimension-reduction_rnaseq_02_umap.html#4_UMAP_Visualization\_-\_RNA-seq
-
-[UMAP Github](https://github.com/lmcinnes/umap)
+-   Mouse - [Analyzing PBMC scATAC-seq](https://rpubs.com/kshridevi/1176302)
+-   Human - [Analyzing PBMC scATAC-seq](https://stuartlab.org/signac/articles/pbmc_vignette)
+-   [What are PBMCs- Peripheral Blood Mononuclear Cells](https://www.jpt.com/support-contact/resources/pbmc/)
+-   Signac tutorial - [Data structures and object interaction](https://stuartlab.org/signac/articles/data_structures)
+-   Signac tutorial - [Joint RNA and ATAC analysis: 10x multiomic](https://stuartlab.org/signac/articles/pbmc_multiomic)
+-   Signac tutorial - [Signac Install](https://stuartlab.org/signac/1.2.0/articles/install)
+-   [Cell Ranger ATAC count: Summary Metrics](https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/metrics)
+-   Buenrostro, et al. 2013. [Transposition of native chromatin for fast and sensitive epigenomic profiling of open chromatin, DNA-binding proteins and nucleosome position.](https://www.nature.com/articles/nmeth.2688) Nature.
+-   [Analyzing adult mouse brain scATAC-seq](https://stuartlab.org/signac/articles/mouse_brain_vignette)
+-   Almarashy, et al. 2023. [Enhancing Fake News Detection by Multi-Feature Classification.](https://ieeexplore.ieee.org/document/10343156) IEEE access
+-   McIness, et al. 2020. [UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction](https://arxiv.org/abs/1802.03426). arxiv.
+-   [UMAP Visualization - RNA-seq](https://alexslemonade.github.io/refinebio-examples/03-rnaseq/dimension-reduction_rnaseq_02_umap.html#4_UMAP_Visualization_-_RNA-seq)
+-   [UMAP Github](https://github.com/lmcinnes/umap)

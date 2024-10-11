@@ -2,23 +2,30 @@
 
 In this step, we will demonstrate the following:
 
--   Utilizing predicted expression through the gene activity matrix approach
--   Loading and pre-processing scATAC-seq, multiome, and scRNA-seq reference datasets
--   Mapping the scATAC-seq dataset using bridge integration
--   Exploring and evaluating the resulting annotations
+-   Utilizing predicted expression through the gene activity matrix approach.
+-   Integrating ATAC-seq and RNA-seq data for label transfer using mutual nearest neighbor cell anchors.
+-   Identifying differentially accessible peaks to assess chromatin accessibility variations across cell types.
+-   Performing GO enrichment analysis with clusterProfiler to find overrepresented biological processes in gene sets.
+-   Plotting genomic regions to visualize the distribution and features of specific sequences across the genome.
 
 #### **Downstream workflow**
 
 ```{mermaid}
 %%| fig-width: 15 
 flowchart LR    
-  A{Integrating with scRNA-seq data} --> B(Gene activity matrix approach)     
-  A --> C(RNA imputation)
+  A{Integrating with scRNA-seq data} --> B(Gene activity matrix approach - \nRNA imputation)     
+  A --> C(Dictionary Learning for cross-modality \nintegration - Bridge integration)
   B --> D[Check Biomarkers]
   C --> D
 ```
 
-## Option A: Gene activity matrix approach {.setup style="blue"}
+::: callout-note
+## What if we don't have the RNA information?
+
+The RNA information in the multiome data is great because it is much easier to annotate cell types/states by gene expression. However, what if we have scATAC-seq rather than scMultiome data? In that case is there a way to "predict" the gene expression based on the ATAC fragments? Although not perfect, there is indeed some possible solutions.
+:::
+
+## Option A: Gene activity matrix approach / RNA imputation {.setup style="blue"}
 
 [![](https://denovosoftware.com/wp-content/uploads/Exploring-tSNE-parameter-overlays.png)](https://denovosoftware.com/faq/kb-how-can-i-explore-tsne-umap-plots/)
 
@@ -46,22 +53,29 @@ library(future) # parallelization in Signac
 plan("multicore", workers = 8)
 # Increase the maximum memory usage
 options(future.globals.maxSize = 14 * 1024^3)  # para 14 GB de RAM
-# Load data
-load("data/pbmc.RData") # scATAC
 ```
 
 ### Step 2: Create a expression matrix
 
-```{r, warning=FALSE}
+```{r load data and gene activity, warning=FALSE}
+# Load data
+load(file = "data/pbmc.RData") # scATAC
+
 start <- Sys.time()
 gene.activities <- GeneActivity(pbmc)
 end <- Sys.time()
 end - start
 ```
 
-Add the gene activity matrix to the Seurat object as a new assay and normalize it.
+Before:
 
 ```{r}
+pbmc@assays
+```
+
+Add the gene activity matrix to the Seurat object as a new assay and normalize it.
+
+```{r add info}
 pbmc[['RNA']] <- CreateAssayObject(counts = gene.activities)
 # normalization
 pbmc <- NormalizeData(
@@ -70,6 +84,12 @@ pbmc <- NormalizeData(
   normalization.method = 'LogNormalize',
   scale.factor = median(pbmc$nCount_RNA)
 )
+```
+
+After:
+
+```{r}
+pbmc@assays
 ```
 
 ### Step 3: Check biomarkers
@@ -87,6 +107,22 @@ FeaturePlot(
   ncol = 3
 )
 ```
+
+::: callout-note
+1.  **MS4A1 (CD20)**: Marker for B lymphocytes.
+
+2.  **CD3D**: Part of the T cell receptor complex, indicating T cell presence.
+
+3.  **LEF1**: Transcription factor associated with T and B cell differentiation.
+
+4.  **NKG7**: Expressed in NK cells and T lymphocytes, related to cytotoxicity.
+
+5.  **TREM1**: Present in monocytes and microglia, associated with the inflammatory response.
+
+6.  **LYZ (lysozyme)**: Expressed in macrophages, involved in defense against bacteria.
+
+These markers indicate the activation and function of various immune cells.
+:::
 
 ## Signac Workflow
 
@@ -127,6 +163,19 @@ transfer.anchors <- FindTransferAnchors(
   reduction = 'cca' # Perform dimensional reduction
 )
 ```
+
+::: callout-note
+\
+Dimensional reduction to perform when finding anchors. Options are:
+
+-   `pcaproject`: Project the PCA from the reference onto the query. We recommend using Principal Component Analysis (PCA) when reference and query datasets are from scRNA-seq, because PCA effectively captures the variance in gene expression data.
+
+-   `lsiproject`: Project the LSI from the reference onto the query. We recommend using LSI when reference and query datasets are from scATAC-seq. This requires that LSI has been computed for the reference dataset, and the same features (eg, peaks or genome bins) are present in both the reference and query. See **`RunTFIDF`** and **`RunSVD`.**
+
+-   `rpca`: Project the PCA from the reference onto the query, and the PCA from the query onto the reference (reciprocal PCA projection). This bidirectional approach allows for a more comprehensive alignment of the datasets, potentially enhancing the identification of shared features.
+
+-   `cca`: Canonical Correlation Analysis (CCA) is used to find linear relationships between the reference and query datasets. By identifying the canonical components that maximize the correlation between the two datasets, CCA helps in aligning them based on shared information.
+:::
 
 ### Step 7: Annotate scATAC-seq cells via label transfer
 
@@ -231,7 +280,7 @@ plot1 + plot2 + plot3
 
 ```{r save, echo=FALSE, message=FALSE}
 gc()
-save(pbmc, file = "data/pbmc.RData")
+save(pbmc, file = "data/pbmc_edited.RData")
 ```
 
 ## Find differentially accessible peaks between cell types
@@ -248,10 +297,8 @@ remotes::install_github('immunogenomics/presto')
 
 For sparse data like scATAC-seq, it is necessary to adjust the `min.pct` parameter of the `FindMarkers()` function to lower values, as the default value (0.1) is designed for scRNA-seq data. Here we will focus on comparing Naive CD4 cells and CD14 monocytes, but any groups of cells can be compared using these methods. We can also visualize these marker peaks on a violin plot, feature plot, dot plot, heat map, or any [visualization tool in Seurat](https://satijalab.org/seurat/articles/visualization_vignette.html).
 
-```{r, message=FALSE, warning=FALSE}
+```{r DA peaks, message=FALSE, warning=FALSE}
 library(presto)
-load("data/pbmc.RData")
-
 # change back to working with peaks instead of gene activities
 DefaultAssay(pbmc) <- 'peaks'
 
@@ -265,6 +312,9 @@ da_peaks <- FindMarkers(
 )
 
 head(da_peaks)
+
+# save
+save(da_peaks, file = "data/da_peaks.RData")
 ```
 
 We visualize the results of the differential accessibility test using a violin plot and over the UMAP projection.
@@ -338,13 +388,13 @@ barplot(cd14mono_ego,showCategory = 20)
 
 We can visualize the frequency of Tn5 integration across genomic regions for cells grouped by cluster, cell type, or any other metadata stored in the object using the [`CoveragePlot()`](https://stuartlab.org/signac/reference/coverageplot) function. These plots represent pseudo-bulk accessibility tracks, where the **signal from all cells within a group is averaged to display DNA accessibility in a specific region.** (Credit to Andrew Hill for the inspiration behind this function, as highlighted in his excellent [blog post.](http://andrewjohnhill.com/blog/2019/04/12/streamlining-scatac-seq-visualization-and-analysis/)) In addition to accessibility tracks, we can include other key information such as gene annotations, peak coordinates, and genomic links (if available in the object). For further details, refer to the [visualization vignette](https://stuartlab.org/signac/articles/visualization).
 
-For plotting purposes, it\'s nice to have related cell types grouped together. We can automatically sort the plotting order according to similarities across the annotated cell types by running the [`SortIdents()`](https://stuartlab.org/signac/reference/sortidents) function:
+For plotting purposes, it's nice to have related cell types grouped together. We can automatically sort the plotting order according to similarities across the annotated cell types by running the [`SortIdents()`](https://stuartlab.org/signac/reference/sortidents) function:
 
 ```{r sort}
 pbmc <- SortIdents(pbmc)
 ```
 
-We can then visualize the DA peaks open in CD4 naive cells and CD14 monocytes, near some key marker genes for these cell types, CD4 and LYZ respectively. Here we\'ll highlight the DA peaks regions in grey.
+We can then visualize the DA peaks open in CD4 naive cells and CD14 monocytes, near some key marker genes for these cell types, CD4 and LYZ respectively. Here we'll highlight the DA peaks regions in grey.
 
 ```{r plot coverage}
 # find DA peaks overlapping gene of interest
@@ -373,20 +423,11 @@ sessionInfo()
 
 ## References
 
-https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8?\_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867419305598%3Fshowall%3Dtrue
-
-Single-cell ATAC sequencing https://www.sc-best-practices.org/chromatin_accessibility/introduction.html
-
-Best practices for single-cell analysis across modalities https://www.nature.com/articles/s41576-023-00586-w
-
-https://stuartlab.org/signac/articles/pbmc_vignette#create-a-gene-activity-matrix
-
-https://stuartlab.org/signac/articles/integrate_atac
-
-https://satijalab.org/seurat/articles/seurat5_atacseq_integration_vignette
-
-https://stuartlab.org/signac/articles/pbmc_vignette
-
-https://rpubs.com/gloknar/809238
-
-https://stuartlab.org/signac/articles/peak_calling
+-   Stuart, et al. 2019. [Comprehensive Integration of Single-Cell Data](https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867419305598%3Fshowall%3Dtrue). Cell.
+-   [Single-cell ATAC sequencing](https://www.sc-best-practices.org/chromatin_accessibility/introduction.html)
+-   Heumos, et al . 2023. [Best practices for single-cell analysis across modalities](https://www.nature.com/articles/s41576-023-00586-w). Nature reviews genetics.
+-   Signac tutorial - [Create a gene activity matrix](https://stuartlab.org/signac/articles/pbmc_vignette#create-a-gene-activity-matrix)
+-   Signac tutorial - [scATAC-seq data integration](https://stuartlab.org/signac/articles/integrate_atac)
+-   Signac tutorial - [Integrating scRNA-seq and scATAC-seq data](https://satijalab.org/seurat/articles/seurat5_atacseq_integration_vignette)
+-   Signac tutorial - [Calling peaks](https://stuartlab.org/signac/articles/peak_calling)
+-   [Análisis de datos scATAC-seq en Signac: cerebro murino](https://rpubs.com/gloknar/809238)

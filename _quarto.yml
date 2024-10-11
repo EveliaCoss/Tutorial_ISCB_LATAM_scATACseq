@@ -1,11 +1,12 @@
 project:
   type: book
+  output-dir: docs
 
 book:
   title: "Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice"
-  output-file: "WCS_scATACseq_book"
+  # output-file: "WCS_scATACseq_book"
   author: "Evelia Coss and Diego Ramirez"
-  date: "8/23/2024"
+  date: "10/11/2024"
   page-navigation: true
   chapters:
     - index.qmd
@@ -46,6 +47,7 @@ format:
       dark: darkly
     code-fold: show # Ocultar codigo
     code-copy: true # Copy button
+    freeze: false  # Desactivar congelamiento
 
 editor: visual
 
