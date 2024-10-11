@@ -97,6 +97,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -295,19 +298,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#dataset-overview" id="toc-dataset-overview" class="nav-link active" data-scroll-target="#dataset-overview"><span class="header-section-number">6.1</span> Dataset overview</a></li>
-  <li><a href="#merging-objects" id="toc-merging-objects" class="nav-link" data-scroll-target="#merging-objects"><span class="header-section-number">6.2</span> Merging objects</a></li>
-  <li><a href="#scatac-seq-data-integration-batch-effect" id="toc-scatac-seq-data-integration-batch-effect" class="nav-link" data-scroll-target="#scatac-seq-data-integration-batch-effect"><span class="header-section-number">6.3</span> scATAC-seq data integration / batch effect</a></li>
-  <li><a href="#option-b-dictionary-learning-for-cross-modality-integration" id="toc-option-b-dictionary-learning-for-cross-modality-integration" class="nav-link" data-scroll-target="#option-b-dictionary-learning-for-cross-modality-integration"><span class="header-section-number">6.4</span> Option B: Dictionary Learning for cross-modality integration</a>
+  <li><a href="#batch-effect-correction" id="toc-batch-effect-correction" class="nav-link active" data-scroll-target="#batch-effect-correction"><span class="header-section-number">7</span> <strong>Batch Effect Correction</strong></a>
   <ul>
-  <li><a href="#step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually" id="toc-step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually" class="nav-link" data-scroll-target="#step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually"><span class="header-section-number">6.4.1</span> Step 1: Load the bridge, query, and reference datasets (each modality individually)</a></li>
-  <li><a href="#azimuth-annotation" id="toc-azimuth-annotation" class="nav-link" data-scroll-target="#azimuth-annotation"><span class="header-section-number">6.4.2</span> Azimuth annotation</a></li>
-  <li><a href="#step-2-annotate-scatac-seq-cells-via-label-transfer" id="toc-step-2-annotate-scatac-seq-cells-via-label-transfer" class="nav-link" data-scroll-target="#step-2-annotate-scatac-seq-cells-via-label-transfer"><span class="header-section-number">6.4.3</span> Step 2: Annotate scATAC-seq cells via label transfer</a></li>
+  <li><a href="#option-1-merging-objects" id="toc-option-1-merging-objects" class="nav-link" data-scroll-target="#option-1-merging-objects"><span class="header-section-number">7.1</span> Option 1: Merging objects</a></li>
+  <li><a href="#option-2-harmony-batch-effect" id="toc-option-2-harmony-batch-effect" class="nav-link" data-scroll-target="#option-2-harmony-batch-effect"><span class="header-section-number">7.2</span> Option 2: <strong>Harmony batch effect</strong></a></li>
+  <li><a href="#option-3-scatac-seq-data-integration" id="toc-option-3-scatac-seq-data-integration" class="nav-link" data-scroll-target="#option-3-scatac-seq-data-integration"><span class="header-section-number">7.3</span> Option 3: scATAC-seq data integration</a></li>
+  <li><a href="#common-peak-set" id="toc-common-peak-set" class="nav-link" data-scroll-target="#common-peak-set"><span class="header-section-number">7.4</span> Common peak set</a></li>
   </ul></li>
-  <li><a href="#analysis-of-multi-omics-data" id="toc-analysis-of-multi-omics-data" class="nav-link" data-scroll-target="#analysis-of-multi-omics-data"><span class="header-section-number">6.5</span> <strong>Analysis of multi-omics data</strong></a></li>
-  <li><a href="#joint-rna-and-atac-analysis-10x-multiomic" id="toc-joint-rna-and-atac-analysis-10x-multiomic" class="nav-link" data-scroll-target="#joint-rna-and-atac-analysis-10x-multiomic"><span class="header-section-number">7</span> Joint RNA and ATAC analysis: 10x multiomic</a>
+  <li><a href="#scatac-seq-downstream" id="toc-scatac-seq-downstream" class="nav-link" data-scroll-target="#scatac-seq-downstream"><span class="header-section-number">8</span> scATAC-seq Downstream</a>
   <ul>
-  <li><a href="#bridge-integration" id="toc-bridge-integration" class="nav-link" data-scroll-target="#bridge-integration"><span class="header-section-number">7.1</span> Bridge integration</a></li>
+  <li><a href="#option-b-dictionary-learning-for-cross-modality-integration-bridge-integration" id="toc-option-b-dictionary-learning-for-cross-modality-integration-bridge-integration" class="nav-link" data-scroll-target="#option-b-dictionary-learning-for-cross-modality-integration-bridge-integration"><span class="header-section-number">8.1</span> Option B: Dictionary Learning for cross-modality integration / Bridge integration</a>
+  <ul class="collapse">
+  <li><a href="#step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually" id="toc-step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually" class="nav-link" data-scroll-target="#step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually"><span class="header-section-number">8.1.1</span> Step 1: Load the bridge, query, and reference datasets (each modality individually)</a></li>
+  <li><a href="#step-2-preprocessingnormalization-for-all-datasets" id="toc-step-2-preprocessingnormalization-for-all-datasets" class="nav-link" data-scroll-target="#step-2-preprocessingnormalization-for-all-datasets"><span class="header-section-number">8.1.2</span> Step 2: Preprocessing/normalization for all datasets</a></li>
+  <li><a href="#step-3-map-scatac-seq-dataset-using-bridge-integration" id="toc-step-3-map-scatac-seq-dataset-using-bridge-integration" class="nav-link" data-scroll-target="#step-3-map-scatac-seq-dataset-using-bridge-integration"><span class="header-section-number">8.1.3</span> Step 3: Map scATAC-seq dataset using bridge integration</a></li>
+  <li><a href="#step-4-assessing-the-mapping" id="toc-step-4-assessing-the-mapping" class="nav-link" data-scroll-target="#step-4-assessing-the-mapping"><span class="header-section-number">8.1.4</span> Step 4: Assessing the mapping</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#analysis-of-multi-omics-data" id="toc-analysis-of-multi-omics-data" class="nav-link" data-scroll-target="#analysis-of-multi-omics-data"><span class="header-section-number">9</span> <strong>Analysis of multi-omics data</strong></a>
+  <ul>
+  <li><a href="#joint-rna-and-atac-analysis-10x-multiomic" id="toc-joint-rna-and-atac-analysis-10x-multiomic" class="nav-link" data-scroll-target="#joint-rna-and-atac-analysis-10x-multiomic"><span class="header-section-number">9.1</span> Joint RNA and ATAC analysis: 10x multiomic</a></li>
+  <li><a href="#dataset-overview" id="toc-dataset-overview" class="nav-link" data-scroll-target="#dataset-overview"><span class="header-section-number">9.2</span> Dataset overview</a>
+  <ul class="collapse">
+  <li><a href="#step-1-load-the-data-and-create-the-seurat-object" id="toc-step-1-load-the-data-and-create-the-seurat-object" class="nav-link" data-scroll-target="#step-1-load-the-data-and-create-the-seurat-object"><span class="header-section-number">9.2.1</span> 📗 Step 1: Load the data and create the Seurat object</a></li>
+  <li><a href="#step-2-computing-qc-metrics" id="toc-step-2-computing-qc-metrics" class="nav-link" data-scroll-target="#step-2-computing-qc-metrics"><span class="header-section-number">9.2.2</span> 📕 Step 2: Computing QC metrics</a></li>
+  <li><a href="#step-3-analysis-on-the-rna-assay" id="toc-step-3-analysis-on-the-rna-assay" class="nav-link" data-scroll-target="#step-3-analysis-on-the-rna-assay"><span class="header-section-number">9.2.3</span> 📘 Step 3: Analysis on the RNA assay</a></li>
+  <li><a href="#step-4-analysis-on-the-atac-assay" id="toc-step-4-analysis-on-the-atac-assay" class="nav-link" data-scroll-target="#step-4-analysis-on-the-atac-assay"><span class="header-section-number">9.2.4</span> 📙 Step 4: Analysis on the ATAC assay</a></li>
+  <li><a href="#step-5-annotating-cell-types" id="toc-step-5-annotating-cell-types" class="nav-link" data-scroll-target="#step-5-annotating-cell-types"><span class="header-section-number">9.2.5</span> ✒️ Step 5: Annotating cell types</a></li>
+  <li><a href="#step-6-joint-umap-visualization" id="toc-step-6-joint-umap-visualization" class="nav-link" data-scroll-target="#step-6-joint-umap-visualization"><span class="header-section-number">9.2.6</span> 📐 Step 6: Joint UMAP visualization</a></li>
+  <li><a href="#step-7-linking-peaks-to-genes" id="toc-step-7-linking-peaks-to-genes" class="nav-link" data-scroll-target="#step-7-linking-peaks-to-genes"><span class="header-section-number">9.2.7</span> 📊 Step 7: Linking peaks to genes</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">9.3</span> References</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -333,137 +354,2079 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 <p>In this step, we will demonstrate the following:</p>
-<section id="dataset-overview" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">6.1</span> Dataset overview</h2>
-</section>
-<section id="merging-objects" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="merging-objects"><span class="header-section-number">6.2</span> Merging objects</h2>
-<p>diferentes numeros de celulas</p>
-<p>https://stuartlab.org/signac/articles/merging</p>
+<ul>
+<li>Analyzing the differences between merging vs integration of data.</li>
+<li>Loading and pre-processing scATAC-seq, multiome, and scRNA-seq reference datasets</li>
+<li>Mapping the scATAC-seq dataset using bridge integration.</li>
+<li>Performing joint RNA and ATAC analysis to explore the relationship between gene expression and chromatin accessibility in single-cell datasets.</li>
+<li>Exploring and evaluating the resulting annotations.</li>
+</ul>
+<section id="batch-effect-correction" class="level1 setup" style="blue" data-number="7">
+<h1 class="setup" style="blue" data-number="7"><span class="header-section-number">7</span> <strong>Batch Effect Correction</strong></h1>
+<p>Variation in different&nbsp;<a href="https://www.10xgenomics.com/products/single-cell-atac">Chromium Single Cell ATAC</a>&nbsp;(Assay for Transposase Accessible Chromatin) samples can be affected by technical factors, such as laboratory conditions or reagent choices. These batch effects may confound true biological variation between samples. Therefore, correcting the batch effects can be useful for data analysis.</p>
+<p>If you are combining libraries generated by Chromium Single Cell ATAC v1.1 and v2 reagents, you might observe systematic differences in chromatin structure profiles between libraries. Here, we will demonstrate how to use community-developed tools to merge and correct batch effects between Single Cell ATAC v1.1 and v2 data. The same procedure could also be used to correct other types of batch effects.</p>
+<section id="option-1-merging-objects" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="option-1-merging-objects"><span class="header-section-number">7.1</span> Option 1: Merging objects</h2>
+<p>When merging multiple single-cell chromatin datasets, it’s important to be aware that if peak calling was performed on each dataset independently, the peaks are unlikely to be exactly the same. <strong>We therefore need to create a common set of peaks across all the datasets to be merged.</strong></p>
+<p>The two datasets used in this example can be found here:&nbsp;<a href="https://www.10xgenomics.com/datasets/10k-human-pbmcs-atac-v1-1-chromium-x-1-1-standard">dataset 1: 10k Human PBMCs, ATAC v1.1 cells</a>&nbsp;and&nbsp;<a href="https://www.10xgenomics.com/datasets/10k-human-pbmcs-atac-v2-chromium-controller-2-standard">dataset 2: 10k Human PBMCs, ATAC v2 cells</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Download the datasets
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>From: <a href="https://www.10xgenomics.com/analysis-guides/batch-effect-correction-in-chromium-single-cell-atac-data">Batch Effect Correction in Chromium Single Cell ATAC Data</a></p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set working directory before downloading files</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"data"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Download dataset 1 filtered_peak_bc_matrix.h5 file</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv1p1_nextgem_Chromium_X/10k_pbmc_ATACv1p1_nextgem_Chromium_X_filtered_peak_bc_matrix.h5"</span>,<span class="st">"10k_pbmc_ATACv1p1_nextgem_Chromium_X_filtered_peak_bc_matrix.h5"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Download dataset 2 filtered_peak_bc_matrix.h5 file</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_X/10k_pbmc_ATACv2_nextgem_Chromium_X_filtered_peak_bc_matrix.h5"</span>,<span class="st">"10k_pbmc_ATACv2_nextgem_Chromium_X_filtered_peak_bc_matrix.h5"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="https://stuartlab.org/signac/articles/merging"><img src="https://stuartlab.org/signac/articles/merging_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img"></a></p>
+<p><a href="https://rpubs.com/eraz0001/Harmony"><img src="img/batcheffect.png" class="img-fluid figure-img"></a></p>
 </figure>
 </div>
 </section>
-<section id="scatac-seq-data-integration-batch-effect" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="scatac-seq-data-integration-batch-effect"><span class="header-section-number">6.3</span> scATAC-seq data integration / batch effect</h2>
-<p>https://stuartlab.org/signac/articles/pbmc_multiomic</p>
-<p>Y si tengo muchos datos</p>
-<p>https://stuartlab.org/signac/articles/integrate_atac</p>
+<section id="option-2-harmony-batch-effect" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="option-2-harmony-batch-effect"><span class="header-section-number">7.2</span> Option 2: <strong>Harmony batch effect</strong></h2>
+<p>We can use the&nbsp;<a href="https://www.nature.com/articles/s41592-019-0619-0">Harmony batch effect correction algorithm</a>&nbsp;(Korsunsky et al.&nbsp;2019) implemented in the&nbsp;<a href="https://satijalab.org/signac">Signac R package</a>. The&nbsp;<a href="https://github.com/immunogenomics/harmony">Harmony algorithm</a>&nbsp;is available on GitHub, and Signac has&nbsp;<a href="https://stuartlab.org/signac/articles/integrate_atac">tutorials for integration</a>.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hm.integrated <span class="ot">&lt;-</span> <span class="fu">RunHarmony</span>(<span class="at">object =</span> unintegrated, <span class="at">group.by.vars =</span> <span class="st">'dataset'</span>, <span class="at">reduction =</span> <span class="st">'lsi'</span>, <span class="at">assay.use =</span> <span class="st">'peaks'</span>, <span class="at">project.dim =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>hm.integrated <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(hm.integrated, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span>, <span class="at">reduction =</span> <span class="st">'harmony'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(hm.integrated, <span class="at">group.by =</span> <span class="st">'dataset'</span>, <span class="at">pt.size =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.10xgenomics.com/analysis-guides/batch-effect-correction-in-chromium-single-cell-atac-data"><img src="https://cdn.10xgenomics.com/image/upload/c_scale,w_600/v1650308284/analysis-guides/atac-batch-correction/atac-batch-correction-Step4_figure.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</section>
+<section id="option-3-scatac-seq-data-integration" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="option-3-scatac-seq-data-integration"><span class="header-section-number">7.3</span> Option 3: scATAC-seq data integration</h2>
+<p>An important first step in any integrative analysis of single-cell chromatin data is to ensure that the same features are measured in each dataset. Here, we quantify the <strong>multiome peaks in the ATAC dataset to ensure that there are common features across the two datasets</strong>. See the&nbsp;<a href="https://stuartlab.org/signac/articles/merging">merge vignette</a>&nbsp;for more information about merging chromatin assays.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="https://stuartlab.org/signac/articles/integrate_atac"><img src="https://stuartlab.org/signac/articles/integrate_atac_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img"></a></p>
 </figure>
 </div>
 </section>
-<section id="option-b-dictionary-learning-for-cross-modality-integration" class="level2" data-number="6.4">
-<h2 data-number="6.4" class="anchored" data-anchor-id="option-b-dictionary-learning-for-cross-modality-integration"><span class="header-section-number">6.4</span> Option B: Dictionary Learning for cross-modality integration</h2>
+<section id="common-peak-set" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="common-peak-set"><span class="header-section-number">7.4</span> Common peak set</h2>
+<p>If the peaks were identified independently in each experiment then they will likely not overlap perfectly. We can merge peaks from all the datasets to create a <strong>common peak set</strong>, and quantify this peak set in each experiment prior to merging the objects.</p>
+<p>First we’ll load the peak coordinates for each experiment and convert them to genomic ranges, the use the <a href="https://rdrr.io/pkg/IRanges/man/inter-range-methods.html"><code>GenomicRanges::reduce</code></a> function to create a common set of peaks to quantify in each dataset.</p>
+<div class="cell" data-fig-width="15">
+<div class="cell-output-display">
+<div>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR    
+  A(Create a common peak set) --&gt; B(Create fragment objects)     
+  A --&gt; C(Quantify peaks in each dataset)
+  C --&gt; D(Create the objects)
+  D --&gt; E(Merge objects)
+  E --&gt; F(Merging without a \ncommon feature set)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="scatac-seq-downstream" class="level1 setup" style="blue" data-number="8">
+<h1 class="setup" style="blue" data-number="8"><span class="header-section-number">8</span> scATAC-seq Downstream</h1>
+<div class="cell" data-fig-width="15">
+<div class="cell-output-display">
+<div>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR    
+  A{Integrating with scRNA-seq data} --&gt; B(Gene activity matrix approach - \nRNA imputation)     
+  A --&gt; C(Dictionary Learning for cross-modality \nintegration - Bridge integration)
+  B --&gt; D[Check Biomarkers]
+  C --&gt; D
+</pre>
+</div>
+</div>
+</div>
+</div>
+<section id="option-b-dictionary-learning-for-cross-modality-integration-bridge-integration" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="option-b-dictionary-learning-for-cross-modality-integration-bridge-integration"><span class="header-section-number">8.1</span> Option B: Dictionary Learning for cross-modality integration / Bridge integration</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="https://www.nature.com/articles/s41587-023-01767-y"><img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41587-023-01767-y/MediaObjects/41587_2023_1767_Fig1_HTML.png?as=webp" class="img-fluid figure-img" alt="Broad schematic of the bridge integration workflow. From: Seurat v5, Hao et al, 2023. Nature biotechnology"></a></p>
 <figcaption class="figure-caption">Broad schematic of the bridge integration workflow. From: Seurat v5, Hao et al, 2023. Nature biotechnology</figcaption>
 </figure>
 </div>
-<section id="step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually" class="level3" data-number="6.4.1">
-<h3 data-number="6.4.1" class="anchored" data-anchor-id="step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually"><span class="header-section-number">6.4.1</span> Step 1: Load the bridge, query, and reference datasets (each modality individually)</h3>
+<section id="step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" class="anchored" data-anchor-id="step-1-load-the-bridge-query-and-reference-datasets-each-modality-individually"><span class="header-section-number">8.1.1</span> Step 1: Load the bridge, query, and reference datasets (each modality individually)</h3>
 <p>Input files:</p>
 <ul>
 <li><p><strong>10x multiome dataset:</strong> Consisting of ~12,000 PBMC from a helthy donor. The dataset measures scRNA-seq and scATAC-seq in the <strong>same cell</strong>, and is available for download from 10x Genomics <a href="https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-10-k-1-standard-2-0-0">here</a>.</p></li>
 <li><p><strong>scATAC-seq Query:</strong> Represents ~10,000 PBMC from a healthy donor, and is available for download <a href="https://www.10xgenomics.com/datasets/10k-human-pbmcs-atac-v2-chromium-controller-2-standard">here</a>.</p></li>
-<li><p><strong>Reference from Azimuth:</strong> We load the reference (download <a href="https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat">here</a>) from our recent <a href="https://doi.org/10.1016/j.cell.2021.04.048">paper</a>. This reference is stored as an h5Seurat file, a format that enables on-disk storage of multimodal Seurat objects (more details on h5Seurat and <code>SeuratDisk</code> can be found <a href="https://satijalab.github.io/seurat-disk/index.html">here</a>).</p></li>
+<li><p><strong>Reference from <a href="https://satijalab.github.io/azimuth/articles/run_azimuth_tutorial.html">Azimuth</a>:</strong> We load the reference (download <a href="https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat">here</a>) from this recent <a href="https://doi.org/10.1016/j.cell.2021.04.048">paper</a>. This reference is stored as an h5Seurat file, a format that enables on-disk storage of multimodal Seurat objects (more details on h5Seurat and <code>SeuratDisk</code> can be found <a href="https://satijalab.github.io/seurat-disk/index.html">here</a>).</p></li>
 </ul>
-</section>
-<section id="azimuth-annotation" class="level3" data-number="6.4.2">
-<h3 data-number="6.4.2" class="anchored" data-anchor-id="azimuth-annotation"><span class="header-section-number">6.4.2</span> Azimuth annotation</h3>
-<p>https://satijalab.github.io/azimuth/articles/run_azimuth_tutorial.html</p>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
 View data download code
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Total 2.7 Gb</p>
-<div class="sourceCode" id="cb1" data-code-copy="true" data-eval="false"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 10x multiome dataset </span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw data </span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5 </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments file </span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz <span class="co"># fragments index </span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz.tbi  </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># scATAC-seq Query (Total 2.7 Gb) </span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw data  </span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5 <span class="co"># metadata </span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv </span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments file </span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz </span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments index </span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz.tbi  </span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Azimuth Reference </span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3" data-code-copy="true" data-eval="false"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 10x multiome dataset </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw data </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5 </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments file </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments index </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz.tbi  </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># scATAC-seq Query (Total 2.7 Gb) </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw data  </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5 </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># metadata </span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments file </span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments index </span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz.tbi  </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Azimuth Reference (Total 9 Gb)</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
-</section>
-<section id="step-2-annotate-scatac-seq-cells-via-label-transfer" class="level3" data-number="6.4.3">
-<h3 data-number="6.4.3" class="anchored" data-anchor-id="step-2-annotate-scatac-seq-cells-via-label-transfer"><span class="header-section-number">6.4.3</span> Step 2: Annotate scATAC-seq cells via label transfer</h3>
-<p>After identifying anchors, we can transfer annotations from the scRNA-seq dataset into the scATAC-seq cells. The annotations are stored in the <code>seurat_annotations</code> field, and are provided as input to the <code>refdata</code> parameter. The output will contain a matrix with predictions and confidence scores for each ATAC-seq cell.</p>
+</div>
+<p>Load and setup the 10x multiome object.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>predicted.labels <span class="ot">&lt;-</span> <span class="fu">TransferData</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">anchorset =</span> transfer.anchors,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">refdata =</span> pbmc_rna<span class="sc">$</span>celltype, <span class="co"># pbmc.rna$seurat_annotations</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight.reduction =</span> pbmc[[<span class="st">'lsi'</span>]],</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">AddMetaData</span>(<span class="at">object =</span> pbmc, <span class="at">metadata =</span> predicted.labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Signac)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Hsapiens.v86)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># the 10x hdf5 file contains both data types.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>inputdata<span class="fl">.10</span>x <span class="ot">&lt;-</span> <span class="fu">Read10X_h5</span>(<span class="st">"/brahms/hartmana/vignette_data/pbmc_cellranger_arc_2/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># extract RNA and ATAC data</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>rna_counts <span class="ot">&lt;-</span> inputdata<span class="fl">.10</span>x<span class="sc">$</span><span class="st">`</span><span class="at">Gene Expression</span><span class="st">`</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>atac_counts <span class="ot">&lt;-</span> inputdata<span class="fl">.10</span>x<span class="sc">$</span>Peaks</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create Seurat object</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>obj.multi <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(<span class="at">counts =</span> rna_counts)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Get % of mitochondrial genes</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>obj.multi[[<span class="st">"percent.mt"</span>]] <span class="ot">&lt;-</span> <span class="fu">PercentageFeatureSet</span>(obj.multi, <span class="at">pattern =</span> <span class="st">"^MT-"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># add the ATAC-seq assay</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>grange.counts <span class="ot">&lt;-</span> <span class="fu">StringToGRanges</span>(<span class="fu">rownames</span>(atac_counts), <span class="at">sep =</span> <span class="fu">c</span>(<span class="st">":"</span>, <span class="st">"-"</span>))</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>grange.use <span class="ot">&lt;-</span> <span class="fu">seqnames</span>(grange.counts) <span class="sc">%in%</span> <span class="fu">standardChromosomes</span>(grange.counts)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>atac_counts <span class="ot">&lt;-</span> atac_counts[<span class="fu">as.vector</span>(grange.use), ]</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Get gene annotations</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>annotations <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> EnsDb.Hsapiens.v86)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Change style to UCSC</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevelsStyle</span>(annotations) <span class="ot">&lt;-</span> <span class="st">'UCSC'</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="fu">genome</span>(annotations) <span class="ot">&lt;-</span> <span class="st">"hg38"</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># File with ATAC per fragment information file</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>frag.file <span class="ot">&lt;-</span> <span class="st">"/brahms/hartmana/vignette_data/pbmc_cellranger_arc_2/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz"</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Add in ATAC-seq data as ChromatinAssay object</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>chrom_assay <span class="ot">&lt;-</span> <span class="fu">CreateChromatinAssay</span>(</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> atac_counts,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="fu">c</span>(<span class="st">":"</span>, <span class="st">"-"</span>),</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome =</span> <span class="st">'hg38'</span>,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">fragments =</span> frag.file,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.cells =</span> <span class="dv">10</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation =</span> annotations</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the ATAC assay to the multiome object</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>obj.multi[[<span class="st">"ATAC"</span>]] <span class="ot">&lt;-</span> chrom_assay</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter ATAC data based on QC metrics</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>obj.multi <span class="ot">&lt;-</span> <span class="fu">subset</span>(</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> obj.multi,</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">subset =</span> nCount_ATAC <span class="sc">&lt;</span> <span class="fl">7e4</span> <span class="sc">&amp;</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    nCount_ATAC <span class="sc">&gt;</span> <span class="fl">5e3</span> <span class="sc">&amp;</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    nCount_RNA <span class="sc">&lt;</span> <span class="dv">25000</span> <span class="sc">&amp;</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    nCount_RNA <span class="sc">&gt;</span> <span class="dv">1000</span> <span class="sc">&amp;</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    percent.mt <span class="sc">&lt;</span> <span class="dv">20</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>plot</p>
+<p>We note that it is important to quantify the same set of genomic features in the query dataset as are quantified in the multi-omic bridge. We therefore requantify the set of scATAC-seq peaks using the&nbsp;<code>FeatureMatrix</code>&nbsp;command. This is also described in the&nbsp;<a href="https://stuartlab.org/signac/articles/integrate_atac.html">Signac vignettes</a>&nbsp;and shown below.</p>
+<p>Load and setup the 10x scATAC-seq query.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc_rna,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by =</span> <span class="st">'celltype'</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">repel =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'scRNA-seq'</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">group.by =</span> <span class="st">'predicted.id'</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">repel =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">'scATAC-seq'</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>plot1 <span class="sc">+</span> plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load ATAC dataset</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>atac_pbmc_data <span class="ot">&lt;-</span> <span class="fu">Read10X_h5</span>(<span class="at">filename =</span> <span class="st">"data/10k_PBMC_ATAC_nextgem_Chromium_X_filtered_peak_bc_matrix.h5"</span>) </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>fragpath <span class="ot">&lt;-</span> <span class="st">"data/10k_PBMC_ATAC_nextgem_Chromium_X_fragments.tsv.gz"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get gene annotations</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> EnsDb.Hsapiens.v86)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to UCSC style </span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevelsStyle</span>(annotation) <span class="ot">&lt;-</span> <span class="st">'UCSC'</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create ChromatinAssay for ATAC data</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>atac_pbmc_assay <span class="ot">&lt;-</span> <span class="fu">CreateChromatinAssay</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> atac_pbmc_data,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="fu">c</span>(<span class="st">":"</span>, <span class="st">"-"</span>),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">fragments =</span> fragpath,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation =</span> annotation</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Requantify query ATAC to have same features as multiome ATAC dataset</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>requant_multiome_ATAC <span class="ot">&lt;-</span> <span class="fu">FeatureMatrix</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">fragments =</span> <span class="fu">Fragments</span>(atac_pbmc_assay),</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">granges</span>(obj.multi[[<span class="st">'ATAC'</span>]]),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">cells =</span> <span class="fu">Cells</span>(atac_pbmc_assay)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create assay with requantified ATAC data</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>ATAC_assay <span class="ot">&lt;-</span> <span class="fu">CreateChromatinAssay</span>(</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> requant_multiome_ATAC,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">fragments =</span> fragpath,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation =</span> annotation</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Create Seurat sbject</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>obj.atac  <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(<span class="at">counts =</span> ATAC_assay,<span class="at">assay =</span> <span class="st">'ATAC'</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>obj.atac[[<span class="st">'peak.orig'</span>]] <span class="ot">&lt;-</span> atac_pbmc_assay</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>obj.atac <span class="ot">&lt;-</span> <span class="fu">subset</span>(obj.atac, <span class="at">subset =</span> nCount_ATAC <span class="sc">&lt;</span> <span class="fl">7e4</span> <span class="sc">&amp;</span> nCount_ATAC <span class="sc">&gt;</span> <span class="dv">2000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>You can see that the scRNA-based classifications are consistent with the UMAP visualization that was computed using the scATAC-seq data. Notice, however, that a small population of cells are predicted to be platelets in the scATAC-seq dataset. This is unexpected as platelets are not nucleated and should not be detected by scATAC-seq. It is possible that the cells predicted to be platelets could instead be the platelet-precursors megakaryocytes, which largely reside in the bone marrow but are rarely found in the peripheral blood of healthy patients, such as the individual these PBMCs were drawn from. Given the already extreme rarity of megakaryocytes within normal bone marrow (&lt; 0.1%), this scenario seems unlikely.</p>
-<p>Check cell types</p>
-<p>Plotting the prediction score for the cells assigned to each label reveals that the “platelet” cells received relatively low scores (&lt; 0.8), indicating a low confidence in the assigned cell identity. In most cases, the next most likely cell identity predicted for these cells was “CD4 naive”.</p>
+<p>Download Azimuth reference and load it.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VlnPlot</span>(pbmc, <span class="st">'prediction.score.max'</span>, <span class="at">group.by =</span> <span class="st">'predicted.id'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>obj.rna <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/pbmc_multimodal_2023.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
+<section id="step-2-preprocessingnormalization-for-all-datasets" class="level3" data-number="8.1.2">
+<h3 data-number="8.1.2" class="anchored" data-anchor-id="step-2-preprocessingnormalization-for-all-datasets"><span class="header-section-number">8.1.2</span> Step 2: Preprocessing/normalization for all datasets</h3>
+<p>Prior to performing bridge integration, we normalize and pre-process each of the datasets (note that the reference has already been normalized). We normalize gene expression data using&nbsp;<a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1">sctransform</a>, and ATAC data using TF-IDF.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize multiome RNA</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(obj.multi) <span class="ot">&lt;-</span> <span class="st">"RNA"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>obj.multi <span class="ot">&lt;-</span> <span class="fu">SCTransform</span>(obj.multi, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize multiome ATAC</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(obj.multi) <span class="ot">&lt;-</span> <span class="st">"ATAC"</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>obj.multi <span class="ot">&lt;-</span> <span class="fu">RunTFIDF</span>(obj.multi)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>obj.multi <span class="ot">&lt;-</span> <span class="fu">FindTopFeatures</span>(obj.multi, <span class="at">min.cutoff =</span> <span class="st">"q0"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize query</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>obj.atac <span class="ot">&lt;-</span> <span class="fu">RunTFIDF</span>(obj.atac)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 </section>
-<section id="analysis-of-multi-omics-data" class="level2" data-number="6.5">
-<h2 data-number="6.5" class="anchored" data-anchor-id="analysis-of-multi-omics-data"><span class="header-section-number">6.5</span> <strong>Analysis of multi-omics data</strong></h2>
-<p>Recently, single cell multi-omics methods that run several assays on the same cells have become available. One such method is&nbsp;<a href="https://www.10xgenomics.com/products/single-cell-multiome-atac-plus-gene-expression">Chromium Single Cell Multiome from 10X genomics</a>, which simultaneously measures gene expression (RNA-seq) and chromatin accessibility (ATAC-seq) in the same nuclei. This makes it possible to identify cell types and states based on both gene expression and accessibility. It also makes it easy to use external gene expression data to annotate your cells, and at the same time study the chromatin accessibility in the cells. In this exercise, we will look at a public data set downloaded from 10X genomics, from <a href="https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0">embyomic mouse brain</a>. You will load both the RNA-seq and ATAC-seq data into the same <code>Seurat</code> object and do some simple pre-processing as was done for the ATAC-seq data above. Then, you will run joint clustering and visuaization of the combined data set, and finally use the gene expression measurements together with a public data set to annotate the cells.</p>
-<p>https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html</p>
+<section id="step-3-map-scatac-seq-dataset-using-bridge-integration" class="level3" data-number="8.1.3">
+<h3 data-number="8.1.3" class="anchored" data-anchor-id="step-3-map-scatac-seq-dataset-using-bridge-integration"><span class="header-section-number">8.1.3</span> Step 3: Map scATAC-seq dataset using bridge integration</h3>
+<p>Now that we have the <strong>reference, query, and bridge datasets set up</strong>, we can begin integration. The bridge dataset enables translation between the scRNA-seq reference and the scATAC-seq query, effectively augmenting the reference so that it can map a new data type. We call this an extended reference, and first set it up. Note that you can save the results of this function and map multiple scATAC-seq datasets without having to rerun.</p>
+<p>First, we drop the first dimension of the ATAC reduction.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dims.atac <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">50</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>dims.rna <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(obj.multi) <span class="ot">&lt;-</span>  <span class="st">"RNA"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(obj.rna) <span class="ot">&lt;-</span> <span class="st">"SCT"</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>obj.rna.ext <span class="ot">&lt;-</span> <span class="fu">PrepareBridgeReference</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">reference =</span> obj.rna, <span class="at">bridge =</span> obj.multi,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">reference.reduction =</span> <span class="st">"spca"</span>, <span class="at">reference.dims =</span> dims.rna,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">normalization.method =</span> <span class="st">"SCT"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now, we can directly find anchors between the extended reference and query objects. We use the&nbsp;<code>FindBridgeTransferAnchors</code>&nbsp;function, which translates the query dataset using the same dictionary as was used to translate the reference, and then identifies anchors in this space. The function is meant to mimic our&nbsp;<code>FindTransferAnchors</code>&nbsp;function, but to identify correspondences across modalities.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>bridge.anchor <span class="ot">&lt;-</span> <span class="fu">FindBridgeTransferAnchors</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">extended.reference =</span> obj.rna.ext, <span class="at">query =</span> obj.atac,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"lsiproject"</span>, <span class="at">dims =</span> dims.atac)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Once we have identified anchors, we can map the query dataset onto the reference. The&nbsp;<code>MapQuery</code>&nbsp;function is the same as we have&nbsp;<a href="https://satijalab.org/seurat/articles/multimodal_reference_mapping">previously introduced for reference mapping</a>&nbsp;. It transfers cell annotations from the reference dataset, and also visualizes the query dataset on a previously computed UMAP embedding. Since our reference dataset contains cell type annotations at three levels of resolution (l1 - l3), we can transfer each level to the query dataset.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>obj.atac <span class="ot">&lt;-</span> <span class="fu">MapQuery</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">anchorset =</span> bridge.anchor, <span class="at">reference =</span> obj.rna.ext,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">query =</span> obj.atac,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">refdata =</span> <span class="fu">list</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">l1 =</span> <span class="st">"celltype.l1"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">l2 =</span> <span class="st">"celltype.l2"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">l3 =</span> <span class="st">"celltype.l3"</span>),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.model =</span> <span class="st">"wnn.umap"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now we can visualize the results, plotting the scATAC-seq cells based on their predicted annotations, on the reference UMAP embedding. You can see that each scATAC-seq cell has been assigned a cell name based on the scRNA-seq defined cell ontology.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  obj.atac, <span class="at">group.by =</span> <span class="st">"predicted.l2"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"ref.umap"</span>, <span class="at">label =</span> <span class="cn">TRUE</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"ATAC"</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 </section>
-<section id="joint-rna-and-atac-analysis-10x-multiomic" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Joint RNA and ATAC analysis: 10x multiomic</h1>
-<p>https://stuartlab.org/signac/articles/pbmc_multiomic</p>
-<section id="bridge-integration" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="bridge-integration"><span class="header-section-number">7.1</span> Bridge integration</h2>
+<section id="step-4-assessing-the-mapping" class="level3" data-number="8.1.4">
+<h3 data-number="8.1.4" class="anchored" data-anchor-id="step-4-assessing-the-mapping"><span class="header-section-number">8.1.4</span> Step 4: Assessing the mapping</h3>
+<p>To assess the mapping and cell type predictions, we will first see if the predicted cell type labels are concordant with an unsupervised analysis of the scATAC-seq dataset. We follow the standard unsupervised processing workflow for scATAC-seq data:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>obj.atac <span class="ot">&lt;-</span> <span class="fu">FindTopFeatures</span>(obj.atac, <span class="at">min.cutoff =</span> <span class="st">"q0"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>obj.atac <span class="ot">&lt;-</span> <span class="fu">RunSVD</span>(obj.atac)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>obj.atac <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(obj.atac, <span class="at">reduction =</span> <span class="st">"lsi"</span>, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now, we visualize the predicted cluster labels on the unsupervised UMAP emebdding. We can see that predicted cluster labels (from the scRNA-seq reference) are concordant with the structure of the scATAC-seq data. However, there are some cell types (i.e.&nbsp;Treg), that do not appear to separate in unsupervised analysis. These may be prediction errors, or cases where the reference mapping provides additional resolution.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(obj.atac, <span class="at">group.by =</span> <span class="st">"predicted.l2"</span>, <span class="at">reduction =</span> <span class="st">"umap"</span>, <span class="at">label =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://satijalab.org/seurat/articles/seurat5_integration_bridge#azimuth-atac-for-bridge-integration"><img src="https://satijalab.org/seurat/articles/seurat5_integration_bridge_files/figure-html/pbmcdimplots-1.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+<p>Lastly, we validate the predicted cell types for the scATAC-seq data by examining their chromatin accessibility profiles at canonical loci. We use the&nbsp;<code>CoveragePlot</code>&nbsp;function to visualize accessibility patterns at the CD8A, FOXP3, and RORC, after grouping cells by their predicted labels. We see expected patterns in each case. For example, the PAX5 locus exhibits peaks that are accessible exclusively in B cells, and the CD8A locus shows the same in CD8 T cell subsets. Similarly, the accessibility of FOXP3, a canonical marker of regulatory T cells (Tregs), in predicted Tregs provides strong support for the accuracy of our prediction.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CoveragePlot</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  obj.atac, <span class="at">region  =</span> <span class="st">"PAX5"</span>, <span class="at">group.by =</span> <span class="st">"predicted.l1"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">idents =</span> <span class="fu">c</span>(<span class="st">"B"</span>, <span class="st">"CD4 T"</span>, <span class="st">"Mono"</span>, <span class="st">"NK"</span>), <span class="at">window =</span> <span class="dv">200</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.upstream =</span> <span class="sc">-</span><span class="dv">150000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://satijalab.org/seurat/articles/seurat5_integration_bridge#azimuth-atac-for-bridge-integration"><img src="https://satijalab.org/seurat/articles/seurat5_integration_bridge_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</section>
+</section>
+</section>
+<section id="analysis-of-multi-omics-data" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> <strong>Analysis of multi-omics data</strong></h1>
+<p>Recently, single cell multi-omics methods that run several assays on the same cells have become available. One such method is&nbsp;<a href="https://www.10xgenomics.com/products/single-cell-multiome-atac-plus-gene-expression">Chromium Single Cell Multiome from 10X genomics</a>, which simultaneously measures gene expression (RNA-seq) and chromatin accessibility (ATAC-seq) in the same nuclei. This makes it possible to i<strong>dentify cell types and states based on both gene expression and accessibility.</strong> It also makes it easy to use external gene expression data to annotate your cells, and at the same time study the chromatin accessibility in the cells.</p>
+<section id="joint-rna-and-atac-analysis-10x-multiomic" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="joint-rna-and-atac-analysis-10x-multiomic"><span class="header-section-number">9.1</span> Joint RNA and ATAC analysis: 10x multiomic</h2>
+<p>In this tutorial, we’ll demonstrate how to jointly analyze a single-cell dataset measuring both DNA accessibility and gene expression in the same cells using Signac and Seurat. In this vignette we’ll be using a publicly available <a href="https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-10-k-1-standard-1-0-0">10x Genomic Multiome dataset for human PBMCs.</a></p>
+</section>
+<section id="dataset-overview" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">9.2</span> Dataset overview</h2>
+<p>Libraries generated:</p>
+<ul>
+<li><p>Chromium Single Cell Multiome ATAC library</p></li>
+<li><p>Chromium Single Cell Multiome Gene Expression library</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+View data download code
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="sourceCode" id="cb15" data-code-copy="true" data-eval="false"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># multiomic data  </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments file </span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># fragments index </span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz.tbi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<section id="step-1-load-the-data-and-create-the-seurat-object" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="step-1-load-the-data-and-create-the-seurat-object"><span class="header-section-number">9.2.1</span> 📗 Step 1: Load the data and create the Seurat object</h3>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Signac)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Hsapiens.v86) <span class="co"># Ensembl based annotation package (hg37)</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BSgenome.Hsapiens.UCSC.hg38) <span class="co"># Full genomic sequences for Homo sapiens (UCSC genome hg38)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(future)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'future'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:AnnotationFilter':
+
+    value</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># parallelization options</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plan</span>(<span class="st">"multicore"</span>, <span class="at">workers =</span> <span class="dv">8</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Increase the maximum memory usage</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">future.globals.maxSize =</span> <span class="dv">14</span> <span class="sc">*</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">3</span>)  <span class="co"># para 14 GB de RAM</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Load data and add annotation:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the RNA and ATAC data</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">Read10X_h5</span>(<span class="st">"data/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>fragpath <span class="ot">&lt;-</span> <span class="st">"data/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz"</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># get gene annotations for hg38</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> EnsDb.Hsapiens.v86)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevels</span>(annotation) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'chr'</span>, <span class="fu">seqlevels</span>(annotation))</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># create a Seurat object containing the RNA adata</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> counts<span class="sc">$</span><span class="st">`</span><span class="at">Gene Expression</span><span class="st">`</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">"RNA"</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="co"># create ATAC assay and add it to the object</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>pbmc[[<span class="st">"ATAC"</span>]] <span class="ot">&lt;-</span> <span class="fu">CreateChromatinAssay</span>(</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> counts<span class="sc">$</span>Peaks,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="fu">c</span>(<span class="st">":"</span>, <span class="st">"-"</span>),</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">fragments =</span> fragpath,</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">annotation =</span> annotation</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>View file:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pbmc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>An object of class Seurat 
+180488 features across 11898 samples within 2 assays 
+Active assay: RNA (36601 features, 0 variable features)
+ 1 layer present: counts
+ 1 other assay present: ATAC</code></pre>
+</div>
+</div>
+</section>
+<section id="step-2-computing-qc-metrics" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="step-2-computing-qc-metrics"><span class="header-section-number">9.2.2</span> 📕 Step 2: Computing QC metrics</h3>
+<p>We can compute per-cell quality control metrics using the DNA accessibility data and remove cells that are outliers for these metrics, as well as cells with low or unusually high counts for either the RNA or ATAC assay.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">"ATAC"</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">NucleosomeSignal</span>(pbmc)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">TSSEnrichment</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Extracting TSS positions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Extracting fragments at TSSs</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Computing TSS enrichment score</code></pre>
+</div>
+</div>
+<p>The relationship between variables stored in the object metadata can be visualized using the&nbsp;<a href="https://stuartlab.org/signac/reference/densityscatter"><code>DensityScatter()</code></a>&nbsp;function. This can also be used to quickly find suitable cutoff values for different QC metrics by setting&nbsp;<code>quantiles=TRUE</code>:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DensityScatter</span>(pbmc, <span class="at">x =</span> <span class="st">'nCount_ATAC'</span>, <span class="at">y =</span> <span class="st">'TSS.enrichment'</span>, <span class="at">log_x =</span> <span class="cn">TRUE</span>, <span class="at">quantiles =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section2_P15_intro_files/figure-html/plot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can plot the distribution of each QC metric separately using a violin plot:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VlnPlot</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">c</span>(<span class="st">"nCount_RNA"</span>, <span class="st">"nCount_ATAC"</span>, <span class="st">"TSS.enrichment"</span>, <span class="st">"nucleosome_signal"</span>),</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">4</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="dv">0</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section2_P15_intro_files/figure-html/remove low quality-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Finally we remove cells that are outliers for these QC metrics. The exact QC thresholds used will need to be adjusted according to your dataset.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># filter out low quality cells</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">subset</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> pbmc,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">subset =</span> nCount_ATAC <span class="sc">&lt;</span> <span class="dv">100000</span> <span class="sc">&amp;</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    nCount_RNA <span class="sc">&lt;</span> <span class="dv">25000</span> <span class="sc">&amp;</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    nCount_ATAC <span class="sc">&gt;</span> <span class="dv">1800</span> <span class="sc">&amp;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    nCount_RNA <span class="sc">&gt;</span> <span class="dv">1000</span> <span class="sc">&amp;</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    nucleosome_signal <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    TSS.enrichment <span class="sc">&gt;</span> <span class="dv">1</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>pbmc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>An object of class Seurat 
+180488 features across 11211 samples within 2 assays 
+Active assay: ATAC (143887 features, 0 variable features)
+ 2 layers present: counts, data
+ 1 other assay present: RNA</code></pre>
+</div>
+</div>
+</section>
+<section id="step-3-analysis-on-the-rna-assay" class="level3" data-number="9.2.3">
+<h3 data-number="9.2.3" class="anchored" data-anchor-id="step-3-analysis-on-the-rna-assay"><span class="header-section-number">9.2.3</span> 📘 Step 3: Analysis on the RNA assay</h3>
+<p>We can normalize the gene expression data using SCTransform, and reduce the dimensionality using PCA.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">"RNA"</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">SCTransform</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running SCTransform on assay: RNA</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running SCTransform on layer: counts</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>vst.flavor='v2' set. Using model with fixed slope and excluding poisson genes.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`vst.flavor` is set to 'v2' but could not find glmGamPoi installed.
+Please install the glmGamPoi package for much faster estimation.
+--------------------------------------------
+install.packages('BiocManager')
+BiocManager::install('glmGamPoi')
+--------------------------------------------
+Falling back to native (slower) implementation.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Variance stabilizing transformation of count matrix of size 24459 by 11211</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Model formula is y ~ log_umi</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Get Negative Binomial regression parameters per gene</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using 2000 genes, 5000 cells</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in glm.nb(formula = as.formula(new_formula), data = data): alternation
+limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in sqrt(1/i): NaNs produced</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached
+Warning in theta.ml(Y, mu, sum(w), w, limit = control$maxit, trace =
+control$trace &gt; : iteration limit reached</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Found 126 outliers - those will be ignored in fitting/regularization step</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Second step: Get residuals using fitted parameters for 24459 genes</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Computing corrected count matrix for 24459 genes</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Calculating gene attributes</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Wall clock passed: Time difference of 8.656189 mins</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Determine variable features</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Centering data matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Getting residuals for block 1(of 3) for counts dataset</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Getting residuals for block 2(of 3) for counts dataset</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Getting residuals for block 3(of 3) for counts dataset</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Centering data matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finished calculating residuals for counts</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Set default assay to SCT</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>PC_ 1 
+Positive:  VCAN, SAT1, PLXDC2, SLC8A1, NEAT1, DPYD, ZEB2, NAMPT, LRMDA, LYZ 
+       FCN1, LYN, AOAH, ANXA1, JAK2, CD36, ARHGAP26, TYMP, RBM47, PID1 
+       PLCB1, LRRK2, ACSL1, LYST, IRAK3, DMXL2, MCTP1, TCF7L2, AC020916.1, GAB2 
+Negative:  EEF1A1, RPL13, RPS27, RPL13A, RPL41, RPS27A, RPS2, RPL3, RPS12, BCL2 
+       LEF1, RPL11, RPS18, BCL11B, BACH2, RPL23A, IL32, RPL10, INPP4B, RPL34 
+       CAMK4, IL7R, RPS3, LTB, RPS26, RPL30, RPS14, SKAP1, RPL19, RPLP2 
+PC_ 2 
+Positive:  GNLY, CCL5, NKG7, CD247, IL32, PRKCH, PRF1, BCL11B, INPP4B, LEF1 
+       VCAN, IL7R, DPYD, THEMIS, GZMA, CAMK4, NEAT1, RORA, AOAH, PLCB1 
+       TXK, GZMH, TC2N, TRBC1, ANXA1, STAT4, PITPNC1, TRAC, AAK1, SYNE2 
+Negative:  BANK1, IGHM, AFF3, IGKC, RALGPS2, MS4A1, CD74, PAX5, EBF1, FCRL1 
+       CD79A, OSBPL10, LINC00926, COL19A1, BLK, NIBAN3, IGHD, CD22, HLA-DRA, CD79B 
+       ADAM28, PLEKHG1, AP002075.1, COBLL1, LIX1-AS1, CCSER1, TCF4, BCL11A, STEAP1B, GNG7 
+PC_ 3 
+Positive:  LEF1, CAMK4, EEF1A1, MAML2, PDE3B, FHIT, BACH2, IL7R, INPP4B, TSHZ2 
+       SERINC5, NELL2, CCR7, BCL2, ANK3, PRKCA, TCF7, FOXP1, BCL11B, LTB 
+       AC139720.1, RPL11, RPL13, OXNAD1, RPS27A, MLLT3, TRABD2A, VCAN, RASGRF2, RPS12 
+Negative:  GNLY, NKG7, CCL5, PRF1, GZMA, GZMH, KLRD1, SPON2, FGFBP2, CST7 
+       GZMB, CCL4, TGFBR3, KLRF1, CTSW, BNC2, PDGFD, ADGRG1, PPP2R2B, PYHIN1 
+       A2M, IL2RB, CLIC3, MCTP2, NCAM1, TRDC, ACTB, SAMD3, NCALD, MYBL1 
+PC_ 4 
+Positive:  BANK1, IGHM, VCAN, IGKC, MS4A1, PAX5, FCRL1, GNLY, RALGPS2, EBF1 
+       LINC00926, CD79A, OSBPL10, COL19A1, NKG7, ARHGAP24, CCL5, IGHD, BACH2, PLCB1 
+       PDE4D, DPYD, LIX1-AS1, CD22, PLEKHG1, LARGE1, PLXDC2, STEAP1B, ANXA1, AP002075.1 
+Negative:  TCF4, LINC01374, CUX2, AC023590.1, RHEX, PLD4, EPHB1, LINC01478, PTPRS, LINC00996 
+       ZFAT, LILRA4, CLEC4C, COL26A1, FAM160A1, CCDC50, PLXNA4, ITM2C, SCN9A, COL24A1 
+       UGCG, RUNX2, NRP1, GZMB, IRF8, SLC35F3, JCHAIN, BCL11A, TNFRSF21, AC007381.1 
+PC_ 5 
+Positive:  VCAN, TCF4, PLCB1, LINC01374, RHEX, CUX2, AC023590.1, EPHB1, DPYD, LINC01478 
+       PTPRS, ANXA1, ZFAT, LINC00996, CD36, GZMB, PLXDC2, ARHGAP26, FCHSD2, CLEC4C 
+       COL26A1, LILRA4, ACSL1, PLXNA4, AC020916.1, DYSF, ARHGAP24, CSF3R, LRMDA, MEGF9 
+Negative:  CDKN1C, FCGR3A, TCF7L2, IFITM3, MTSS1, AIF1, CST3, LST1, MS4A7, WARS 
+       PSAP, ACTB, SERPINA1, HLA-DPA1, IFI30, COTL1, CD74, FCER1G, CFD, HLA-DRA 
+       FTL, HLA-DRB1, SMIM25, CSF1R, TMSB4X, FMNL2, SAT1, MAFB, S100A4, HLA-DPB1 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you have this error:</p>
+<p>“Error in getGlobalsAndPackages(expr, envir = envir, globals = globals) :</p>
+<p>The total size of the 19 globals exported for future expression (‘FUN()’) is 4.69 GiB.. This exceeds the maximum allowed size of 500.00 MiB (option ‘future.globals.maxSize’). The three largest globals are ‘FUN’ (4.67 GiB of class ‘function’), ‘umi_bin’ (19.28 MiB of class ‘numeric’) and ‘data_step1’ (1.27 MiB of class ‘list’)“<br>
+<br>
+You need to use parallelization in Seurat with future. If you want know more about this read this <a href="https://github.com/satijalab/seurat/issues/1845">issue</a> and <a href="https://satijalab.org/seurat/archive/v3.0/future_vignette.html">documentation</a>.</p>
+</div>
+</div>
+</section>
+<section id="step-4-analysis-on-the-atac-assay" class="level3" data-number="9.2.4">
+<h3 data-number="9.2.4" class="anchored" data-anchor-id="step-4-analysis-on-the-atac-assay"><span class="header-section-number">9.2.4</span> 📙 Step 4: Analysis on the ATAC assay</h3>
+<p>Here we process the DNA accessibility assay the same way we would process a scATAC-seq dataset, by performing latent semantic indexing (LSI).</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalization and linear dimensional reduction (LSI)</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">"ATAC"</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindTopFeatures</span>(pbmc, <span class="at">min.cutoff =</span> <span class="dv">5</span>)</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunTFIDF</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Performing TF-IDF normalization</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunSVD</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running SVD</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Scaling cell embeddings</code></pre>
+</div>
+</div>
+</section>
+<section id="step-5-annotating-cell-types" class="level3" data-number="9.2.5">
+<h3 data-number="9.2.5" class="anchored" data-anchor-id="step-5-annotating-cell-types"><span class="header-section-number">9.2.5</span> ✒️ Step 5: Annotating cell types</h3>
+<p>To annotate cell types in the dataset we can transfer cell labels from an existing PBMC reference dataset using tools in the Seurat package. See the Seurat reference mapping <a href="https://satijalab.org/seurat/v4.0/reference_mapping.html">vignette</a> for more information.</p>
+<p>We’ll use an annotated PBMC reference dataset from <a href="https://www.biorxiv.org/content/10.1101/2020.10.12.335331v1">Hao et al.&nbsp;(2020)</a>, available for download here: <a href="https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat" class="uri">https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat</a></p>
+<p>Note that the SeuratDisk package is required to load the reference dataset. Installation instructions for SeuratDisk can be found <a href="https://github.com/mojaveazure/seurat-disk">here</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Install Seurat-disk
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>SeuratDisk is not currently available on CRAN. You can install it from&nbsp;<a href="https://github.com/mojaveazure/seurat-disk">GitHub</a>&nbsp;with:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"remotes"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"remotes"</span>)</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"mojaveazure/seurat-disk"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>If you have problems you can use this way, from this <a href="https://github.com/mojaveazure/seurat-disk/issues/179">issue</a>:</p>
+<ul>
+<li>Download the package source locally (bash terminal):</li>
+</ul>
+<div class="sourceCode" id="cb81" data-code-copy="true" data-eval="false"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/mojaveazure/seurat-disk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Install package from source:</li>
+</ul>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"~/seurat-disk"</span>, <span class="at">repos =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"source"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SeuratDisk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'SeuratDisk':
+  method            from  
+  as.sparse.H5Group Seurat</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load PBMC reference</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>reference <span class="ot">&lt;-</span> <span class="fu">LoadH5Seurat</span>(<span class="st">"data/pbmc_multimodal.h5seurat"</span>, <span class="at">assays =</span> <span class="fu">list</span>(<span class="st">"SCT"</span> <span class="ot">=</span> <span class="st">"counts"</span>), <span class="at">reductions =</span> <span class="st">'spca'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Validating h5Seurat file</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Initializing SCT with counts</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding variable feature information for SCT</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding miscellaneous information for SCT</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding reduction spca</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding cell embeddings for spca</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding feature loadings for spca</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding miscellaneous information for spca</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding graph wknn</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding graph wsnn</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding command information</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding cell-level metadata</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>reference <span class="ot">&lt;-</span> <span class="fu">UpdateSeuratObject</span>(reference)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Validating object structure</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Updating object slots</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Ensuring keys are in the proper structure</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Updating matrix keys for DimReduc 'spca'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Ensuring keys are in the proper structure</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Ensuring feature names don't have underscores or pipes</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Updating slots in SCT</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Updating slots in wknn</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Cannot find wknn in the object, setting default assay of wknn to SCT</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Updating slots in wsnn</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Cannot find wsnn in the object, setting default assay of wsnn to SCT</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Updating slots in spca</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Validating object structure for SCTAssay 'SCT'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Validating object structure for Graph 'wknn'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Validating object structure for Graph 'wsnn'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Validating object structure for DimReduc 'spca'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Object representation is consistent with the most current Seurat version</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">"SCT"</span></span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-3"><a href="#cb116-3" aria-hidden="true" tabindex="-1"></a><span class="co"># transfer cell type labels from reference to query</span></span>
+<span id="cb116-4"><a href="#cb116-4" aria-hidden="true" tabindex="-1"></a>transfer_anchors <span class="ot">&lt;-</span> <span class="fu">FindTransferAnchors</span>(</span>
+<span id="cb116-5"><a href="#cb116-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">reference =</span> reference,</span>
+<span id="cb116-6"><a href="#cb116-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">query =</span> pbmc,</span>
+<span id="cb116-7"><a href="#cb116-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">normalization.method =</span> <span class="st">"SCT"</span>,</span>
+<span id="cb116-8"><a href="#cb116-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">reference.reduction =</span> <span class="st">"spca"</span>,</span>
+<span id="cb116-9"><a href="#cb116-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">recompute.residuals =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb116-10"><a href="#cb116-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span></span>
+<span id="cb116-11"><a href="#cb116-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Projecting cell embeddings</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finding neighborhoods</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finding anchors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>    Found 14542 anchors</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">TransferData</span>(</span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">anchorset =</span> transfer_anchors, </span>
+<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">refdata =</span> reference<span class="sc">$</span>celltype.l2,</span>
+<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight.reduction =</span> pbmc[[<span class="st">'pca'</span>]],</span>
+<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span></span>
+<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finding integration vectors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finding integration vector weights</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Predicting cell labels</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">AddMetaData</span>(</span>
+<span id="cb125-2"><a href="#cb125-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb125-3"><a href="#cb125-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">metadata =</span> predictions</span>
+<span id="cb125-4"><a href="#cb125-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb125-5"><a href="#cb125-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-6"><a href="#cb125-6" aria-hidden="true" tabindex="-1"></a><span class="co"># set the cell identities to the cell type predictions</span></span>
+<span id="cb125-7"><a href="#cb125-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Idents</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">"predicted.id"</span></span>
+<span id="cb125-8"><a href="#cb125-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-9"><a href="#cb125-9" aria-hidden="true" tabindex="-1"></a><span class="co"># remove low-quality predictions</span></span>
+<span id="cb125-10"><a href="#cb125-10" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> pbmc[, pbmc<span class="sc">$</span>prediction.score.max <span class="sc">&gt;</span> <span class="fl">0.5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="step-6-joint-umap-visualization" class="level3" data-number="9.2.6">
+<h3 data-number="9.2.6" class="anchored" data-anchor-id="step-6-joint-umap-visualization"><span class="header-section-number">9.2.6</span> 📐 Step 6: Joint UMAP visualization</h3>
+<p>Using the weighted nearest neighbor methods in&nbsp;<a href="https://www.biorxiv.org/content/10.1101/2020.10.12.335331v1">Seurat v4</a>, we can compute a joint neighbor graph that represent both the gene expression and DNA accessibility measurements.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="co"># build a joint neighbor graph using both assays</span></span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindMultiModalNeighbors</span>(</span>
+<span id="cb126-3"><a href="#cb126-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb126-4"><a href="#cb126-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction.list =</span> <span class="fu">list</span>(<span class="st">"pca"</span>, <span class="st">"lsi"</span>), </span>
+<span id="cb126-5"><a href="#cb126-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">dims.list =</span> <span class="fu">list</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, <span class="dv">2</span><span class="sc">:</span><span class="dv">40</span>),</span>
+<span id="cb126-6"><a href="#cb126-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">modality.weight.name =</span> <span class="st">"RNA.weight"</span>,</span>
+<span id="cb126-7"><a href="#cb126-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb126-8"><a href="#cb126-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Calculating cell-specific modality weights</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finding 20 nearest neighbors for each modality.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Calculating kernel bandwidths</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in FindMultiModalNeighbors(object = pbmc, reduction.list = list("pca",
+: The number of provided modality.weight.name is not equal to the number of
+modalities. SCT.weight ATAC.weight are used to store the modality weights</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finding multimodal neighbors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Constructing multimodal KNN graph</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Constructing multimodal SNN graph</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="co"># build a joint UMAP visualization</span></span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(</span>
+<span id="cb134-3"><a href="#cb134-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb134-4"><a href="#cb134-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn.name =</span> <span class="st">"weighted.nn"</span>,</span>
+<span id="cb134-5"><a href="#cb134-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">"RNA"</span>,</span>
+<span id="cb134-6"><a href="#cb134-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb134-7"><a href="#cb134-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
+To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'
+This message will be shown once per session</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>03:08:16 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>03:08:18 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 20
+03:08:20 Found 2 connected components, falling back to random initialization
+03:08:20 Initializing from uniform random
+03:08:21 Commencing optimization for 200 epochs, with 316880 positive edges
+03:08:34 Optimization finished</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">repel =</span> <span class="cn">TRUE</span>, <span class="at">reduction =</span> <span class="st">"umap"</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section2_P15_intro_files/figure-html/umap-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="step-7-linking-peaks-to-genes" class="level3" data-number="9.2.7">
+<h3 data-number="9.2.7" class="anchored" data-anchor-id="step-7-linking-peaks-to-genes"><span class="header-section-number">9.2.7</span> 📊 Step 7: Linking peaks to genes</h3>
+<p>For each gene, we can find the set of peaks that may regulate the gene by by computing the correlation between gene expression and accessibility at nearby peaks, and correcting for bias due to GC content, overall accessibility, and peak size. See the <a href="https://www.biorxiv.org/content/10.1101/2020.11.09.373613v1">Signac paper</a> for a full description of the method we use to link peaks to genes.</p>
+<p>Running this step on the whole genome can be time consuming, so here we demonstrate peak-gene links for a subset of genes as an example. The same function can be used to find links for all genes by omitting the <code>genes.use</code> parameter:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">"ATAC"</span></span>
+<span id="cb139-2"><a href="#cb139-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb139-3"><a href="#cb139-3" aria-hidden="true" tabindex="-1"></a><span class="co"># first compute the GC content for each peak</span></span>
+<span id="cb139-4"><a href="#cb139-4" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RegionStats</span>(pbmc, <span class="at">genome =</span> BSgenome.Hsapiens.UCSC.hg38)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in RegionStats.default(object = regions, genome = genome, verbose =
+verbose, : Not all seqlevels present in supplied genome</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="co"># link peaks to genes</span></span>
+<span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">LinkPeaks</span>(</span>
+<span id="cb141-3"><a href="#cb141-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb141-4"><a href="#cb141-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">peak.assay =</span> <span class="st">"ATAC"</span>,</span>
+<span id="cb141-5"><a href="#cb141-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">expression.assay =</span> <span class="st">"SCT"</span>,</span>
+<span id="cb141-6"><a href="#cb141-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">genes.use =</span> <span class="fu">c</span>(<span class="st">"LYZ"</span>, <span class="st">"MS4A1"</span>)</span>
+<span id="cb141-7"><a href="#cb141-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Testing 2 genes and 143871 peaks</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in .merge_two_Seqinfo_objects(x, y): Each of the 2 combined objects has sequence levels not in the other:
+  - in 'x': GL000194.1, GL000195.1, GL000205.2, GL000219.1, KI270711.1, KI270713.1, KI270721.1, KI270726.1, KI270727.1, KI270728.1, KI270731.1, KI270734.1
+  - in 'y': chrMT
+  Make sure to always combine/compare objects based on the same reference
+  genome (use suppressWarnings() to suppress this warning).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: UNRELIABLE VALUE: One of the 'future.apply' iterations
+('future_lapply-1') unexpectedly generated random numbers without declaring so.
+There is a risk that those random numbers are not statistically sound and the
+overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This
+ensures that proper, parallel-safe random numbers are produced via the
+L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set
+option 'future.rng.onMisuse' to "ignore".</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: UNRELIABLE VALUE: One of the 'future.apply' iterations
+('future_lapply-2') unexpectedly generated random numbers without declaring so.
+There is a risk that those random numbers are not statistically sound and the
+overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This
+ensures that proper, parallel-safe random numbers are produced via the
+L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set
+option 'future.rng.onMisuse' to "ignore".</code></pre>
+</div>
+</div>
+<p>We can visualize these links using the&nbsp;<a href="https://stuartlab.org/signac/reference/coverageplot"><code>CoveragePlot()</code></a>&nbsp;function, or alternatively we could use the&nbsp;<a href="https://stuartlab.org/signac/reference/coveragebrowser"><code>CoverageBrowser()</code></a>&nbsp;function in an interactive analysis:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a>idents.plot <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"B naive"</span>, <span class="st">"B intermediate"</span>, <span class="st">"B memory"</span>,</span>
+<span id="cb146-2"><a href="#cb146-2" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"CD14 Mono"</span>, <span class="st">"CD16 Mono"</span>, <span class="st">"CD8 TEM"</span>, <span class="st">"CD8 Naive"</span>)</span>
+<span id="cb146-3"><a href="#cb146-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb146-4"><a href="#cb146-4" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">SortIdents</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Creating pseudobulk profiles for 27 variables across 143887 features</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Computing euclidean distance between pseudobulk profiles</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Clustering distance matrix</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">CoveragePlot</span>(</span>
+<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb150-3"><a href="#cb150-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="st">"MS4A1"</span>,</span>
+<span id="cb150-4"><a href="#cb150-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="st">"MS4A1"</span>,</span>
+<span id="cb150-5"><a href="#cb150-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">expression.assay =</span> <span class="st">"SCT"</span>,</span>
+<span id="cb150-6"><a href="#cb150-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">idents =</span> idents.plot,</span>
+<span id="cb150-7"><a href="#cb150-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.upstream =</span> <span class="dv">500</span>,</span>
+<span id="cb150-8"><a href="#cb150-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.downstream =</span> <span class="dv">10000</span></span>
+<span id="cb150-9"><a href="#cb150-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb150-10"><a href="#cb150-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-11"><a href="#cb150-11" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">CoveragePlot</span>(</span>
+<span id="cb150-12"><a href="#cb150-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb150-13"><a href="#cb150-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="st">"LYZ"</span>,</span>
+<span id="cb150-14"><a href="#cb150-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="st">"LYZ"</span>,</span>
+<span id="cb150-15"><a href="#cb150-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">expression.assay =</span> <span class="st">"SCT"</span>,</span>
+<span id="cb150-16"><a href="#cb150-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">idents =</span> idents.plot,</span>
+<span id="cb150-17"><a href="#cb150-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.upstream =</span> <span class="dv">8000</span>,</span>
+<span id="cb150-18"><a href="#cb150-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.downstream =</span> <span class="dv">5000</span></span>
+<span id="cb150-19"><a href="#cb150-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb150-20"><a href="#cb150-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-21"><a href="#cb150-21" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Section2_P15_intro_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22631)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Mexico_City
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] SeuratDisk_0.0.0.9021             future_1.34.0                    
+ [3] BSgenome.Hsapiens.UCSC.hg38_1.4.5 BSgenome_1.72.0                  
+ [5] rtracklayer_1.64.0                BiocIO_1.14.0                    
+ [7] Biostrings_2.72.1                 XVector_0.44.0                   
+ [9] EnsDb.Hsapiens.v86_2.99.0         ensembldb_2.28.1                 
+[11] AnnotationFilter_1.28.0           GenomicFeatures_1.56.0           
+[13] AnnotationDbi_1.66.0              Biobase_2.64.0                   
+[15] GenomicRanges_1.56.1              GenomeInfoDb_1.40.1              
+[17] IRanges_2.38.1                    S4Vectors_0.42.1                 
+[19] BiocGenerics_0.50.0               Seurat_5.1.0                     
+[21] SeuratObject_5.0.2                sp_2.1-4                         
+[23] Signac_1.14.0                    
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22            splines_4.4.1              
+  [3] later_1.3.2                 bitops_1.0-8               
+  [5] tibble_3.2.1                polyclip_1.10-7            
+  [7] rpart_4.1.23                XML_3.99-0.17              
+  [9] fastDummies_1.7.4           lifecycle_1.0.4            
+ [11] hdf5r_1.3.11                globals_0.16.3             
+ [13] lattice_0.22-6              MASS_7.3-60.2              
+ [15] backports_1.5.0             magrittr_2.0.3             
+ [17] Hmisc_5.1-3                 plotly_4.10.4              
+ [19] rmarkdown_2.28              yaml_2.3.10                
+ [21] httpuv_1.6.15               sctransform_0.4.1          
+ [23] spam_2.10-0                 spatstat.sparse_3.1-0      
+ [25] reticulate_1.39.0           cowplot_1.1.3              
+ [27] pbapply_1.7-2               DBI_1.2.3                  
+ [29] RColorBrewer_1.1-3          abind_1.4-8                
+ [31] zlibbioc_1.50.0             Rtsne_0.17                 
+ [33] purrr_1.0.2                 biovizBase_1.52.0          
+ [35] RCurl_1.98-1.16             nnet_7.3-19                
+ [37] tweenr_2.0.3                VariantAnnotation_1.50.0   
+ [39] GenomeInfoDbData_1.2.12     ggrepel_0.9.5              
+ [41] irlba_2.3.5.1               listenv_0.9.1              
+ [43] spatstat.utils_3.1-0        goftest_1.2-3              
+ [45] RSpectra_0.16-2             spatstat.random_3.3-1      
+ [47] fitdistrplus_1.2-1          parallelly_1.38.0          
+ [49] leiden_0.4.3.1              codetools_0.2-20           
+ [51] DelayedArray_0.30.1         RcppRoll_0.3.1             
+ [53] ggforce_0.4.2               tidyselect_1.2.1           
+ [55] farver_2.1.2                UCSC.utils_1.0.0           
+ [57] base64enc_0.1-3             matrixStats_1.4.0          
+ [59] spatstat.explore_3.3-2      GenomicAlignments_1.40.0   
+ [61] jsonlite_1.8.8              Formula_1.2-5              
+ [63] progressr_0.14.0            ggridges_0.5.6             
+ [65] survival_3.6-4              tools_4.4.1                
+ [67] ica_1.0-3                   Rcpp_1.0.13                
+ [69] glue_1.7.0                  gridExtra_2.3              
+ [71] SparseArray_1.4.8           xfun_0.45                  
+ [73] MatrixGenerics_1.16.0       dplyr_1.1.4                
+ [75] withr_3.0.1                 fastmap_1.2.0              
+ [77] fansi_1.0.6                 digest_0.6.36              
+ [79] R6_2.5.1                    mime_0.12                  
+ [81] colorspace_2.1-1            scattermore_1.2            
+ [83] tensor_1.5                  dichromat_2.0-0.1          
+ [85] spatstat.data_3.1-2         RSQLite_2.3.7              
+ [87] utf8_1.2.4                  tidyr_1.3.1                
+ [89] generics_0.1.3              data.table_1.16.0          
+ [91] httr_1.4.7                  htmlwidgets_1.6.4          
+ [93] S4Arrays_1.4.1              uwot_0.2.2                 
+ [95] pkgconfig_2.0.3             gtable_0.3.5               
+ [97] blob_1.2.4                  lmtest_0.9-40              
+ [99] htmltools_0.5.8.1           dotCall64_1.1-1            
+[101] ProtGenerics_1.36.0         scales_1.3.0               
+[103] png_0.1-8                   spatstat.univar_3.0-1      
+[105] knitr_1.48                  rstudioapi_0.16.0          
+[107] reshape2_1.4.4              rjson_0.2.22               
+[109] checkmate_2.3.2             nlme_3.1-164               
+[111] curl_5.2.2                  zoo_1.8-12                 
+[113] cachem_1.1.0                stringr_1.5.1              
+[115] KernSmooth_2.23-24          vipor_0.4.7                
+[117] parallel_4.4.1              miniUI_0.1.1.1             
+[119] foreign_0.8-86              ggrastr_1.0.2              
+[121] restfulr_0.0.15             pillar_1.9.0               
+[123] grid_4.4.1                  vctrs_0.6.5                
+[125] RANN_2.6.2                  promises_1.3.0             
+[127] xtable_1.8-4                cluster_2.1.6              
+[129] beeswarm_0.4.0              htmlTable_2.4.3            
+[131] evaluate_1.0.0              cli_3.6.2                  
+[133] compiler_4.4.1              Rsamtools_2.20.0           
+[135] rlang_1.1.3                 crayon_1.5.3               
+[137] future.apply_1.11.2         labeling_0.4.3             
+[139] ggbeeswarm_0.7.2            plyr_1.8.9                 
+[141] stringi_1.8.4               viridisLite_0.4.2          
+[143] deldir_2.0-4                BiocParallel_1.38.0        
+[145] munsell_0.5.1               lazyeval_0.2.2             
+[147] spatstat.geom_3.3-2         Matrix_1.7-0               
+[149] RcppHNSW_0.6.0              patchwork_1.2.0            
+[151] bit64_4.0.5                 ggplot2_3.5.1              
+[153] KEGGREST_1.44.1             shiny_1.9.1                
+[155] SummarizedExperiment_1.34.0 ROCR_1.0-11                
+[157] igraph_2.0.3                memoise_2.0.1              
+[159] fastmatch_1.1-4             bit_4.0.5                  </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="references" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="references"><span class="header-section-number">9.3</span> References</h2>
+<ul>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/merging#creating-a-common-peak-set">Merging objects</a></li>
+<li><a href="https://rpubs.com/eraz0001/Harmony">harmony batch effect</a></li>
+<li>10x tutorial - <a href="https://www.10xgenomics.com/analysis-guides/batch-effect-correction-in-chromium-single-cell-atac-data">Batch Effect Correction in Chromium Single Cell ATAC Data</a></li>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/integrate_atac">scATAC-seq data integration</a></li>
+<li>Signac tutorial - <a href="https://satijalab.org/seurat/articles/seurat5_atacseq_integration_vignette">Integrating scRNA-seq and scATAC-seq data</a></li>
+<li>Seurat tutorial - <a href="https://satijalab.org/seurat/articles/seurat5_integration_bridge#azimuth-atac-for-bridge-integration">Dictionary Learning for cross-modality integration</a></li>
+<li><a href="https://satijalab.github.io/azimuth/articles/run_azimuth_tutorial.html">Azimuth annotation</a></li>
+<li>Epigenomics workshop 2024 - <a href="https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html">Integrating scATAC-seq and scRNA-seq data</a></li>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/pbmc_multiomic">Joint RNA and ATAC analysis: 10x multiomic</a></li>
+</ul>
 
 
 </section>

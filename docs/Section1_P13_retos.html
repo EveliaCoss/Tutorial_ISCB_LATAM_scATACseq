@@ -642,7 +642,7 @@ Fragment files: 1 </code></pre>
   .. .. .. ..@ motifs            : NULL
   .. .. .. ..@ fragments         :List of 1
   .. .. .. .. ..$ :Formal class 'Fragment' [package "Signac"] with 3 slots
-  .. .. .. .. .. .. ..@ path : chr "C:\\Users\\ecoss\\OneDrive - CINVESTAV\\Documentos\\Github_notes\\scATACseq_Team\\WCS_scATACseq_book\\data\\ata"| __truncated__
+  .. .. .. .. .. .. ..@ path : chr "C:\\Users\\ecoss\\Documents\\Respaldos\\Github_notes\\WCS_scATACseq_book\\data\\atac_v1_pbmc_10k_fragments.tsv.gz"
   .. .. .. .. .. .. ..@ hash : chr [1:2] "8e03bd72e952a7da7c1cce52f3696e6e" "146e556e1311573593bd6cfa6efefcc1"
   .. .. .. .. .. .. ..@ cells: Named chr [1:8728] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1" "AAACGAAAGGCTTCGC-1" ...
   .. .. .. .. .. .. .. ..- attr(*, "names")= chr [1:8728] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1" "AAACGAAAGGCTTCGC-1" ...
@@ -974,8 +974,8 @@ Active assay: ATAC (87561 features, 0 variable features)
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>            used   (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells  14744424  787.5   39499445 2109.5  31091560 1660.5
-Vcells 300690801 2294.1  514189314 3923.0 514189312 3923.0</code></pre>
+Ncells  14747239  787.6   43780821 2338.2  34074492 1819.8
+Vcells 300696555 2294.2  548983892 4188.5 548983887 4188.5</code></pre>
 </div>
 </div>
 </section>
@@ -1009,8 +1009,8 @@ Vcells 300690801 2294.1  514189314 3923.0 514189312 3923.0</code></pre>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>            used   (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells  14753702  788.0   39499445 2109.5  31091560 1660.5
-Vcells 296878213 2265.1  514189314 3923.0 514189312 3923.0</code></pre>
+Ncells  14756544  788.1   43780821 2338.2  34074492 1819.8
+Vcells 296883996 2265.1  548983892 4188.5 548983887 4188.5</code></pre>
 </div>
 </div>
 <p>The first LSI component often captures sequencing depth (technical variation) rather than biological variation. If this is the case, the component should be removed from downstream analysis. We can assess the correlation between each LSI component and sequencing depth using the&nbsp;<a href="https://stuartlab.org/signac/reference/depthcor"><code>DepthCor()</code></a>&nbsp;function:</p>
@@ -1033,16 +1033,16 @@ Vcells 296878213 2265.1  514189314 3923.0 514189312 3923.0</code></pre>
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(<span class="at">object =</span> pbmc, <span class="at">reduction =</span> <span class="st">'lsi'</span>, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>13:00:54 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>02:10:46 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>13:00:54 Read 5628 rows and found 29 numeric columns</code></pre>
+<pre><code>02:10:46 Read 5628 rows and found 29 numeric columns</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>13:00:54 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>02:10:46 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>13:00:54 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>02:10:46 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
@@ -1052,13 +1052,13 @@ Vcells 296878213 2265.1  514189314 3923.0 514189312 3923.0</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>**************************************************|
-13:00:55 Writing NN index file to temp file C:\Users\ecoss\AppData\Local\Temp\Rtmp6dLVBu\file1440705513a5
-13:00:55 Searching Annoy index using 8 threads, search_k = 3000
-13:00:55 Annoy recall = 100%
-13:00:56 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 30
-13:00:59 Initializing from normalized Laplacian + noise (using RSpectra)
-13:00:59 Commencing optimization for 500 epochs, with 212950 positive edges
-13:01:15 Optimization finished</code></pre>
+02:10:46 Writing NN index file to temp file C:\Users\ecoss\AppData\Local\Temp\Rtmpi4Xas7\file195c37a54711
+02:10:46 Searching Annoy index using 8 threads, search_k = 3000
+02:10:47 Annoy recall = 100%
+02:10:48 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 30
+02:10:50 Initializing from normalized Laplacian + noise (using RSpectra)
+02:10:50 Commencing optimization for 500 epochs, with 212950 positive edges
+02:11:06 Optimization finished</code></pre>
 </div>
 <details open="">
 <summary>Code</summary>
@@ -1080,8 +1080,10 @@ Computing SNN</code></pre>
 </section>
 <section id="references" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="references"><span class="header-section-number">4.6</span> References</h2>
-<p><a href="https://stuartlab.org/signac/articles/pbmc_vignette">Analyzing PBMC scATAC-seq (Signac tutorial)</a></p>
-<p><a href="https://rpubs.com/qshenfeng/signac_pbmc10k">Analyzing PBMC scATAC-seq</a></p>
+<ul>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/pbmc_vignette">Analyzing PBMC scATAC-seq (Signac tutorial)</a></li>
+<li>Signac tutorial - <a href="https://rpubs.com/qshenfeng/signac_pbmc10k">Analyzing PBMC scATAC-seq</a></li>
+</ul>
 
 
 </section>

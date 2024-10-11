@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -261,10 +295,18 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#motif-analysis" id="toc-motif-analysis" class="nav-link active" data-scroll-target="#motif-analysis"><span class="header-section-number">8.0.1</span> <strong>Motif analysis</strong></a></li>
-  <li><a href="#the-motif-class" id="toc-the-motif-class" class="nav-link" data-scroll-target="#the-motif-class"><span class="header-section-number">8.0.2</span> The <code>Motif</code> Class</a>
+  <li><a href="#motif-analysis" id="toc-motif-analysis" class="nav-link active" data-scroll-target="#motif-analysis"><span class="header-section-number">9</span> <strong>Motif analysis</strong></a>
   <ul>
-  <li><a href="#identifying-enriched-motifs" id="toc-identifying-enriched-motifs" class="nav-link" data-scroll-target="#identifying-enriched-motifs"><strong>Identifying enriched motifs</strong></a></li>
+  <li><a href="#the-motif-class" id="toc-the-motif-class" class="nav-link" data-scroll-target="#the-motif-class"><span class="header-section-number">9.0.1</span> The <code>Motif</code> Class</a></li>
+  <li><a href="#step-1-adding-motif-information-to-the-seurat-object" id="toc-step-1-adding-motif-information-to-the-seurat-object" class="nav-link" data-scroll-target="#step-1-adding-motif-information-to-the-seurat-object"><span class="header-section-number">9.0.2</span> Step 1: Adding motif information to the Seurat object</a></li>
+  <li><a href="#step-2-identifying-enriched-motifs-finding-overrepresented-motifs" id="toc-step-2-identifying-enriched-motifs-finding-overrepresented-motifs" class="nav-link" data-scroll-target="#step-2-identifying-enriched-motifs-finding-overrepresented-motifs"><span class="header-section-number">9.0.3</span> Step 2: <strong>Identifying enriched motifs /</strong> Finding overrepresented motifs</a>
+  <ul class="collapse">
+  <li><a href="#step-3-motif-activity-scores" id="toc-step-3-motif-activity-scores" class="nav-link" data-scroll-target="#step-3-motif-activity-scores"><strong>Step 3: Motif activity scores</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#transcription-factor-footprinting" id="toc-transcription-factor-footprinting" class="nav-link" data-scroll-target="#transcription-factor-footprinting"><span class="header-section-number">10</span> Transcription factor footprinting</a>
+  <ul>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">10.1</span> References</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -289,12 +331,18 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="motif-analysis" class="level3" data-number="8.0.1">
-<h3 data-number="8.0.1" class="anchored" data-anchor-id="motif-analysis"><span class="header-section-number">8.0.1</span> <strong>Motif analysis</strong></h3>
-<p>We can also analyze motif occurrence in the peaks, to see how this varies between the different cell types.</p>
-</section>
-<section id="the-motif-class" class="level3" data-number="8.0.2">
-<h3 data-number="8.0.2" class="anchored" data-anchor-id="the-motif-class"><span class="header-section-number">8.0.2</span> The <code>Motif</code> Class</h3>
+<p>In this step, we will demonstrate the following:</p>
+<ul>
+<li>Identifying enriched motifs.</li>
+<li>Obtaining motif activity scores.</li>
+</ul>
+<section id="motif-analysis" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> <strong>Motif analysis</strong></h1>
+<p>The previous analysis (P14 - Find differentially accessible peaks between cell types, <code>da_peaks</code>) can help us to identify putative <em>cis</em>-regulatory elements that are critical for regulating cell type identity or cell state transitions. This is usually achieved via the binding of certain <em>trans</em>-regulators, e.g.&nbsp;TFs, to those open chromatin regions.</p>
+<p>The binding of most TFs have strong sequence specificity, which can be summarized into sequence motifs, i.e.&nbsp;the TF binding motifs. If certain TFs play important roles in those regulations, it is very likely that the cell-type-specific peaks are regions enriched for the binding, with their genomic sequences enriched for the corresponding TF binding motifs. In this case, by checking the motifs enriched in those cell-type-specific peaks, we may be then able to identify TFs responsible for establishment and maintanence of cell type identity.</p>
+<p>To do that, we also need a database of TF binding motifs. Indeed, there are several commonly used databases, including the commercial ones like&nbsp;<a href="https://genexplain.com/transfac/">TRANSFAC</a>&nbsp;and open source ones like&nbsp;<a href="https://jaspar.genereg.net/">JASPAR</a>. By scanning for sequences matching those motifs, we can predict possible binding sites of the TFs with binding motif information in the databases, and then check their enrichment in the peak list of interest in relative to the other peaks.</p>
+<section id="the-motif-class" class="level3" data-number="9.0.1">
+<h3 data-number="9.0.1" class="anchored" data-anchor-id="the-motif-class"><span class="header-section-number">9.0.1</span> The <code>Motif</code> Class</h3>
 <p>The <code>Motif</code> class stores information needed for DNA sequence motif analysis, and has the following slots:</p>
 <ul>
 <li><p><code>data</code>: a sparse feature by motif matrix, where entries are 1 if the feature contains the motif, and 0 otherwise</p></li>
@@ -304,10 +352,326 @@ ul.task-list li input[type="checkbox"] {
 <li><p><code>meta.data</code>: Additional information about the motifs</p></li>
 </ul>
 <p>Many of these slots are optional and do not need to be filled, but are only required when running certain functions. For example, the <code>positions</code> slot will be needed if running TF footprinting. For more details on the <a href="https://stuartlab.org/signac/articles/data_structures#the-motif-class"><strong>Motif</strong> class</a>.</p>
-<section id="identifying-enriched-motifs" class="level4">
-<h4 class="anchored" data-anchor-id="identifying-enriched-motifs"><strong>Identifying enriched motifs</strong></h4>
-<p>First, we will look at motifs that are enriched in a set of peaks, <em>e.g.</em> in peaks that show differential accessibility between two cell types. <em>Do you notice anything particular about these motifs?</em></p>
-<p>https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html</p>
+</section>
+<section id="step-1-adding-motif-information-to-the-seurat-object" class="level3" data-number="9.0.2">
+<h3 data-number="9.0.2" class="anchored" data-anchor-id="step-1-adding-motif-information-to-the-seurat-object"><span class="header-section-number">9.0.2</span> Step 1: Adding motif information to the Seurat object</h3>
+<p>To add the DNA sequence motif information required for motif analyses, we can run the&nbsp;<a href="https://stuartlab.org/signac/reference/addmotifs"><code>AddMotifs()</code></a>&nbsp;function:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Signac)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install("JASPAR2020")</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(JASPAR2020) <span class="co"># Data package for JASPAR database (version 2020)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install("TFBSTools")</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TFBSTools) <span class="co"># Software Package for Transcription Factor Binding Site (TFBS) Analysis</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BSgenome.Hsapiens.UCSC.hg38)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load from Section 2 P14 - STEP: Find differentially accessible peaks between cell types, da_peaks</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"data/pbmc_edited.RData"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">pt.size =</span> <span class="fl">0.1</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a list of motif position frequency matrices from the JASPAR database</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pfm <span class="ot">&lt;-</span> <span class="fu">getMatrixSet</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> JASPAR2020,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">opts =</span> <span class="fu">list</span>(<span class="at">species =</span> <span class="st">"Homo sapiens"</span>, <span class="at">all_versions =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Scan the DNA sequence of each peak for the presence of each motif</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>motif.matrix <span class="ot">&lt;-</span> <span class="fu">CreateMotifMatrix</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> <span class="fu">granges</span>(pbmc<span class="sc">$</span>peaks),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">pwm =</span> pfm,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">genome =</span> <span class="st">'hg38'</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">use.counts =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(motif.matrix)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">as.matrix</span>(motif.matrix[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>To facilitate motif analysis in <code>Signac</code>, we have created the&nbsp;<code>Motif</code>&nbsp;class to store all the required information, including a list of position weight matrices (PWMs) or position frequency matrices (PFMs) and a motif occurrence matrix. Here, the&nbsp;<a href="https://stuartlab.org/signac/reference/addmotifs"><code>AddMotifs()</code></a>&nbsp;function constructs a&nbsp;<code>Motif</code>&nbsp;object and adds it to our mouse brain dataset, along with other information such as the base composition of each peak. A motif object can be added to any Seurat assay using the&nbsp;<a href="https://mojaveazure.github.io/seurat-object/reference/AssayData.html"><code>SetAssayData()</code></a>&nbsp;function. See the&nbsp;<a href="https://stuartlab.org/signac/articles/data_structures">object interaction vignette</a>&nbsp;for more information.</p>
+</section>
+<section id="step-2-identifying-enriched-motifs-finding-overrepresented-motifs" class="level3" data-number="9.0.3">
+<h3 data-number="9.0.3" class="anchored" data-anchor-id="step-2-identifying-enriched-motifs-finding-overrepresented-motifs"><span class="header-section-number">9.0.3</span> Step 2: <strong>Identifying enriched motifs /</strong> Finding overrepresented motifs</h3>
+<p>To identify potentially important cell-type-specific regulatory sequences, we can search for DNA motifs that are overrepresented in a set of peaks that are differentially accessible between cell types.</p>
+<p>Here, we find differentially accessible peaks between Pvalb and Sst inhibitory interneurons. For sparse data (such as scATAC-seq), we find it is often necessary to lower the <code>min.pct</code> threshold in <a href="https://satijalab.org/seurat/reference/FindMarkers.html"><code>FindMarkers()</code></a> from the default (0.1, which was designed for scRNA-seq data).</p>
+<p>We then perform a <strong>hypergeometric test to test the probability of observing the motif</strong> at the given frequency by chance, comparing with a background set of peaks matched for GC content.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new Mofif object to store the results</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>motif <span class="ot">&lt;-</span> <span class="fu">CreateMotifObject</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> motif.matrix,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">pwm =</span> pfm</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the Motif object to the assay</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">SetAssayData</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">assay =</span> <span class="st">'peaks'</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">slot =</span> <span class="st">'motifs'</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">new.data =</span> motif</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>peaks<span class="sc">@</span>motifs</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate statistics for each peak: GC content, length, dinucleotide frequencies etc.</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># These are used in the test of motif enrichment</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>peaks <span class="ot">&lt;-</span> <span class="fu">RegionStats</span>(<span class="at">object =</span> pbmc<span class="sc">$</span>peaks, <span class="at">genome =</span> BSgenome.Hsapiens.UCSC.hg19)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Find differentially accessible peaks in cluster 0 compared to cluster 1</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>da_peaks <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.1 =</span> <span class="st">"0"</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.2 =</span> <span class="st">"1"</span>,</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">only.pos =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.pct =</span> <span class="fl">0.05</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">test.use =</span> <span class="st">'LR'</span>,</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">latent.vars =</span> <span class="st">'nCount_peaks'</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the top differentially accessible peaks, with lowest p-values</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>top.da.peak <span class="ot">&lt;-</span> <span class="fu">rownames</span>(da_peaks[da_peaks<span class="sc">$</span>p_val <span class="sc">&lt;</span> <span class="fl">1e-20</span> <span class="sc">&amp;</span> da_peaks<span class="sc">$</span>pct<span class="fl">.1</span> <span class="sc">&gt;</span> <span class="fl">0.2</span>,  ])</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Find motifs enriched in these top differentially accessible peaks</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>enriched.motifs <span class="ot">&lt;-</span> <span class="fu">FindMotifs</span>(</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> top.da.peak</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(enriched.motifs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html#motif-analysis</p>
+<p>https://stuartlab.org/signac/articles/motif_vignette</p>
+<p>We can also plot the position weight matrices for the motifs, so we can visualize the different motif sequences.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">MotifPlot</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">motifs =</span> <span class="fu">head</span>(<span class="fu">rownames</span>(enriched.motifs))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="step-3-motif-activity-scores" class="level4">
+<h4 class="anchored" data-anchor-id="step-3-motif-activity-scores"><strong>Step 3: Motif activity scores</strong></h4>
+<p>We can also compute a per-cell motif activity score by running <a href="https://greenleaflab.github.io/chromVAR/index.html">chromVAR</a>. The motif activity score for a motif M is based on the number of reads mapping to peaks with motif M, after normalization correction for various biases: GC content, average number of reads mapping across all cells etc. You can read more about chromVar <a href="https://www.nature.com/articles/nmeth.4401">here</a>. Motif activity scores allow us to visualize motif activities per cell.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>ChromVAR identifies motifs associated with variability in chromatin accessibility between cells. See the chromVAR&nbsp;<a href="https://www.nature.com/articles/nmeth.4401">paper</a>&nbsp;for a complete description of the method.</p>
+</div>
+</div>
+<p>It is also possible to directly test for differential activity scores between cell types, without looking at peaks with differential binding. This tends to give similar results as performing an enrichment test on differentially accessible peaks between the cell types (shown above).</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This takes a while to run (around 5 minutes on Uppmax).</p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use chromVAR to calculate the motif activities of all motifs in all cells.</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunChromVAR</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">genome =</span> BSgenome.Hsapiens.UCSC.hg38,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at results</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>chromvar</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">GetAssayData</span>(pbmc<span class="sc">$</span>chromvar)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Have a look at the activitiy of the FOS motif, which has id MA0476.1</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">'chromvar'</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">FeaturePlot</span>(</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> <span class="st">"MA0476.1"</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.cutoff =</span> <span class="st">'q10'</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.cutoff =</span> <span class="st">'q90'</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">pt.size =</span> <span class="fl">0.1</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We can also directly test for differential activity scores between cell types. This tends to give similar results as performing an enrichment test on differentially accessible peaks between the cell types (shown above).</p>
+<p>When performing differential testing on the chromVAR z-score, we can set <code>mean.fxn=rowMeans</code> and <code>fc.name="avg_diff"</code> in the <a href="https://satijalab.org/seurat/reference/FindMarkers.html"><code>FindMarkers()</code></a> function so that the fold-change calculation computes the average difference in z-score between the groups.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look for motifs that have differential activity between clusters 0 and 1.</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>differential.activity <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.1 =</span> <span class="st">'0'</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.2 =</span> <span class="st">'1'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">only.pos =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">test.use =</span> <span class="st">'LR'</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.pct =</span> <span class="fl">0.2</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">latent.vars =</span> <span class="st">'nCount_peaks'</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="fu">MotifPlot</span>(</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">motifs =</span> <span class="fu">head</span>(<span class="fu">rownames</span>(differential.activity)),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">assay =</span> <span class="st">'peaks'</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+</section>
+<section id="transcription-factor-footprinting" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Transcription factor footprinting</h1>
+<p>https://stuartlab.org/signac/articles/footprint</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22631)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Mexico_City
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] patchwork_1.2.0                   BSgenome.Hsapiens.UCSC.hg38_1.4.5
+ [3] BSgenome_1.72.0                   rtracklayer_1.64.0               
+ [5] BiocIO_1.14.0                     Biostrings_2.72.1                
+ [7] XVector_0.44.0                    GenomicRanges_1.56.1             
+ [9] GenomeInfoDb_1.40.1               IRanges_2.38.1                   
+[11] S4Vectors_0.42.1                  BiocGenerics_0.50.0              
+[13] TFBSTools_1.42.0                  JASPAR2020_0.99.10               
+[15] Seurat_5.1.0                      SeuratObject_5.0.2               
+[17] sp_2.1-4                          Signac_1.14.0                    
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22            splines_4.4.1              
+  [3] later_1.3.2                 bitops_1.0-8               
+  [5] R.oo_1.26.0                 tibble_3.2.1               
+  [7] polyclip_1.10-7             XML_3.99-0.17              
+  [9] DirichletMultinomial_1.46.0 fastDummies_1.7.4          
+ [11] lifecycle_1.0.4             pwalign_1.0.0              
+ [13] globals_0.16.3              lattice_0.22-6             
+ [15] MASS_7.3-60.2               magrittr_2.0.3             
+ [17] plotly_4.10.4               rmarkdown_2.28             
+ [19] yaml_2.3.10                 httpuv_1.6.15              
+ [21] sctransform_0.4.1           spam_2.10-0                
+ [23] spatstat.sparse_3.1-0       reticulate_1.39.0          
+ [25] cowplot_1.1.3               pbapply_1.7-2              
+ [27] DBI_1.2.3                   CNEr_1.40.0                
+ [29] RColorBrewer_1.1-3          abind_1.4-8                
+ [31] zlibbioc_1.50.0             Rtsne_0.17                 
+ [33] R.utils_2.12.3              purrr_1.0.2                
+ [35] RCurl_1.98-1.16             pracma_2.4.4               
+ [37] GenomeInfoDbData_1.2.12     ggrepel_0.9.5              
+ [39] irlba_2.3.5.1               listenv_0.9.1              
+ [41] spatstat.utils_3.1-0        seqLogo_1.70.0             
+ [43] goftest_1.2-3               RSpectra_0.16-2            
+ [45] annotate_1.82.0             spatstat.random_3.3-1      
+ [47] fitdistrplus_1.2-1          parallelly_1.38.0          
+ [49] leiden_0.4.3.1              codetools_0.2-20           
+ [51] DelayedArray_0.30.1         RcppRoll_0.3.1             
+ [53] tidyselect_1.2.1            UCSC.utils_1.0.0           
+ [55] matrixStats_1.4.0           spatstat.explore_3.3-2     
+ [57] GenomicAlignments_1.40.0    jsonlite_1.8.8             
+ [59] progressr_0.14.0            ggridges_0.5.6             
+ [61] survival_3.6-4              tools_4.4.1                
+ [63] TFMPvalue_0.0.9             ica_1.0-3                  
+ [65] Rcpp_1.0.13                 glue_1.7.0                 
+ [67] gridExtra_2.3               SparseArray_1.4.8          
+ [69] xfun_0.45                   MatrixGenerics_1.16.0      
+ [71] dplyr_1.1.4                 fastmap_1.2.0              
+ [73] fansi_1.0.6                 caTools_1.18.3             
+ [75] digest_0.6.36               R6_2.5.1                   
+ [77] mime_0.12                   colorspace_2.1-1           
+ [79] GO.db_3.19.1                scattermore_1.2            
+ [81] poweRlaw_0.80.0             gtools_3.9.5               
+ [83] tensor_1.5                  spatstat.data_3.1-2        
+ [85] RSQLite_2.3.7               R.methodsS3_1.8.2          
+ [87] utf8_1.2.4                  tidyr_1.3.1                
+ [89] generics_0.1.3              data.table_1.16.0          
+ [91] httr_1.4.7                  htmlwidgets_1.6.4          
+ [93] S4Arrays_1.4.1              uwot_0.2.2                 
+ [95] pkgconfig_2.0.3             gtable_0.3.5               
+ [97] blob_1.2.4                  lmtest_0.9-40              
+ [99] htmltools_0.5.8.1           dotCall64_1.1-1            
+[101] scales_1.3.0                Biobase_2.64.0             
+[103] png_0.1-8                   spatstat.univar_3.0-1      
+[105] knitr_1.48                  rstudioapi_0.16.0          
+[107] tzdb_0.4.0                  rjson_0.2.22               
+[109] reshape2_1.4.4              curl_5.2.2                 
+[111] nlme_3.1-164                zoo_1.8-12                 
+[113] cachem_1.1.0                stringr_1.5.1              
+[115] KernSmooth_2.23-24          parallel_4.4.1             
+[117] miniUI_0.1.1.1              AnnotationDbi_1.66.0       
+[119] restfulr_0.0.15             pillar_1.9.0               
+[121] grid_4.4.1                  vctrs_0.6.5                
+[123] RANN_2.6.2                  promises_1.3.0             
+[125] xtable_1.8-4                cluster_2.1.6              
+[127] evaluate_1.0.0              readr_2.1.5                
+[129] cli_3.6.2                   compiler_4.4.1             
+[131] Rsamtools_2.20.0            rlang_1.1.3                
+[133] crayon_1.5.3                future.apply_1.11.2        
+[135] plyr_1.8.9                  stringi_1.8.4              
+[137] viridisLite_0.4.2           deldir_2.0-4               
+[139] BiocParallel_1.38.0         munsell_0.5.1              
+[141] lazyeval_0.2.2              spatstat.geom_3.3-2        
+[143] Matrix_1.7-0                RcppHNSW_0.6.0             
+[145] hms_1.1.3                   bit64_4.0.5                
+[147] future_1.34.0               ggplot2_3.5.1              
+[149] KEGGREST_1.44.1             shiny_1.9.1                
+[151] SummarizedExperiment_1.34.0 ROCR_1.0-11                
+[153] igraph_2.0.3                memoise_2.0.1              
+[155] fastmatch_1.1-4             bit_4.0.5                  </code></pre>
+</div>
+</div>
+<section id="references" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="references"><span class="header-section-number">10.1</span> References</h2>
+<ul>
+<li>Signac - tutorial <a href="https://stuartlab.org/signac/articles/motif_vignette">Motif analysis with Signac</a></li>
+<li>Epigenomic workshop 2024 - <a href="https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html">Motif analysis</a></li>
+<li>Signac - tutorial <a href="https://stuartlab.org/signac/articles/footprint">Transcription factor footprinting</a></li>
+</ul>
 
 
 </section>

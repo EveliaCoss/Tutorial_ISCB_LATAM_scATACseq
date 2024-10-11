@@ -920,9 +920,9 @@ Active assay: peaks (165376 features, 0 variable features)
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>            used   (Mb) gc trigger   (Mb)   max used   (Mb)
-Ncells  14848910  793.1   44127650 2356.7   44127650 2356.7
-Vcells 585590329 4467.7 1160573644 8854.5 1160573644 8854.5</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used   (Mb)
+Ncells  14851936  793.2   44328732  2367.5   44328732 2367.5
+Vcells 585597127 4467.8 1391138032 10613.6 1159215027 8844.2</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -981,6 +981,7 @@ More information
 <li><p><strong>TF</strong> measures how frequently a peak is accessible in a cell.</p></li>
 <li><p><strong>IDF</strong> penalizes peaks that are accessible in many cells and gives more weight to those specific to fewer cells.</p></li>
 <li><p><strong>TF-IDF in scATAC-seq</strong> is used to normalize the data, providing a better representation of chromatin accessibility for analyses like clustering or dimensionality reduction.</p></li>
+<li><p>By default, the TF-IDF is then defined as TF times IDF followed by log-transformation (<code>method = 1</code>). There are also other options, for instance, TF times log-transformed IDF (<code>method = 2</code>), and log-transformed TF times log-transformed IDF (<code>method = 3</code>).</p></li>
 </ul></li>
 </ul></li>
 </ol>
@@ -1020,9 +1021,22 @@ More information
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>            used   (Mb) gc trigger   (Mb)   max used   (Mb)
-Ncells  14857990  793.6   44127650 2356.7   44127650 2356.7
-Vcells 546696312 4171.0 1160573644 8854.5 1160573644 8854.5</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells  14861031  793.7   44328732  2367.5   44328732  2367.5
+Vcells 546703133 4171.1 1391138032 10613.6 1339365755 10218.6</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Another reason of using TF-IDF for ATAC-seq data is that its scales of different peaks, regardless the size of the peaks, should be comparable, and therefore the further data scaling becomes unnecessary. Computationally this is very important. <strong>From the definition it is clear that for peaks with no fragment detected in a cell, its TF-IDF value remains zero.</strong> Therefore, the TF-IDF matrix can be still represented by a sparse matrix, and then is directly used as the input for the next analysis without the need to generating a scaled data matrix which is likely a high-dimensional dense matrix that needs huge amount of memory to store.</p>
 </div>
 </div>
 <p>The first LSI component often captures sequencing depth (technical variation) rather than biological variation. If this is the case, the component should be removed from downstream analysis. We can assess the correlation between each LSI component and sequencing depth using the&nbsp;<a href="https://stuartlab.org/signac/reference/depthcor"><code>DepthCor()</code></a>&nbsp;function:</p>
@@ -1078,16 +1092,16 @@ Note
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(<span class="at">object =</span> pbmc, <span class="at">reduction =</span> <span class="st">'lsi'</span>, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>21:55:08 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>01:59:03 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>21:55:08 Read 9649 rows and found 29 numeric columns</code></pre>
+<pre><code>01:59:03 Read 9649 rows and found 29 numeric columns</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>21:55:08 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>01:59:03 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>21:55:08 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>01:59:03 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
@@ -1097,13 +1111,13 @@ Note
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>**************************************************|
-21:55:09 Writing NN index file to temp file C:\Users\ecoss\AppData\Local\Temp\RtmpovQGFE\file4b7cfbb4fc9
-21:55:09 Searching Annoy index using 8 threads, search_k = 3000
-21:55:10 Annoy recall = 100%
-21:55:11 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 30
-21:55:14 Initializing from normalized Laplacian + noise (using RSpectra)
-21:55:14 Commencing optimization for 500 epochs, with 384536 positive edges
-21:55:40 Optimization finished</code></pre>
+01:59:04 Writing NN index file to temp file C:\Users\ecoss\AppData\Local\Temp\Rtmps5Do8y\file2de47cdf17ab
+01:59:04 Searching Annoy index using 8 threads, search_k = 3000
+01:59:04 Annoy recall = 100%
+01:59:06 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 30
+01:59:08 Initializing from normalized Laplacian + noise (using RSpectra)
+01:59:09 Commencing optimization for 500 epochs, with 384536 positive edges
+01:59:35 Optimization finished</code></pre>
 </div>
 <details open="">
 <summary>Code</summary>
@@ -1116,7 +1130,12 @@ Computing SNN</code></pre>
 <details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(<span class="at">object =</span> pbmc, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">algorithm =</span> <span class="dv">3</span>)</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(<span class="at">object =</span> pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="co"># save</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(pbmc, <span class="at">file =</span> <span class="st">"data/pbmc.RData"</span>)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(<span class="at">object =</span> pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Section1_P13_intro_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
@@ -1141,16 +1160,23 @@ Computing SNN</code></pre>
 </div>
 </div>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove ALL objects from workspace</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="co"># free memory</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">gc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
-<pre><code>            used   (Mb) gc trigger   (Mb)   max used   (Mb)
-Ncells  14904626  796.0   44127650 2356.7   44127650 2356.7
-Vcells 548217690 4182.6 1160573644 8854.5 1160573644 8854.5</code></pre>
+<pre><code>            used   (Mb) gc trigger   (Mb)   max used    (Mb)
+Ncells  14178933  757.3   44328732 2367.5   44328732  2367.5
+Vcells 365350483 2787.5 1112910426 8490.9 1339365755 10218.6</code></pre>
 </div>
 </div>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.4.1 (2024-06-14 ucrt)
@@ -1201,7 +1227,7 @@ loaded via a namespace (and not attached):
  [25] spatstat.sparse_3.1-0       reticulate_1.39.0          
  [27] cowplot_1.1.3               pbapply_1.7-2              
  [29] DBI_1.2.3                   RColorBrewer_1.1-3         
- [31] abind_1.4-5                 zlibbioc_1.50.0            
+ [31] abind_1.4-8                 zlibbioc_1.50.0            
  [33] Rtsne_0.17                  purrr_1.0.2                
  [35] biovizBase_1.52.0           RCurl_1.98-1.16            
  [37] nnet_7.3-19                 VariantAnnotation_1.50.0   
@@ -1251,7 +1277,7 @@ loaded via a namespace (and not attached):
 [125] vctrs_0.6.5                 RANN_2.6.2                 
 [127] promises_1.3.0              xtable_1.8-4               
 [129] cluster_2.1.6               beeswarm_0.4.0             
-[131] htmlTable_2.4.3             evaluate_0.24.0            
+[131] htmlTable_2.4.3             evaluate_1.0.0             
 [133] cli_3.6.2                   compiler_4.4.1             
 [135] Rsamtools_2.20.0            rlang_1.1.3                
 [137] crayon_1.5.3                future.apply_1.11.2        
@@ -1273,20 +1299,21 @@ loaded via a namespace (and not attached):
 </section>
 <section id="references" class="level2" data-number="2.8">
 <h2 data-number="2.8" class="anchored" data-anchor-id="references"><span class="header-section-number">2.8</span> References</h2>
-<p>https://www.jpt.com/support-contact/resources/pbmc/</p>
-<p><a href="https://stuartlab.org/signac/articles/data_structures">Data structures and object interaction</a></p>
-<p><a href="https://stuartlab.org/signac/articles/pbmc_multiomic">Joint RNA and ATAC analysis: 10x multiomic</a>.</p>
-<p>https://stuartlab.org/signac/1.2.0/articles/install</p>
-<p>https://stuartlab.org/signac/articles/pbmc_multiomic</p>
-<p>https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/metrics</p>
-<p>https://www.nature.com/articles/nmeth.2688</p>
-<p><a href="https://stuartlab.org/signac/articles/mouse_brain_vignette">Analyzing adult mouse brain scATAC-seq</a></p>
-<p>Raton https://rpubs.com/kshridevi/1176302</p>
-<p>https://ieeexplore.ieee.org/document/10343156</p>
-<p>https://stuartlab.org/signac/articles/pbmc_vignette</p>
-<p>https://arxiv.org/abs/1802.03426</p>
-<p>https://alexslemonade.github.io/refinebio-examples/03-rnaseq/dimension-reduction_rnaseq_02_umap.html#4_UMAP_Visualization_-_RNA-seq</p>
-<p><a href="https://github.com/lmcinnes/umap">UMAP Github</a></p>
+<ul>
+<li>Mouse - <a href="https://rpubs.com/kshridevi/1176302">Analyzing PBMC scATAC-seq</a></li>
+<li>Human - <a href="https://stuartlab.org/signac/articles/pbmc_vignette">Analyzing PBMC scATAC-seq</a></li>
+<li><a href="https://www.jpt.com/support-contact/resources/pbmc/">What are PBMCs- Peripheral Blood Mononuclear Cells</a></li>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/data_structures">Data structures and object interaction</a></li>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/pbmc_multiomic">Joint RNA and ATAC analysis: 10x multiomic</a></li>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/1.2.0/articles/install">Signac Install</a></li>
+<li><a href="https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/metrics">Cell Ranger ATAC count: Summary Metrics</a></li>
+<li>Buenrostro, et al.&nbsp;2013. <a href="https://www.nature.com/articles/nmeth.2688">Transposition of native chromatin for fast and sensitive epigenomic profiling of open chromatin, DNA-binding proteins and nucleosome position.</a> Nature.</li>
+<li><a href="https://stuartlab.org/signac/articles/mouse_brain_vignette">Analyzing adult mouse brain scATAC-seq</a></li>
+<li>Almarashy, et al.&nbsp;2023. <a href="https://ieeexplore.ieee.org/document/10343156">Enhancing Fake News Detection by Multi-Feature Classification.</a> IEEE access</li>
+<li>McIness, et al.&nbsp;2020. <a href="https://arxiv.org/abs/1802.03426">UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction</a>. arxiv.</li>
+<li><a href="https://alexslemonade.github.io/refinebio-examples/03-rnaseq/dimension-reduction_rnaseq_02_umap.html#4_UMAP_Visualization_-_RNA-seq">UMAP Visualization - RNA-seq</a></li>
+<li><a href="https://github.com/lmcinnes/umap">UMAP Github</a></li>
+</ul>
 
 
 </section>
