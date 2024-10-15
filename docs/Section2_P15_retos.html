@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -221,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Section2_P15_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Multimodal analysis and Integration</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -291,7 +257,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#dataset-overview-pbmc-from-a-healthy-donor---granulocytes-removed-through-cell-sorting-3k" id="toc-dataset-overview-pbmc-from-a-healthy-donor---granulocytes-removed-through-cell-sorting-3k" class="nav-link active" data-scroll-target="#dataset-overview-pbmc-from-a-healthy-donor---granulocytes-removed-through-cell-sorting-3k"><span class="header-section-number">7.1</span> Dataset overview: <strong>PBMC from a Healthy Donor - Granulocytes Removed Through Cell Sorting (3k)</strong></a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">7.2</span> References</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -313,6 +286,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<section id="dataset-overview-pbmc-from-a-healthy-donor---granulocytes-removed-through-cell-sorting-3k" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="dataset-overview-pbmc-from-a-healthy-donor---granulocytes-removed-through-cell-sorting-3k"><span class="header-section-number">7.1</span> Dataset overview: <strong>PBMC from a Healthy Donor - Granulocytes Removed Through Cell Sorting (3k)</strong></h2>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of <a href="https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-3-k-1-standard-2-0-0">human peripheral blood mononuclear cells (PBMCs) (3K)</a> provided by 10x Genomics (Cell Ranger ARC 2.0.0). The following files are used in this course, all available through the 10x Genomics website:</p>
+<ul>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_raw_feature_bc_matrix.h5">Raw data</a>: Filtered peak barcode matrix.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_atac_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_atac_fragments.tsv.gz.tbi">fragments file index</a>: Fragments file index.</p></li>
+</ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -324,26 +305,20 @@ Exercise in Google Colab
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Create a copy of the <a href="https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing">Google colab notebook part 1</a> on your one drive.</li>
+<li>Create a copy of the <a href="https://colab.research.google.com/drive/1QzCOMi4z8lW3r7qqx7FD6_YfSezHRbTW?usp=sharing">Google colab notebook part 15</a> on your one drive.</li>
 <li>Run the exercise.</li>
 </ol>
 </div>
 </div>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load output</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>obj.atac <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">"data/obj_atac_final.rds"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  obj.atac, <span class="at">group.by =</span> <span class="st">"predicted.l2"</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="st">"ref.umap"</span>, <span class="at">label =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"ATAC"</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+</section>
+<section id="references" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="references"><span class="header-section-number">7.2</span> References</h2>
+<ul>
+<li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/pbmc_multiomic">Joint RNA and ATAC analysis: 10x multiomic</a></li>
+</ul>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -697,7 +672,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./Section2_P15_intro.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Multimodal analysis and Integration</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

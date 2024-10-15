@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -298,29 +264,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#dataset-overview-10k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor" id="toc-dataset-overview-10k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor" class="nav-link active" data-scroll-target="#dataset-overview-10k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor"><span class="header-section-number">3.1</span> Dataset overview: <strong>10k Peripheral Blood Mononuclear Cells (PBMCs) from a Healthy Donor</strong></a>
+  <li><a href="#dataset-overview-1k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor" id="toc-dataset-overview-1k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor" class="nav-link active" data-scroll-target="#dataset-overview-1k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor"><span class="header-section-number">3.1</span> Dataset overview: <strong>1k Peripheral Blood Mononuclear Cells (PBMCs) from a Healthy Donor</strong></a>
   <ul>
   <li><a href="#pre-processing-workflow" id="toc-pre-processing-workflow" class="nav-link" data-scroll-target="#pre-processing-workflow"><strong>Pre-processing workflow</strong></a></li>
   </ul></li>
-  <li><a href="#complete-results" id="toc-complete-results" class="nav-link" data-scroll-target="#complete-results"><span class="header-section-number">4</span> Complete results</a>
-  <ul>
-  <li><a href="#step-1-import-data" id="toc-step-1-import-data" class="nav-link" data-scroll-target="#step-1-import-data"><span class="header-section-number">4.1</span> 📗 Step 1: Import Data</a>
-  <ul class="collapse">
-  <li><a href="#create-chromatinassay" id="toc-create-chromatinassay" class="nav-link" data-scroll-target="#create-chromatinassay"><span class="header-section-number">4.1.1</span> Create <code>ChromatinAssay</code></a></li>
-  </ul></li>
-  <li><a href="#step-2-annotation" id="toc-step-2-annotation" class="nav-link" data-scroll-target="#step-2-annotation"><span class="header-section-number">4.2</span> ✒️ Step 2: Annotation</a>
-  <ul class="collapse">
-  <li><a href="#get-gene-annotations-for-the-peaks-and-add-to-the-object" id="toc-get-gene-annotations-for-the-peaks-and-add-to-the-object" class="nav-link" data-scroll-target="#get-gene-annotations-for-the-peaks-and-add-to-the-object"><span class="header-section-number">4.2.1</span> Get gene annotations for the peaks and add to the object</a></li>
-  </ul></li>
-  <li><a href="#step-3-computing-qc-metrics" id="toc-step-3-computing-qc-metrics" class="nav-link" data-scroll-target="#step-3-computing-qc-metrics"><span class="header-section-number">4.3</span> 📕 Step 3: Computing QC metrics</a>
-  <ul class="collapse">
-  <li><a href="#impact-of-sample-type-on-fragment-yield-and-sequencing-quality" id="toc-impact-of-sample-type-on-fragment-yield-and-sequencing-quality" class="nav-link" data-scroll-target="#impact-of-sample-type-on-fragment-yield-and-sequencing-quality"><span class="header-section-number">4.3.1</span> Impact of Sample Type on Fragment Yield and Sequencing Quality</a></li>
-  <li><a href="#fragment-size-distribution" id="toc-fragment-size-distribution" class="nav-link" data-scroll-target="#fragment-size-distribution"><span class="header-section-number">4.3.2</span> Fragment size distribution</a></li>
-  </ul></li>
-  <li><a href="#step-4-normalization-and-linear-dimensional-reduction-lsi" id="toc-step-4-normalization-and-linear-dimensional-reduction-lsi" class="nav-link" data-scroll-target="#step-4-normalization-and-linear-dimensional-reduction-lsi"><span class="header-section-number">4.4</span> 📘 Step 4: Normalization and linear dimensional reduction (LSI)</a></li>
-  <li><a href="#step-5-non-linear-dimensional-reduction-and-clustering" id="toc-step-5-non-linear-dimensional-reduction-and-clustering" class="nav-link" data-scroll-target="#step-5-non-linear-dimensional-reduction-and-clustering"><span class="header-section-number">4.5</span> 📙 Step 5: Non-linear dimensional reduction and clustering</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">4.6</span> References</a></li>
-  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">3.2</span> References</a></li>
   </ul>
 </nav>
     </div>
@@ -344,14 +292,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="dataset-overview-10k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="dataset-overview-10k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor"><span class="header-section-number">3.1</span> Dataset overview: <strong>10k Peripheral Blood Mononuclear Cells (PBMCs) from a Healthy Donor</strong></h2>
-<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of <a href="https://www.10xgenomics.com/datasets/10-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-1-standard-1-0-1">human peripheral blood mononuclear cells</a> (PBMCs) provided by 10x Genomics. The following files are used in this course, all available through the 10x Genomics website:</p>
+<section id="dataset-overview-1k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="dataset-overview-1k-peripheral-blood-mononuclear-cells-pbmcs-from-a-healthy-donor"><span class="header-section-number">3.1</span> Dataset overview: <strong>1k Peripheral Blood Mononuclear Cells (PBMCs) from a Healthy Donor</strong></h2>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of <a href="https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0">human peripheral blood mononuclear cells (PBMCs)</a> provided by 10x Genomics (Next GEM v1.1). The following files are used in this course, all available through the 10x Genomics website:</p>
 <ul>
-<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_filtered_tf_bc_matrix.h5">Raw data</a>: Filtered peak barcode matrix.</p></li>
-<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_singlecell.csv">Metadata</a>: Per-barcode fragment counts &amp; metrics.</p></li>
-<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file.</p></li>
-<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_fragments.tsv.gz.tbi">fragments file index</a>: Fragments file index.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_filtered_peak_bc_matrix.h5">Raw data</a>: Filtered peak barcode matrix.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_singlecell.csv">Metadata</a>: Per-barcode fragment counts &amp; metrics.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi">fragments file index</a>: Fragments file index.</p></li>
 </ul>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -363,7 +311,7 @@ Questions
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Check the <a href="https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_web_summary.html">data report</a> and answer the questions.</p>
+<p>Check the <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_web_summary.html">data report</a> and answer the questions.</p>
 <ul>
 <li><p>How many cells were recovered?</p>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
@@ -379,7 +327,7 @@ Answer
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
-<li>8728 nuclei were recovered.</li>
+<li>1,195 nuclei were recovered.</li>
 </ul>
 </div>
 </div>
@@ -398,7 +346,7 @@ Answer
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
-<li>Single Cell ATAC dataset analyzed using Cell Ranger ATAC 1.0.1</li>
+<li>Single Cell ATAC dataset analyzed using Cell Ranger ATAC 1.1.0</li>
 </ul>
 </div>
 </div>
@@ -452,641 +400,21 @@ Exercise in Google Colab
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Create a copy of the <a href="https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing">Google colab notebook part 1</a> on your one drive.</li>
+<li>Create a copy of the <a href="https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing">Google colab notebook part 13</a> on your one drive.</li>
 <li>Run the exercise.</li>
 </ol>
 </div>
 </div>
 </section>
 </section>
-<section id="complete-results" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Complete results</h1>
-<p>what happen if we use all data?</p>
-<section id="step-1-import-data" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="step-1-import-data"><span class="header-section-number">4.1</span> 📗 Step 1: Import Data</h2>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Signac)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat) </span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GenomicRanges) <span class="co"># genomic data manipulation</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co">#vizualization</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork) <span class="co"># Vizualization </span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Hsapiens.v75) <span class="co"># human genome hg19</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(future) <span class="co"># parallelization in Signac</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>Settings on my computer:</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain versions</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"R version:"</span>, R.version<span class="sc">$</span>version.string, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>R version: R version 4.4.1 (2024-06-14 ucrt) </code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Number of cores:"</span>, <span class="fu">availableCores</span>(), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Number of cores: 8 </code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">"Signac"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] '1.14.0'</code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># parallelization options</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plan</span>(<span class="st">"multicore"</span>, <span class="at">workers =</span> <span class="dv">8</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plan</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>multicore:
-- args: function (..., workers = 8, envir = parent.frame())
-- tweaked: TRUE
-- call: plan("multicore", workers = 8)</code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Increase the maximum memory usage</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">future.globals.maxSize =</span> <span class="dv">14</span> <span class="sc">*</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">3</span>)  <span class="co"># para 14 GB de RAM</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>Note that as of future version 1.14.0, forked processing is disabled when running in RStudio. To enable parallel computing in RStudio, you will need to select the “multisession” option.</p>
-<section id="create-chromatinassay" class="level3" data-number="4.1.1">
-<h3 data-number="4.1.1" class="anchored" data-anchor-id="create-chromatinassay"><span class="header-section-number">4.1.1</span> Create <code>ChromatinAssay</code></h3>
-<p>The ATAC-seq data is stored using a custom assay, the&nbsp;<code>ChromatinAssay</code>. This enables some specialized functions for analysing genomic single-cell assays such as scATAC-seq. By printing the assay we can see some of the additional information that can be contained in the&nbsp;<code>ChromatinAssay</code>, including motif information, gene annotations, and genome information.</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">Read10X_h5</span>(<span class="at">filename =</span> <span class="st">"data/atac_v1_pbmc_10k_filtered_peak_bc_matrix.h5"</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/atac_v1_pbmc_10k_singlecell.csv"</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="dv">1</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>chrom_assay <span class="ot">&lt;-</span> <span class="fu">CreateChromatinAssay</span>(</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> counts,</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="fu">c</span>(<span class="st">":"</span>, <span class="st">"-"</span>),</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome =</span> <span class="st">'hg19'</span>, <span class="co"># EnsDb.Hsapiens.v75</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">fragments =</span> <span class="st">"data/atac_v1_pbmc_10k_fragments.tsv.gz"</span>,</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.cells =</span> <span class="dv">10</span>,</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.features =</span> <span class="dv">200</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Computing hash</code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> chrom_assay,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">"ATAC"</span>,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">meta.data =</span> metadata</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>Check global information</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pbmc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>An object of class Seurat 
-87561 features across 8728 samples within 1 assay 
-Active assay: ATAC (87561 features, 0 variable features)
- 2 layers present: counts, data</code></pre>
-</div>
-</div>
-<p>Check ATAC information</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>pbmc[[<span class="st">'ATAC'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>ChromatinAssay data with 87561 features for 8728 cells
-Variable features: 0 
-Genome: hg19 
-Annotation present: FALSE 
-Motifs present: FALSE 
-Fragment files: 1 </code></pre>
-</div>
-</div>
-<p>We then remove the features that correspond to chromosome scaffolds e.g.&nbsp;(KI270713.1) or other sequences instead of the (22+2) standard chromosomes.</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>peaks.keep <span class="ot">&lt;-</span> <span class="fu">seqnames</span>(<span class="fu">granges</span>(pbmc)) <span class="sc">%in%</span> <span class="fu">standardChromosomes</span>(<span class="fu">granges</span>(pbmc))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> pbmc[<span class="fu">as.vector</span>(peaks.keep), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>Check file:</p>
-<p>87561 features across 8728 samples within 1 assay.</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 87561  8728</code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Formal class 'Seurat' [package "SeuratObject"] with 13 slots
-  ..@ assays      :List of 1
-  .. ..$ ATAC:Formal class 'ChromatinAssay' [package "Signac"] with 16 slots
-  .. .. .. ..@ ranges            :Formal class 'GRanges' [package "GenomicRanges"] with 7 slots
-  .. .. .. .. .. ..@ seqnames       :Formal class 'Rle' [package "S4Vectors"] with 4 slots
-  .. .. .. .. .. .. .. ..@ values         : Factor w/ 24 levels "chr1","chr2",..: 1 2 3 4 5 6 7 8 9 10 ...
-  .. .. .. .. .. .. .. ..@ lengths        : int [1:24] 8555 6858 5499 3515 4389 5269 4263 3677 3540 4137 ...
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. ..@ ranges         :Formal class 'IRanges' [package "IRanges"] with 6 slots
-  .. .. .. .. .. .. .. ..@ start          : int [1:87561] 565107 569174 713460 752422 762106 779589 793516 801120 804872 839520 ...
-  .. .. .. .. .. .. .. ..@ width          : int [1:87561] 444 466 1364 617 1254 683 226 219 890 1604 ...
-  .. .. .. .. .. .. .. ..@ NAMES          : NULL
-  .. .. .. .. .. .. .. ..@ elementType    : chr "ANY"
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. ..@ strand         :Formal class 'Rle' [package "S4Vectors"] with 4 slots
-  .. .. .. .. .. .. .. ..@ values         : Factor w/ 3 levels "+","-","*": 3
-  .. .. .. .. .. .. .. ..@ lengths        : int 87561
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. ..@ seqinfo        :Formal class 'Seqinfo' [package "GenomeInfoDb"] with 4 slots
-  .. .. .. .. .. .. .. ..@ seqnames   : chr [1:24] "chr1" "chr2" "chr3" "chr4" ...
-  .. .. .. .. .. .. .. ..@ seqlengths : int [1:24] NA NA NA NA NA NA NA NA NA NA ...
-  .. .. .. .. .. .. .. ..@ is_circular: logi [1:24] NA NA NA NA NA NA ...
-  .. .. .. .. .. .. .. ..@ genome     : chr [1:24] NA NA NA NA ...
-  .. .. .. .. .. ..@ elementMetadata:Formal class 'DFrame' [package "S4Vectors"] with 6 slots
-  .. .. .. .. .. .. .. ..@ rownames       : NULL
-  .. .. .. .. .. .. .. ..@ nrows          : int 87561
-  .. .. .. .. .. .. .. ..@ elementType    : chr "ANY"
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. .. .. ..@ listData       : Named list()
-  .. .. .. .. .. ..@ elementType    : chr "ANY"
-  .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. ..@ motifs            : NULL
-  .. .. .. ..@ fragments         :List of 1
-  .. .. .. .. ..$ :Formal class 'Fragment' [package "Signac"] with 3 slots
-  .. .. .. .. .. .. ..@ path : chr "C:\\Users\\ecoss\\Documents\\Respaldos\\Github_notes\\WCS_scATACseq_book\\data\\atac_v1_pbmc_10k_fragments.tsv.gz"
-  .. .. .. .. .. .. ..@ hash : chr [1:2] "8e03bd72e952a7da7c1cce52f3696e6e" "146e556e1311573593bd6cfa6efefcc1"
-  .. .. .. .. .. .. ..@ cells: Named chr [1:8728] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1" "AAACGAAAGGCTTCGC-1" ...
-  .. .. .. .. .. .. .. ..- attr(*, "names")= chr [1:8728] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1" "AAACGAAAGGCTTCGC-1" ...
-  .. .. .. ..@ seqinfo           :Formal class 'Seqinfo' [package "GenomeInfoDb"] with 4 slots
-  .. .. .. .. .. ..@ seqnames   : chr [1:298] "chr1" "chr2" "chr3" "chr4" ...
-  .. .. .. .. .. ..@ seqlengths : int [1:298] 249250621 243199373 198022430 191154276 180915260 171115067 159138663 146364022 141213431 135534747 ...
-  .. .. .. .. .. ..@ is_circular: logi [1:298] FALSE FALSE FALSE FALSE FALSE FALSE ...
-  .. .. .. .. .. ..@ genome     : chr [1:298] "hg19" "hg19" "hg19" "hg19" ...
-  .. .. .. ..@ annotation        : NULL
-  .. .. .. ..@ bias              : NULL
-  .. .. .. ..@ positionEnrichment: list()
-  .. .. .. ..@ links             :Formal class 'GRanges' [package "GenomicRanges"] with 7 slots
-  .. .. .. .. .. ..@ seqnames       :Formal class 'Rle' [package "S4Vectors"] with 4 slots
-  .. .. .. .. .. .. .. ..@ values         : Factor w/ 0 levels: 
-  .. .. .. .. .. .. .. ..@ lengths        : int(0) 
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. ..@ ranges         :Formal class 'IRanges' [package "IRanges"] with 6 slots
-  .. .. .. .. .. .. .. ..@ start          : int(0) 
-  .. .. .. .. .. .. .. ..@ width          : int(0) 
-  .. .. .. .. .. .. .. ..@ NAMES          : NULL
-  .. .. .. .. .. .. .. ..@ elementType    : chr "ANY"
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. ..@ strand         :Formal class 'Rle' [package "S4Vectors"] with 4 slots
-  .. .. .. .. .. .. .. ..@ values         : Factor w/ 3 levels "+","-","*": 
-  .. .. .. .. .. .. .. ..@ lengths        : int(0) 
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. ..@ seqinfo        :Formal class 'Seqinfo' [package "GenomeInfoDb"] with 4 slots
-  .. .. .. .. .. .. .. ..@ seqnames   : chr(0) 
-  .. .. .. .. .. .. .. ..@ seqlengths : int(0) 
-  .. .. .. .. .. .. .. ..@ is_circular: logi(0) 
-  .. .. .. .. .. .. .. ..@ genome     : chr(0) 
-  .. .. .. .. .. ..@ elementMetadata:Formal class 'DFrame' [package "S4Vectors"] with 6 slots
-  .. .. .. .. .. .. .. ..@ rownames       : NULL
-  .. .. .. .. .. .. .. ..@ nrows          : int 0
-  .. .. .. .. .. .. .. ..@ elementType    : chr "ANY"
-  .. .. .. .. .. .. .. ..@ elementMetadata: NULL
-  .. .. .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. .. .. .. .. ..@ listData       : Named list()
-  .. .. .. .. .. ..@ elementType    : chr "ANY"
-  .. .. .. .. .. ..@ metadata       : list()
-  .. .. .. ..@ counts            :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots
-  .. .. .. .. .. ..@ i       : int [1:52681465] 31 74 83 116 134 147 153 166 175 178 ...
-  .. .. .. .. .. ..@ p       : int [1:8729] 0 5546 12127 21340 51653 56574 61650 64340 73157 79801 ...
-  .. .. .. .. .. ..@ Dim     : int [1:2] 87561 8728
-  .. .. .. .. .. ..@ Dimnames:List of 2
-  .. .. .. .. .. .. ..$ : chr [1:87561] "chr1-565107-565550" "chr1-569174-569639" "chr1-713460-714823" "chr1-752422-753038" ...
-  .. .. .. .. .. .. ..$ : chr [1:8728] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1" "AAACGAAAGGCTTCGC-1" ...
-  .. .. .. .. .. ..@ x       : num [1:52681465] 2 2 2 1 2 2 2 6 2 2 ...
-  .. .. .. .. .. ..@ factors : list()
-  .. .. .. ..@ data              :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots
-  .. .. .. .. .. ..@ i       : int [1:52681465] 31 74 83 116 134 147 153 166 175 178 ...
-  .. .. .. .. .. ..@ p       : int [1:8729] 0 5546 12127 21340 51653 56574 61650 64340 73157 79801 ...
-  .. .. .. .. .. ..@ Dim     : int [1:2] 87561 8728
-  .. .. .. .. .. ..@ Dimnames:List of 2
-  .. .. .. .. .. .. ..$ : chr [1:87561] "chr1-565107-565550" "chr1-569174-569639" "chr1-713460-714823" "chr1-752422-753038" ...
-  .. .. .. .. .. .. ..$ : chr [1:8728] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1" "AAACGAAAGGCTTCGC-1" ...
-  .. .. .. .. .. ..@ x       : num [1:52681465] 2 2 2 1 2 2 2 6 2 2 ...
-  .. .. .. .. .. ..@ factors : list()
-  .. .. .. ..@ scale.data        : num[0 , 0 ] 
-  .. .. .. ..@ assay.orig        : NULL
-  .. .. .. ..@ var.features      : logi(0) 
-  .. .. .. ..@ meta.features     :'data.frame': 87561 obs. of  2 variables:
-  .. .. .. .. ..$ count     : num [1:87561] 172 437 6807 864 4841 ...
-  .. .. .. .. ..$ percentile: num [1:87561] 0.274 0.535 0.92 0.691 0.891 ...
-  .. .. .. ..@ misc              :List of 1
-  .. .. .. .. ..$ calcN: logi TRUE
-  .. .. .. ..@ key               : chr "atac_"
-  ..@ meta.data   :'data.frame':    8728 obs. of  19 variables:
-  .. ..$ orig.ident                      : Factor w/ 1 level "SeuratProject": 1 1 1 1 1 1 1 1 1 1 ...
-  .. ..$ nCount_ATAC                     : num [1:8728] 13187 16069 28008 221734 11439 ...
-  .. ..$ nFeature_ATAC                   : int [1:8728] 5546 6581 9213 30313 4921 5076 2690 8817 6644 3632 ...
-  .. ..$ total                           : int [1:8728] 22965 21806 46233 288897 16103 266481 10753 31745 23136 14626 ...
-  .. ..$ duplicate                       : int [1:8728] 10872 9336 21197 99998 6751 45654 4760 14341 10210 5612 ...
-  .. ..$ chimeric                        : int [1:8728] 183 122 479 2830 104 3425 61 167 145 99 ...
-  .. ..$ unmapped                        : int [1:8728] 198 175 292 1512 120 1514 43 191 157 109 ...
-  .. ..$ lowmapq                         : int [1:8728] 1198 1050 2673 16347 867 41940 644 1465 1308 913 ...
-  .. ..$ mitochondrial                   : int [1:8728] 51 1 14 913 0 57 96 29 15 96 ...
-  .. ..$ passed_filters                  : int [1:8728] 10463 11122 21578 167297 8261 173891 5149 15552 11301 7797 ...
-  .. ..$ cell_id                         : chr [1:8728] "_cell_0" "_cell_1" "_cell_2" "_cell_3" ...
-  .. ..$ is__cell_barcode                : int [1:8728] 1 1 1 1 1 1 1 1 1 1 ...
-  .. ..$ TSS_fragments                   : int [1:8728] 4157 4858 10696 86433 3784 14141 2637 6587 5136 3493 ...
-  .. ..$ DNase_sensitive_region_fragments: int [1:8728] 8537 9548 17420 137387 6973 78696 3973 13546 9636 6050 ...
-  .. ..$ enhancer_region_fragments       : int [1:8728] 3079 3954 4332 32884 2509 11425 753 5745 3542 1394 ...
-  .. ..$ promoter_region_fragments       : int [1:8728] 3249 3600 8763 70515 2987 1686 2289 4911 4019 2740 ...
-  .. ..$ on_target_fragments             : int [1:8728] 8894 10034 18562 144918 7288 85168 4183 14115 10072 6346 ...
-  .. ..$ blacklist_region_fragments      : int [1:8728] 6 10 22 300 4 2121 8 23 8 13 ...
-  .. ..$ peak_region_fragments           : int [1:8728] 6796 8319 14333 113658 5879 7360 3220 11399 8215 4509 ...
-  ..@ active.assay: chr "ATAC"
-  ..@ active.ident: Factor w/ 1 level "SeuratProject": 1 1 1 1 1 1 1 1 1 1 ...
-  .. ..- attr(*, "names")= chr [1:8728] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1" "AAACGAAAGGCTTCGC-1" ...
-  ..@ graphs      : list()
-  ..@ neighbors   : list()
-  ..@ reductions  : list()
-  ..@ images      : list()
-  ..@ project.name: chr "SeuratProject"
-  ..@ misc        : list()
-  ..@ version     :Classes 'package_version', 'numeric_version'  hidden list of 1
-  .. ..$ : int [1:3] 5 0 2
-  ..@ commands    : list()
-  ..@ tools       : list()</code></pre>
-</div>
-</div>
-<p>For example, we can call&nbsp;<code>granges</code>&nbsp;on a Seurat object with a ChromatinAssay set as the active assay (or on a&nbsp;<code>ChromatinAssay</code>) to see the genomic ranges associated with each feature in the object. See the&nbsp;<a href="https://www.google.com/url?q=https%3A%2F%2Fstuartlab.org%2Fsignac%2Farticles%2Fdata_structures">object interaction vignette</a>&nbsp;for more information about the ChromatinAssay class.</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">granges</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>GRanges object with 87561 ranges and 0 metadata columns:
-          seqnames            ranges strand
-             &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt;
-      [1]     chr1     565107-565550      *
-      [2]     chr1     569174-569639      *
-      [3]     chr1     713460-714823      *
-      [4]     chr1     752422-753038      *
-      [5]     chr1     762106-763359      *
-      ...      ...               ...    ...
-  [87557]     chrY 58993392-58993760      *
-  [87558]     chrY 58994571-58994823      *
-  [87559]     chrY 58996352-58997331      *
-  [87560]     chrY 59001782-59002175      *
-  [87561]     chrY 59017143-59017246      *
-  -------
-  seqinfo: 24 sequences from an unspecified genome; no seqlengths</code></pre>
-</div>
-</div>
-<p>Barcodes:</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">colnames</span>(pbmc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "AAACGAAAGAGCGAAA-1" "AAACGAAAGAGTTTGA-1" "AAACGAAAGCGAGCTA-1"
-[4] "AAACGAAAGGCTTCGC-1" "AAACGAAAGTGCTGAG-1" "AAACGAACAAGGGTAC-1"</code></pre>
-</div>
-</div>
-<p>Positions:</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">rownames</span>(pbmc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "chr1-565107-565550" "chr1-569174-569639" "chr1-713460-714823"
-[4] "chr1-752422-753038" "chr1-762106-763359" "chr1-779589-780271"</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="step-2-annotation" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="step-2-annotation"><span class="header-section-number">4.2</span> ✒️ Step 2: Annotation</h2>
-<p>We can also add gene annotations to the&nbsp;<code>pbmc</code>&nbsp;object for the human genome. This will allow downstream functions to pull the gene annotation information directly from the object.</p>
-<p>Before annotation</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">@</span>assays<span class="sc">$</span>ATAC<span class="sc">@</span>annotation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
-</div>
-</div>
-<section id="get-gene-annotations-for-the-peaks-and-add-to-the-object" class="level3" data-number="4.2.1">
-<h3 data-number="4.2.1" class="anchored" data-anchor-id="get-gene-annotations-for-the-peaks-and-add-to-the-object"><span class="header-section-number">4.2.1</span> Get gene annotations for the peaks and add to the object</h3>
-<p>From the&nbsp;<a href="https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_web_summary.html">dataset summary</a>, we can see that the reference package 10x Genomics used to perform the mapping was “hg19”, which&nbsp;<a href="https://www.10xgenomics.com/support/software/cell-ranger/downloads/cr-ref-build-steps#ref-2020-a">corresponds to</a>&nbsp;the Ensembl v75 (hg19) patch release.</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract gene annotations from EnsDb</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>annotations <span class="ot">&lt;-</span> <span class="fu">GetGRangesFromEnsDb</span>(<span class="at">ensdb =</span> EnsDb.Hsapiens.v75)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># change to UCSC style since the data was mapped to hg19</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">seqlevelsStyle</span>(annotations) <span class="ot">&lt;-</span> <span class="st">'UCSC'</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># add the gene information to the object</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">Annotation</span>(pbmc) <span class="ot">&lt;-</span> annotations</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co"># check</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">seqlevels</span>(pbmc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "chr1" "chr2" "chr3" "chr4" "chr5" "chr6"</code></pre>
-</div>
-</div>
-<p>After adding the gene annotation:</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">@</span>assays<span class="sc">$</span>ATAC<span class="sc">@</span>annotation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>GRanges object with 3072120 ranges and 5 metadata columns:
-                  seqnames        ranges strand |           tx_id   gene_name
-                     &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; |     &lt;character&gt; &lt;character&gt;
-  ENSE00001489430     chrX 192989-193061      + | ENST00000399012      PLCXD1
-  ENSE00001536003     chrX 192991-193061      + | ENST00000484611      PLCXD1
-  ENSE00002160563     chrX 193020-193061      + | ENST00000430923      PLCXD1
-  ENSE00001750899     chrX 197722-197788      + | ENST00000445062      PLCXD1
-  ENSE00001489388     chrX 197859-198351      + | ENST00000381657      PLCXD1
-              ...      ...           ...    ... .             ...         ...
-  ENST00000361739    chrMT     7586-8269      + | ENST00000361739      MT-CO2
-  ENST00000361789    chrMT   14747-15887      + | ENST00000361789      MT-CYB
-  ENST00000361851    chrMT     8366-8572      + | ENST00000361851     MT-ATP8
-  ENST00000361899    chrMT     8527-9207      + | ENST00000361899     MT-ATP6
-  ENST00000362079    chrMT     9207-9990      + | ENST00000362079      MT-CO3
-                          gene_id   gene_biotype     type
-                      &lt;character&gt;    &lt;character&gt; &lt;factor&gt;
-  ENSE00001489430 ENSG00000182378 protein_coding     exon
-  ENSE00001536003 ENSG00000182378 protein_coding     exon
-  ENSE00002160563 ENSG00000182378 protein_coding     exon
-  ENSE00001750899 ENSG00000182378 protein_coding     exon
-  ENSE00001489388 ENSG00000182378 protein_coding     exon
-              ...             ...            ...      ...
-  ENST00000361739 ENSG00000198712 protein_coding      cds
-  ENST00000361789 ENSG00000198727 protein_coding      cds
-  ENST00000361851 ENSG00000228253 protein_coding      cds
-  ENST00000361899 ENSG00000198899 protein_coding      cds
-  ENST00000362079 ENSG00000198938 protein_coding      cds
-  -------
-  seqinfo: 25 sequences (1 circular) from hg19 genome</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="step-3-computing-qc-metrics" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="step-3-computing-qc-metrics"><span class="header-section-number">4.3</span> 📕 Step 3: Computing QC metrics</h2>
-<p>We can now compute some QC metrics for the scATAC-seq experiment as the <a href="https://stuartlab.org/signac/articles/pbmc_vignette">original tutorial</a>. We currently suggest the following metrics below to assess data quality. As with scRNA-seq, the expected range of values for these parameters will vary depending on your biological system, cell viability, and other factors.</p>
-<p>Calculate the strength of the nucleosome signal per cell using <a href="https://stuartlab.org/signac/reference/nucleosomesignal"><code>NucleosomeSignal()</code></a>. Computes the ratio of fragments between 147 bp and 294 bp (mononucleosome) to fragments &lt; 147 bp (nucleosome-free).</p>
-<p>We can inspect the TSS enrichment scores by grouping the cells based on the score and plotting the accessibility signal over all TSS sites. Setting the `fast=TRUE` option in <a href="https://stuartlab.org/signac/reference/tssenrichment"><code>TSSEnrichment()</code></a> will only compute the TSS enrichment score without storing the entire cell by position matrix of Tn5 insertion frequency for each cell, and can save memory.</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute nucleosome signal score per cell</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">NucleosomeSignal</span>(<span class="at">object =</span> pbmc)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># compute TSS enrichment score per cell</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">TSSEnrichment</span>(<span class="at">object =</span> pbmc)</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># add fraction of reads in peaks</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>pct_reads_in_peaks <span class="ot">&lt;-</span> pbmc<span class="sc">$</span>peak_region_fragments <span class="sc">/</span> pbmc<span class="sc">$</span>passed_filters <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co"># add blacklist ratio</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>blacklist_ratio <span class="ot">&lt;-</span> pbmc<span class="sc">$</span>blacklist_region_fragments<span class="sc">/</span>pbmc<span class="sc">$</span>peak_region_fragments</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<section id="impact-of-sample-type-on-fragment-yield-and-sequencing-quality" class="level3" data-number="4.3.1">
-<h3 data-number="4.3.1" class="anchored" data-anchor-id="impact-of-sample-type-on-fragment-yield-and-sequencing-quality"><span class="header-section-number">4.3.1</span> Impact of Sample Type on Fragment Yield and Sequencing Quality</h3>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li><p><strong>Scatterplot colored by point density:</strong> This plot shows the <code>log10(unique nuclear fragments)</code> vs TSS enrichment score and indicates the thresholds used with dotted lines.</p></li>
-<li><p><strong>Histogram:</strong> These plot shows the fragment size distribution.</p></li>
-</ul>
-</div>
-</div>
-<p>The relationship between variables stored in the object metadata can be visualized using the&nbsp;<a href="https://stuartlab.org/signac/reference/densityscatter"><code>DensityScatter()</code></a>&nbsp;function. This can also be used to quickly find suitable cutoff values for different QC metrics by setting&nbsp;<code>quantiles=TRUE</code>:</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DensityScatter</span>(pbmc, <span class="at">x =</span> <span class="st">'nCount_ATAC'</span>, <span class="at">y =</span> <span class="st">'TSS.enrichment'</span>, <span class="at">log_x =</span> <span class="cn">TRUE</span>, <span class="at">quantiles =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="Section1_P13_retos_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>We can also look at the fragment length periodicity for all the cells, and group by cells with high or low nucleosomal signal strength. You can see that cells that are outliers for the mononucleosomal / nucleosome-free ratio (based on the plots above) have different nucleosomal banding patterns. The remaining cells exhibit a pattern that is typical for a successful ATAC-seq experiment.</p>
-</section>
-<section id="fragment-size-distribution" class="level3" data-number="4.3.2">
-<h3 data-number="4.3.2" class="anchored" data-anchor-id="fragment-size-distribution"><span class="header-section-number">4.3.2</span> Fragment size distribution</h3>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>nucleosome_group <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(pbmc<span class="sc">$</span>nucleosome_signal <span class="sc">&gt;</span> <span class="dv">4</span>, <span class="st">'NS &gt; 4'</span>, <span class="st">'NS &lt; 4'</span>)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">FragmentHistogram</span>(<span class="at">object =</span> pbmc, <span class="at">group.by =</span> <span class="st">'nucleosome_group'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="Section1_P13_retos_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>We can plot the distribution of each QC metric separately using a violin plot:</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VlnPlot</span>(</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">c</span>(<span class="st">'nCount_ATAC'</span>, <span class="st">'TSS.enrichment'</span>, <span class="st">'blacklist_ratio'</span>, <span class="st">'nucleosome_signal'</span>, <span class="st">'pct_reads_in_peaks'</span>),</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="fl">0.1</span>,</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">5</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="Section1_P13_retos_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Finally we remove cells that are outliers for these QC metrics. The exact QC thresholds used will need to be adjusted according to your dataset.</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">subset</span>(</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> pbmc,</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">subset =</span> nCount_ATAC <span class="sc">&gt;</span> <span class="dv">3000</span> <span class="sc">&amp;</span> </span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    nCount_ATAC <span class="sc">&lt;</span> <span class="dv">20000</span> <span class="sc">&amp;</span>  </span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    pct_reads_in_peaks <span class="sc">&gt;</span> <span class="dv">15</span> <span class="sc">&amp;</span> <span class="co"># 15 % of the reads in the peaks</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    blacklist_ratio <span class="sc">&lt;</span> <span class="fl">0.01</span> <span class="sc">&amp;</span> <span class="co"># 1 % of the reads mapeaning in blacklist ratio</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    nucleosome_signal <span class="sc">&lt;</span> <span class="dv">4</span> <span class="sc">&amp;</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    TSS.enrichment <span class="sc">&gt;</span> <span class="dv">4</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>pbmc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>An object of class Seurat 
-87561 features across 5628 samples within 1 assay 
-Active assay: ATAC (87561 features, 0 variable features)
- 2 layers present: counts, data</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>            used   (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells  14747239  787.6   43780821 2338.2  34074492 1819.8
-Vcells 300696555 2294.2  548983892 4188.5 548983887 4188.5</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="step-4-normalization-and-linear-dimensional-reduction-lsi" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="step-4-normalization-and-linear-dimensional-reduction-lsi"><span class="header-section-number">4.4</span> 📘 Step 4: Normalization and linear dimensional reduction (LSI)</h2>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunTFIDF</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Performing TF-IDF normalization</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in RunTFIDF.default(object = GetAssayData(object = object, layer =
-"counts"), : Some features contain 0 total counts</code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindTopFeatures</span>(pbmc, <span class="at">min.cutoff =</span> <span class="st">'q0'</span>)</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunSVD</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Running SVD</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Scaling cell embeddings</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>            used   (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells  14756544  788.1   43780821 2338.2  34074492 1819.8
-Vcells 296883996 2265.1  548983892 4188.5 548983887 4188.5</code></pre>
-</div>
-</div>
-<p>The first LSI component often captures sequencing depth (technical variation) rather than biological variation. If this is the case, the component should be removed from downstream analysis. We can assess the correlation between each LSI component and sequencing depth using the&nbsp;<a href="https://stuartlab.org/signac/reference/depthcor"><code>DepthCor()</code></a>&nbsp;function:</p>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DepthCor</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="Section1_P13_retos_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Here we see there is a very strong correlation between the first LSI component and the total number of counts for the cell. We will perform downstream steps without this component as we don’t want to group cells together based on their total sequencing depth, but rather by their patterns of accessibility at cell-type-specific peaks.</p>
-</section>
-<section id="step-5-non-linear-dimensional-reduction-and-clustering" class="level2" data-number="4.5">
-<h2 data-number="4.5" class="anchored" data-anchor-id="step-5-non-linear-dimensional-reduction-and-clustering"><span class="header-section-number">4.5</span> 📙 Step 5: Non-linear dimensional reduction and clustering</h2>
-<div class="cell">
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(<span class="at">object =</span> pbmc, <span class="at">reduction =</span> <span class="st">'lsi'</span>, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>02:10:46 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>02:10:46 Read 5628 rows and found 29 numeric columns</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>02:10:46 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>02:10:46 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[----|----|----|----|----|----|----|----|----|----|</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>**************************************************|
-02:10:46 Writing NN index file to temp file C:\Users\ecoss\AppData\Local\Temp\Rtmpi4Xas7\file195c37a54711
-02:10:46 Searching Annoy index using 8 threads, search_k = 3000
-02:10:47 Annoy recall = 100%
-02:10:48 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 30
-02:10:50 Initializing from normalized Laplacian + noise (using RSpectra)
-02:10:50 Commencing optimization for 500 epochs, with 212950 positive edges
-02:11:06 Optimization finished</code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindNeighbors</span>(<span class="at">object =</span> pbmc, <span class="at">reduction =</span> <span class="st">'lsi'</span>, <span class="at">dims =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Computing nearest neighbor graph
-Computing SNN</code></pre>
-</div>
-<details open="">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(<span class="at">object =</span> pbmc, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">algorithm =</span> <span class="dv">3</span>)</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(<span class="at">object =</span> pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="Section1_P13_retos_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="references" class="level2" data-number="4.6">
-<h2 data-number="4.6" class="anchored" data-anchor-id="references"><span class="header-section-number">4.6</span> References</h2>
+<section id="references" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="references"><span class="header-section-number">3.2</span> References</h2>
 <ul>
 <li>Signac tutorial - <a href="https://stuartlab.org/signac/articles/pbmc_vignette">Analyzing PBMC scATAC-seq (Signac tutorial)</a></li>
 <li>Signac tutorial - <a href="https://rpubs.com/qshenfeng/signac_pbmc10k">Analyzing PBMC scATAC-seq</a></li>
 </ul>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

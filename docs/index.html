@@ -314,7 +314,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <section id="global-information" class="level1 unnumbered">
 <h1 class="unnumbered">Global information</h1>
-<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="globalInfo">
+<ul>
+<li><div class="tabset-margin-container"></div><div class="panel-tabset" data-group="globalInfo">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">About the course 📌</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Agenda 📆</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">About datasets <strong>📖</strong></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false">About packages 📚</a></li></ul>
 <div class="tab-content" data-group="globalInfo">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
@@ -323,19 +324,14 @@ ul.task-list li input[type="checkbox"] {
 <li><p><strong>Date:</strong> 11 November 2024</p></li>
 <li><p><strong>Course duration:</strong> 5 hours</p></li>
 </ul>
-<section id="course-instructors" class="level4">
-<h4 class="anchored" data-anchor-id="course-instructors"><strong>Course Instructors:</strong></h4>
+<h4 id="course-instructors" class="anchored"><strong>Course Instructors:</strong></h4>
 <ul>
 <li><p><strong>Diego Ramirez</strong> - Bachelor in Genomic Sciences, Escuela Nacional de Estudios Superiores Unidad Juriquilla UNAM (ENES Juriquilla), Mexico.</p></li>
 <li><p><strong>Evelia Lorena Coss-Navarrete</strong> - PostDoc, International Laboratory for Human Genome Research (LIIGH)-UNAM, Mexico. Contact: <a href="https://eveliacoss.github.io/">Web page</a></p></li>
 </ul>
-</section>
-<section id="abstract" class="level4">
-<h4 class="anchored" data-anchor-id="abstract"><strong>Abstract:</strong></h4>
+<h4 id="abstract" class="anchored"><strong>Abstract:</strong></h4>
 <p>Single-cell transposase-accessible chromatin sequencing (scATAC-seq) represents the most innovative technology for examining genome-wide regulatory landscapes in single cells. For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of human peripheral blood mononuclear cells (PBMCs) provided by 10x Genomics. We will run bridge integration for PBMC with the newly released Azimuth ATAC workflow. In this workshop we will review the existing statistical tools for analyzing scATAC-seq data, how to document your analysis and review some tools for interpreting results.</p>
-</section>
-<section id="learning-objectives" class="level4">
-<h4 class="anchored" data-anchor-id="learning-objectives"><strong>Learning objectives:</strong></h4>
+<h4 id="learning-objectives" class="anchored"><strong>Learning objectives:</strong></h4>
 <ol type="1">
 <li><p>Fundamentals of Single Cell ATAC-seq (scATAC-seq) and Multiome analysis.</p></li>
 <li><p>Single-Cell ATAC-seq Pre-Processing and Quality Control.</p></li>
@@ -344,11 +340,8 @@ ul.task-list li input[type="checkbox"] {
 <li><p>Exploring and assessing the resulting annotations.</p></li>
 <li><p>Motif analysis with Signac</p></li>
 </ol>
-</section>
-<section id="citing-and-re-using-course-material" class="level2">
-<h2 class="anchored" data-anchor-id="citing-and-re-using-course-material">Citing and Re-using Course Material</h2>
+<h2 id="citing-and-re-using-course-material" class="anchored" data-anchor-id="global-information">Citing and Re-using Course Material</h2>
 <p>The course data are free to reuse and adapt with appropriate attribution. All course data in these repositories are licensed under the&nbsp;<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>.</p>
-</section>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <table class="table">
@@ -448,13 +441,19 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <p>🔷 <strong>Section 1 - Practical 13</strong></p>
-<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of <strong>human peripheral blood mononuclear cells (PBMCs)</strong> provided by 10x Genomics. The following files are used in this vignette, all available through the 10x Genomics website:</p>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of <a href="https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0">human peripheral blood mononuclear cells (PBMCs)</a> provided by 10x Genomics (Next GEM v1.1). The following files are used in this course, all available through the 10x Genomics website:</p>
 <ul>
-<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5">Raw data</a></p></li>
-<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv">Metadata</a></p></li>
-<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz">fragments file</a></p></li>
-<li><p>The fragments file <a href="https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz.tbi">index</a></p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_filtered_peak_bc_matrix.h5">Raw data</a>: Filtered peak barcode matrix.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_singlecell.csv">Metadata</a>: Per-barcode fragment counts &amp; metrics.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi">fragments file index</a>: Fragments file index.</p></li>
 </ul>
+<p>🔷 <strong>Section 2 - Practical 14</strong></p>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of</p>
+<p>🔷 <strong>Section 2 - Practical 15</strong></p>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of</p>
+<p>🔷 <strong>Section 3 - Practical 16</strong></p>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of</p>
 </div>
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <ul>
@@ -464,7 +463,7 @@ ul.task-list li input[type="checkbox"] {
 </ul></li>
 <li><p><strong>From Bioconductor:</strong></p>
 <ul>
-<li>celldex, SingleR, SeuratDisk, clusterProfile, preprocessCore, EnsDb.Hsapiens.v86, EnsDb.Hsapiens.v75, biovizBase, LoomExperiment, SingleCellExperiment, SeuratData</li>
+<li>celldex, SingleR, SeuratDisk, clusterProfile, preprocessCore, EnsDb.Hsapiens.v86, EnsDb.Hsapiens.v75, biovizBase, LoomExperiment, SingleCellExperiment, SeuratData, JASPAR2020, TFBSTools, glmGamPoi, clusterProfiler, org.Hs.eg.db , BSgenome.Hsapiens.UCSC.hg38</li>
 </ul></li>
 <li><p><strong>From Github:</strong></p>
 <ul>
@@ -473,7 +472,8 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 </div>
 </div>
-</div>
+</div></li>
+</ul>
 
 
 </section>

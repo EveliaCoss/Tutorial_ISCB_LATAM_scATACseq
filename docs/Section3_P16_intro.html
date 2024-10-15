@@ -221,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Section2_P15_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Multimodal analysis and Integration</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -338,7 +338,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <section id="motif-analysis" class="level1" data-number="9">
 <h1 data-number="9"><span class="header-section-number">9</span> <strong>Motif analysis</strong></h1>
-<p>The previous analysis (P14 - Find differentially accessible peaks between cell types, <code>da_peaks</code>) can help us to identify putative <em>cis</em>-regulatory elements that are critical for regulating cell type identity or cell state transitions. This is usually achieved via the binding of certain <em>trans</em>-regulators, e.g.&nbsp;TFs, to those open chromatin regions.</p>
+<p>The previous analysis (<strong>Practical 14 - Find differentially accessible peaks between cell types</strong>, <code>da_peaks</code>) can help us to identify putative <em>cis</em>-regulatory elements that are critical for regulating cell type identity or cell state transitions. This is usually achieved via the binding of certain <em>trans</em>-regulators, e.g.&nbsp;TFs, to those open chromatin regions.</p>
 <p>The binding of most TFs have strong sequence specificity, which can be summarized into sequence motifs, i.e.&nbsp;the TF binding motifs. If certain TFs play important roles in those regulations, it is very likely that the cell-type-specific peaks are regions enriched for the binding, with their genomic sequences enriched for the corresponding TF binding motifs. In this case, by checking the motifs enriched in those cell-type-specific peaks, we may be then able to identify TFs responsible for establishment and maintanence of cell type identity.</p>
 <p>To do that, we also need a database of TF binding motifs. Indeed, there are several commonly used databases, including the commercial ones like&nbsp;<a href="https://genexplain.com/transfac/">TRANSFAC</a>&nbsp;and open source ones like&nbsp;<a href="https://jaspar.genereg.net/">JASPAR</a>. By scanning for sequences matching those motifs, we can predict possible binding sites of the TFs with binding motif information in the databases, and then check their enrichment in the peak list of interest in relative to the other peaks.</p>
 <section id="the-motif-class" class="level3" data-number="9.0.1">
