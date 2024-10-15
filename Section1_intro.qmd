@@ -79,7 +79,7 @@ We can use the `granges()` function on a **Seurat** object with an active **Chro
 The `Fragment` class is designed for storing and interacting with a [fragment file](https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/fragments) commonly used for single-cell chromatin data. It contains the path to an indexed fragment file on disk, a MD5 hash for the fragment file and the fragment file index, and a vector of cell names contained in the fragment file. Importantly, this is a named vector where the elements of the vector are the cell names as they appear in the fragment file, and the name of each element is the cell name as it appears in the `ChromatinAssay` object storing the `Fragment` object. This allows a mapping of cell names on disk to cell names in R, and avoids the need to alter fragment files on disk. This path can also be a remote file accessible by `http` or `ftp`. For more details on the [**Fragment** class](https://stuartlab.org/signac/articles/data_structures#the-fragment-class).
 
 | Column Number | Name        | Description                                                                                                                                             |
-|---------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+|-----------|-----------|---------------------------------------------------|
 | 1             | chrom       | Reference genome chromosome of fragment.                                                                                                                |
 | 2             | chromStart  | Adjusted start position of fragment on chromosome.                                                                                                      |
 | 3             | chromEnd    | Adjusted end position of fragment on chromosome. The end position is exclusive, so represents the position immediately following the fragment interval. |
@@ -101,22 +101,12 @@ Example:
 
 ## **References**
 
-https://www.nature.com/articles/s41596-022-00692-9
-
-https://www.nature.com/articles/s43586-020-00008-9
-
-https://www.sc-best-practices.org/chromatin_accessibility/introduction.html
-
-https://www.nature.com/articles/s41576-023-00586-w
-
-https://www.archrproject.com/bookdown/footprinting-with-archr.html
-
-<https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/matrices>
-
-[Calling peaks](https://stuartlab.org/signac/1.13.0/articles/peak_calling)
-
-[Issue 560](https://github.com/stuart-lab/signac/issues/560)
-
-[Seuratv4](https://satijalab.org/seurat/articles/get_started.html)
-
-Import data
+-   Grandi, et al. 2022. [Chromatin accessibility profiling by ATAC-seq](https://www.nature.com/articles/s41596-022-00692-9). Nature protocols.
+-   Minnoye, et al. 2021. [Chromatin accessibility profiling methods.](https://www.nature.com/articles/s43586-020-00008-9)Nature reviews methods primers.
+-   Heumos, et al. 2023. [Best practices for single-cell analysis across modalities](https://www.nature.com/articles/s41576-023-00586-w). Nature reviews genetics.
+-   Best practices. [23. Single-cell ATAC sequencing](https://www.sc-best-practices.org/chromatin_accessibility/introduction.html).
+-   Signac Tutorial. [Calling peaks](https://stuartlab.org/signac/1.13.0/articles/peak_calling)
+-   [Seuratv4](https://satijalab.org/seurat/articles/get_started.html)
+-   ArchR tutorial. [Chapter 14 Footprinting with ArchR](https://www.archrproject.com/bookdown/footprinting-with-archr.html)
+-   Peak Calling using MACS2. [Issue 560](https://github.com/stuart-lab/signac/issues/560)
+-   10Xgenomics tutorial. [Cell Ranger ATAC count: Feature-Barcode Matrices.](https://support.10xgenomics.com/single-cell-atac/software/pipelines/latest/output/matrices)

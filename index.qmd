@@ -6,102 +6,114 @@
 
 # Global information {.unnumbered}
 
-::: {.panel-tabset group="globalInfo"}
-### About the course 📌
+-   ::: {.panel-tabset group="globalInfo"}
+    ### About the course 📌
 
-This course is part of the [Workshop Single Cell Genomic Approaches to Study the Immune System - Latin America & the Caribbean](https://coursesandconferences.wellcomeconnectingscience.org/event/single-cell-genomic-approaches-to-study-the-immune-system-latin-america-the-caribbean-20241109/) (9-11 Novembrer 2024), Universidad CES, Medellín, Colombia.
+    This course is part of the [Workshop Single Cell Genomic Approaches to Study the Immune System - Latin America & the Caribbean](https://coursesandconferences.wellcomeconnectingscience.org/event/single-cell-genomic-approaches-to-study-the-immune-system-latin-america-the-caribbean-20241109/) (9-11 Novembrer 2024), Universidad CES, Medellín, Colombia.
 
--   **Date:** 11 November 2024
+    -   **Date:** 11 November 2024
 
--   **Course duration:** 5 hours
+    -   **Course duration:** 5 hours
 
-#### **Course Instructors:**
+    #### **Course Instructors:**
 
--   **Diego Ramirez** - Bachelor in Genomic Sciences, Escuela Nacional de Estudios Superiores Unidad Juriquilla UNAM (ENES Juriquilla), Mexico.
+    -   **Diego Ramirez** - Bachelor in Genomic Sciences, Escuela Nacional de Estudios Superiores Unidad Juriquilla UNAM (ENES Juriquilla), Mexico.
 
--   **Evelia Lorena Coss-Navarrete** - PostDoc, International Laboratory for Human Genome Research (LIIGH)-UNAM, Mexico. Contact: [Web page](https://eveliacoss.github.io/)
+    -   **Evelia Lorena Coss-Navarrete** - PostDoc, International Laboratory for Human Genome Research (LIIGH)-UNAM, Mexico. Contact: [Web page](https://eveliacoss.github.io/)
 
-#### **Abstract:**
+    #### **Abstract:**
 
-Single-cell transposase-accessible chromatin sequencing (scATAC-seq) represents the most innovative technology for examining genome-wide regulatory landscapes in single cells. For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of human peripheral blood mononuclear cells (PBMCs) provided by 10x Genomics. We will run bridge integration for PBMC with the newly released Azimuth ATAC workflow. In this workshop we will review the existing statistical tools for analyzing scATAC-seq data, how to document your analysis and review some tools for interpreting results.
+    Single-cell transposase-accessible chromatin sequencing (scATAC-seq) represents the most innovative technology for examining genome-wide regulatory landscapes in single cells. For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of human peripheral blood mononuclear cells (PBMCs) provided by 10x Genomics. We will run bridge integration for PBMC with the newly released Azimuth ATAC workflow. In this workshop we will review the existing statistical tools for analyzing scATAC-seq data, how to document your analysis and review some tools for interpreting results.
 
-#### **Learning objectives:**
+    #### **Learning objectives:**
 
-1.  Fundamentals of Single Cell ATAC-seq (scATAC-seq) and Multiome analysis.
+    1.  Fundamentals of Single Cell ATAC-seq (scATAC-seq) and Multiome analysis.
 
-2.  Single-Cell ATAC-seq Pre-Processing and Quality Control.
+    2.  Single-Cell ATAC-seq Pre-Processing and Quality Control.
 
-3.  Loading in and pre-processing the scATAC-seq, multiome, and scRNA-seq reference datasets.
+    3.  Loading in and pre-processing the scATAC-seq, multiome, and scRNA-seq reference datasets.
 
-4.  Mapping the scATAC-seq dataset via bridge integration.
+    4.  Mapping the scATAC-seq dataset via bridge integration.
 
-5.  Exploring and assessing the resulting annotations.
+    5.  Exploring and assessing the resulting annotations.
 
-6.  Motif analysis with Signac
+    6.  Motif analysis with Signac
 
-## Citing and Re-using Course Material
+    ## Citing and Re-using Course Material
 
-The course data are free to reuse and adapt with appropriate attribution. All course data in these repositories are licensed under the [Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+    The course data are free to reuse and adapt with appropriate attribution. All course data in these repositories are licensed under the [Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
-### Agenda 📆 {#agenda}
+    ### Agenda 📆 {#agenda}
 
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| Subject                                                                       | Time                 | Instructor                    |
-+===============================================================================+:====================:+:=============================:+
-| 🔷 **Section 1 - Introduction and Quality control (45 min) - (9:45-10:30 h)** |                      |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| -   Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis                | 15 min (9:45- 10:00) | Evelia Coss                   |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| -   **Practical 13:** scATAC-seq Pre-Processing and Quality Control           | 30 min\              | Evelia Coss                   |
-|                                                                               | (10:00-10:30)        |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| ☕ *Coffee break (30 min) - (10:30-11:00 h) ☕*                               |                      |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| 🔷 **Section 2 - scATAC-seq Downstream analysis** **(2 h) - (11:00-13:00 h)** |                      |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| -   **Practical 14:** scATAC-seq Downstream                                   | 1 h\                 | Diego Ramirez                 |
-|                                                                               | (11:00-12:00)        |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| -   **Practical 15:** Analyses and scRNA-seq Integration                      | 1 h\                 | Diego Ramirez                 |
-|                                                                               | (12:00-13:00)        |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| *🍖🍗 Lunch (1 h) - (13:00 - 14:00) 🍖🍗*                                     |                      |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| 🔷 **Section 3 - Motif analysis and results (14:00 - 15:30 h)**               |                      |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| -   **Practical 16:** Motif analysis with Signac                              | 30 min\              | Diego Ramirez                 |
-|                                                                               | (14:00-14:30)        |                               |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| -   **Practical 17:** Exploring results (graphs)                              | 30 min (14:30-15:00) | Diego Ramirez                 |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
-| -   Other tools used in scATAC-seq                                            | 30 min (15:00-15:30) | Evelia Coss and Diego Ramirez |
-+-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | Subject                                                                       | Time                 | Instructor                    |
+    +===============================================================================+:====================:+:=============================:+
+    | 🔷 **Section 1 - Introduction and Quality control (45 min) - (9:45-10:30 h)** |                      |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | -   Fundamentals of Single Cell ATAC-seq (scATAC-seq) analysis                | 15 min (9:45- 10:00) | Evelia Coss                   |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | -   **Practical 13:** scATAC-seq Pre-Processing and Quality Control           | 30 min\              | Evelia Coss                   |
+    |                                                                               | (10:00-10:30)        |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | ☕ *Coffee break (30 min) - (10:30-11:00 h) ☕*                               |                      |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | 🔷 **Section 2 - scATAC-seq Downstream analysis** **(2 h) - (11:00-13:00 h)** |                      |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | -   **Practical 14:** scATAC-seq Downstream                                   | 1 h\                 | Diego Ramirez                 |
+    |                                                                               | (11:00-12:00)        |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | -   **Practical 15:** Analyses and scRNA-seq Integration                      | 1 h\                 | Diego Ramirez                 |
+    |                                                                               | (12:00-13:00)        |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | *🍖🍗 Lunch (1 h) - (13:00 - 14:00) 🍖🍗*                                     |                      |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | 🔷 **Section 3 - Motif analysis and results (14:00 - 15:30 h)**               |                      |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | -   **Practical 16:** Motif analysis with Signac                              | 30 min\              | Diego Ramirez                 |
+    |                                                                               | (14:00-14:30)        |                               |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | -   **Practical 17:** Exploring results (graphs)                              | 30 min (14:30-15:00) | Diego Ramirez                 |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
+    | -   Other tools used in scATAC-seq                                            | 30 min (15:00-15:30) | Evelia Coss and Diego Ramirez |
+    +-------------------------------------------------------------------------------+----------------------+-------------------------------+
 
-### About datasets **📖**
+    ### About datasets **📖**
 
-🔷 **Section 1 - Practical 13**
+    🔷 **Section 1 - Practical 13**
 
-For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of **human peripheral blood mononuclear cells (PBMCs)** provided by 10x Genomics. The following files are used in this vignette, all available through the 10x Genomics website:
+    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of [human peripheral blood mononuclear cells (PBMCs)](https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0) provided by 10x Genomics (Next GEM v1.1). The following files are used in this course, all available through the 10x Genomics website:
 
--   The [Raw data](https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5)
+    -   The [Raw data](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_filtered_peak_bc_matrix.h5): Filtered peak barcode matrix.
 
--   The [Metadata](https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_singlecell.csv)
+    -   The [Metadata](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_singlecell.csv): Per-barcode fragment counts & metrics.
 
--   The [fragments file](https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz)
+    -   The [fragments file](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz): Barcoded and aligned fragment file.
 
--   The fragments file [index](https://cf.10xgenomics.com/samples/cell-atac/2.1.0/10k_pbmc_ATACv2_nextgem_Chromium_Controller/10k_pbmc_ATACv2_nextgem_Chromium_Controller_fragments.tsv.gz.tbi)
+    -   The [fragments file index](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi): Fragments file index.
 
-### About packages 📚
+    🔷 **Section 2 - Practical 14**
 
--   **From CRAN:**
+    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of
 
-    -   Seurat, cowplot, SingleCellExperiment, scDblFinder, Rtsne, hdf5r, clustree, tidyverse, Signac, SeuratObject, hdf5r, reticulate, patchwork, ggplot2, future.
+    🔷 **Section 2 - Practical 15**
 
--   **From Bioconductor:**
+    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of
 
-    -   celldex, SingleR, SeuratDisk, clusterProfile, preprocessCore, EnsDb.Hsapiens.v86, EnsDb.Hsapiens.v75, biovizBase, LoomExperiment, SingleCellExperiment, SeuratData
+    🔷 **Section 3 - Practical 16**
 
--   **From Github:**
+    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of
 
-    -   seurat-data and sceasy
-:::
+    ### About packages 📚
+
+    -   **From CRAN:**
+
+        -   Seurat, cowplot, SingleCellExperiment, scDblFinder, Rtsne, hdf5r, clustree, tidyverse, Signac, SeuratObject, hdf5r, reticulate, patchwork, ggplot2, future.
+
+    -   **From Bioconductor:**
+
+        -   celldex, SingleR, SeuratDisk, clusterProfile, preprocessCore, EnsDb.Hsapiens.v86, EnsDb.Hsapiens.v75, biovizBase, LoomExperiment, SingleCellExperiment, SeuratData, JASPAR2020, TFBSTools, glmGamPoi, clusterProfiler, org.Hs.eg.db , BSgenome.Hsapiens.UCSC.hg38
+
+    -   **From Github:**
+
+        -   seurat-data and sceasy
+    :::

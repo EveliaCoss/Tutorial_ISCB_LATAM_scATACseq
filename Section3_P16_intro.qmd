@@ -7,7 +7,7 @@ In this step, we will demonstrate the following:
 
 # **Motif analysis**
 
-The previous analysis (P14 - Find differentially accessible peaks between cell types, `da_peaks`) can help us to identify putative *cis*-regulatory elements that are critical for regulating cell type identity or cell state transitions. This is usually achieved via the binding of certain *trans*-regulators, e.g. TFs, to those open chromatin regions.
+The previous analysis (**Practical 14 - Find differentially accessible peaks between cell types**, `da_peaks`) can help us to identify putative *cis*-regulatory elements that are critical for regulating cell type identity or cell state transitions. This is usually achieved via the binding of certain *trans*-regulators, e.g. TFs, to those open chromatin regions.
 
 The binding of most TFs have strong sequence specificity, which can be summarized into sequence motifs, i.e. the TF binding motifs. If certain TFs play important roles in those regulations, it is very likely that the cell-type-specific peaks are regions enriched for the binding, with their genomic sequences enriched for the corresponding TF binding motifs. In this case, by checking the motifs enriched in those cell-type-specific peaks, we may be then able to identify TFs responsible for establishment and maintanence of cell type identity.
 

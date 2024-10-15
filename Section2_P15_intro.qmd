@@ -1,4 +1,4 @@
-# **Practical 15:** Analyses and scRNA-seq Integration {#install .setup style="blue"}
+# **Practical 15:** Multimodal analysis and Integration {#install .setup style="blue"}
 
 In this step, we will demonstrate the following:
 

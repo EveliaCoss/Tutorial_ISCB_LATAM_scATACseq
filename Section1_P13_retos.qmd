@@ -1,28 +1,28 @@
 # Exercises {#install .setup style="blue"}
 
-## Dataset overview: **10k Peripheral Blood Mononuclear Cells (PBMCs) from a Healthy Donor**
+## Dataset overview: **1k Peripheral Blood Mononuclear Cells (PBMCs) from a Healthy Donor**
 
-For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of [human peripheral blood mononuclear cells](https://www.10xgenomics.com/datasets/10-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-1-standard-1-0-1) (PBMCs) provided by 10x Genomics. The following files are used in this course, all available through the 10x Genomics website:
+For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of [human peripheral blood mononuclear cells (PBMCs)](https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0) provided by 10x Genomics (Next GEM v1.1). The following files are used in this course, all available through the 10x Genomics website:
 
--   The [Raw data](https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_filtered_tf_bc_matrix.h5): Filtered peak barcode matrix.
+-   The [Raw data](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_filtered_peak_bc_matrix.h5): Filtered peak barcode matrix.
 
--   The [Metadata](https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_singlecell.csv): Per-barcode fragment counts & metrics.
+-   The [Metadata](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_singlecell.csv): Per-barcode fragment counts & metrics.
 
--   The [fragments file](https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_fragments.tsv.gz): Barcoded and aligned fragment file.
+-   The [fragments file](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz): Barcoded and aligned fragment file.
 
--   The [fragments file index](https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_fragments.tsv.gz.tbi): Fragments file index.
+-   The [fragments file index](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi): Fragments file index.
 
 ::: {.callout-note icon="false"}
 ## Questions
 
-Check the [data report](https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_web_summary.html) and answer the questions.
+Check the [data report](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_web_summary.html) and answer the questions.
 
 -   How many cells were recovered?
 
     ::: {.callout-tip collapse="true" icon="false"}
     #### Answer
 
-    -   8728 nuclei were recovered.
+    -   1,195 nuclei were recovered.
     :::
 
 -   Which version of Cell Ranger ATAC is used?
@@ -30,7 +30,7 @@ Check the [data report](https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_
     ::: {.callout-tip collapse="true" icon="false"}
     #### Answer
 
-    -   Single Cell ATAC dataset analyzed using Cell Ranger ATAC 1.0.1
+    -   Single Cell ATAC dataset analyzed using Cell Ranger ATAC 1.1.0
     :::
 
 -   What version of the genome did they use?
@@ -56,252 +56,9 @@ flowchart LR
 ::: callout-note
 ## Exercise in Google Colab
 
-1.  Create a copy of the [Google colab notebook part 1](https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing) on your one drive.
+1.  Create a copy of the [Google colab notebook part 13](https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing) on your one drive.
 2.  Run the exercise.
 :::
-
-# Complete results
-
-what happen if we use all data?
-
-## 📗 Step 1: Import Data
-
-```{r load packages, message=FALSE, warning=FALSE}
-library(Signac)
-library(Seurat) 
-library(GenomicRanges) # genomic data manipulation
-library(ggplot2) #vizualization
-library(patchwork) # Vizualization 
-library(EnsDb.Hsapiens.v75) # human genome hg19
-library(future) # parallelization in Signac
-```
-
-Settings on my computer:
-
-```{r version, message=FALSE}
-# Obtain versions
-cat("R version:", R.version$version.string, "\n")
-cat("Number of cores:", availableCores(), "\n")
-packageVersion("Signac")
-# parallelization options
-plan("multicore", workers = 8)
-plan()
-# Increase the maximum memory usage
-options(future.globals.maxSize = 14 * 1024^3)  # para 14 GB de RAM
-```
-
-Note that as of future version 1.14.0, forked processing is disabled when running in RStudio. To enable parallel computing in RStudio, you will need to select the "multisession" option.
-
-### Create `ChromatinAssay`
-
-The ATAC-seq data is stored using a custom assay, the `ChromatinAssay`. This enables some specialized functions for analysing genomic single-cell assays such as scATAC-seq. By printing the assay we can see some of the additional information that can be contained in the `ChromatinAssay`, including motif information, gene annotations, and genome information.
-
-```{r}
-counts <- Read10X_h5(filename = "data/atac_v1_pbmc_10k_filtered_peak_bc_matrix.h5")
-metadata <- read.csv(
-  file = "data/atac_v1_pbmc_10k_singlecell.csv",
-  header = TRUE,
-  row.names = 1
-)
-
-chrom_assay <- CreateChromatinAssay(
-  counts = counts,
-  sep = c(":", "-"),
-  genome = 'hg19', # EnsDb.Hsapiens.v75
-  fragments = "data/atac_v1_pbmc_10k_fragments.tsv.gz",
-  min.cells = 10,
-  min.features = 200
-)
-
-pbmc <- CreateSeuratObject(
-  counts = chrom_assay,
-  assay = "ATAC",
-  meta.data = metadata
-)
-```
-
-Check global information
-
-```{r}
-pbmc
-```
-
-Check ATAC information
-
-```{r}
-pbmc[['ATAC']]
-```
-
-We then remove the features that correspond to chromosome scaffolds e.g. (KI270713.1) or other sequences instead of the (22+2) standard chromosomes.
-
-```{r}
-peaks.keep <- seqnames(granges(pbmc)) %in% standardChromosomes(granges(pbmc))
-pbmc <- pbmc[as.vector(peaks.keep), ]
-```
-
-Check file:
-
-87561 features across 8728 samples within 1 assay.
-
-```{r}
-dim(pbmc)
-str(pbmc)
-```
-
-For example, we can call `granges` on a Seurat object with a ChromatinAssay set as the active assay (or on a `ChromatinAssay`) to see the genomic ranges associated with each feature in the object. See the [object interaction vignette](https://www.google.com/url?q=https%3A%2F%2Fstuartlab.org%2Fsignac%2Farticles%2Fdata_structures) for more information about the ChromatinAssay class.
-
-```{r}
-granges(pbmc)
-```
-
-Barcodes:
-
-```{r}
-head(colnames(pbmc))
-```
-
-Positions:
-
-```{r}
-head(rownames(pbmc))
-```
-
-## ✒️ Step 2: Annotation
-
-We can also add gene annotations to the `pbmc` object for the human genome. This will allow downstream functions to pull the gene annotation information directly from the object.
-
-Before annotation
-
-```{r before}
-pbmc@assays$ATAC@annotation
-```
-
-### Get gene annotations for the peaks and add to the object
-
-From the [dataset summary](https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_web_summary.html), we can see that the reference package 10x Genomics used to perform the mapping was "hg19", which [corresponds to](https://www.10xgenomics.com/support/software/cell-ranger/downloads/cr-ref-build-steps#ref-2020-a) the Ensembl v75 (hg19) patch release.
-
-```{r, warning=FALSE}
-# extract gene annotations from EnsDb
-annotations <- GetGRangesFromEnsDb(ensdb = EnsDb.Hsapiens.v75)
-
-# change to UCSC style since the data was mapped to hg19
-seqlevelsStyle(annotations) <- 'UCSC'
-
-# add the gene information to the object
-Annotation(pbmc) <- annotations
-# check
-head(seqlevels(pbmc))
-```
-
-After adding the gene annotation:
-
-```{r after}
-pbmc@assays$ATAC@annotation
-```
-
-## 📕 Step 3: Computing QC metrics
-
-We can now compute some QC metrics for the scATAC-seq experiment as the [original tutorial](https://stuartlab.org/signac/articles/pbmc_vignette). We currently suggest the following metrics below to assess data quality. As with scRNA-seq, the expected range of values for these parameters will vary depending on your biological system, cell viability, and other factors.
-
-Calculate the strength of the nucleosome signal per cell using [`NucleosomeSignal()`](https://stuartlab.org/signac/reference/nucleosomesignal). Computes the ratio of fragments between 147 bp and 294 bp (mononucleosome) to fragments \< 147 bp (nucleosome-free).
-
-We can inspect the TSS enrichment scores by grouping the cells based on the score and plotting the accessibility signal over all TSS sites. Setting the \`fast=TRUE\` option in [`TSSEnrichment()`](https://stuartlab.org/signac/reference/tssenrichment) will only compute the TSS enrichment score without storing the entire cell by position matrix of Tn5 insertion frequency for each cell, and can save memory.
-
-```{r QControl, message=FALSE, warning=FALSE}
-# compute nucleosome signal score per cell
-pbmc <- NucleosomeSignal(object = pbmc)
-
-# compute TSS enrichment score per cell
-pbmc <- TSSEnrichment(object = pbmc)
-
-# add fraction of reads in peaks
-pbmc$pct_reads_in_peaks <- pbmc$peak_region_fragments / pbmc$passed_filters * 100
-
-# add blacklist ratio
-pbmc$blacklist_ratio <- pbmc$blacklist_region_fragments/pbmc$peak_region_fragments
-```
-
-### Impact of Sample Type on Fragment Yield and Sequencing Quality
-
-::: callout-note
--   **Scatterplot colored by point density:** This plot shows the `log10(unique nuclear fragments)` vs TSS enrichment score and indicates the thresholds used with dotted lines.
-
--   **Histogram:** These plot shows the fragment size distribution.
-:::
-
-The relationship between variables stored in the object metadata can be visualized using the [`DensityScatter()`](https://stuartlab.org/signac/reference/densityscatter) function. This can also be used to quickly find suitable cutoff values for different QC metrics by setting `quantiles=TRUE`:
-
-```{r}
-DensityScatter(pbmc, x = 'nCount_ATAC', y = 'TSS.enrichment', log_x = TRUE, quantiles = TRUE)
-```
-
-We can also look at the fragment length periodicity for all the cells, and group by cells with high or low nucleosomal signal strength. You can see that cells that are outliers for the mononucleosomal / nucleosome-free ratio (based on the plots above) have different nucleosomal banding patterns. The remaining cells exhibit a pattern that is typical for a successful ATAC-seq experiment.
-
-### Fragment size distribution
-
-```{r, warning=FALSE}
-pbmc$nucleosome_group <- ifelse(pbmc$nucleosome_signal > 4, 'NS > 4', 'NS < 4')
-FragmentHistogram(object = pbmc, group.by = 'nucleosome_group')
-```
-
-We can plot the distribution of each QC metric separately using a violin plot:
-
-```{r, warning=FALSE}
-VlnPlot(
-  object = pbmc,
-  features = c('nCount_ATAC', 'TSS.enrichment', 'blacklist_ratio', 'nucleosome_signal', 'pct_reads_in_peaks'),
-  pt.size = 0.1,
-  ncol = 5
-)
-```
-
-Finally we remove cells that are outliers for these QC metrics. The exact QC thresholds used will need to be adjusted according to your dataset.
-
-```{r}
-pbmc <- subset(
-  x = pbmc,
-  subset = nCount_ATAC > 3000 & 
-    nCount_ATAC < 20000 &  
-    pct_reads_in_peaks > 15 & # 15 % of the reads in the peaks
-    blacklist_ratio < 0.01 & # 1 % of the reads mapeaning in blacklist ratio
-    nucleosome_signal < 4 &
-    TSS.enrichment > 4
-)
-pbmc
-```
-
-```{r, echo=FALSE, message=FALSE}
-gc()
-```
-
-## 📘 Step 4: Normalization and linear dimensional reduction (LSI)
-
-```{r}
-pbmc <- RunTFIDF(pbmc)
-pbmc <- FindTopFeatures(pbmc, min.cutoff = 'q0')
-pbmc <- RunSVD(pbmc)
-```
-
-```{r, echo=FALSE, message=FALSE}
-gc()
-```
-
-The first LSI component often captures sequencing depth (technical variation) rather than biological variation. If this is the case, the component should be removed from downstream analysis. We can assess the correlation between each LSI component and sequencing depth using the [`DepthCor()`](https://stuartlab.org/signac/reference/depthcor) function:
-
-```{r}
-DepthCor(pbmc)
-```
-
-Here we see there is a very strong correlation between the first LSI component and the total number of counts for the cell. We will perform downstream steps without this component as we don't want to group cells together based on their total sequencing depth, but rather by their patterns of accessibility at cell-type-specific peaks.
-
-## 📙 Step 5: Non-linear dimensional reduction and clustering
-
-```{r, warning=FALSE}
-pbmc <- RunUMAP(object = pbmc, reduction = 'lsi', dims = 2:30)
-pbmc <- FindNeighbors(object = pbmc, reduction = 'lsi', dims = 2:30)
-pbmc <- FindClusters(object = pbmc, verbose = FALSE, algorithm = 3)
-DimPlot(object = pbmc, label = TRUE) + NoLegend()
-```
 
 ## References
 

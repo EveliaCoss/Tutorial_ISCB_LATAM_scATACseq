@@ -1,33 +1,15 @@
 # Exercises {#install .setup style="blue"}
 
-```{r DA peaks, eval=FALSE, message=FALSE, warning=FALSE}
-library(presto)
-load("data/pbmc_edited.RData")
-# change back to working with peaks instead of gene activities
-DefaultAssay(pbmc) <- 'peaks'
+For this tutorial, we will use the results from Practical 13, where we analyzed a single-cell ATAC-seq dataset of [human peripheral blood mononuclear cells (PBMCs)](https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0). Additionally, we will use the pre-processed Seurat object available [here](https://signac-objects.s3.amazonaws.com/pbmc_10k_v3.rds).
 
-# wilcox is the default option for test.use
-da_peaks <- FindMarkers(
-  object = pbmc,
-  ident.1 = "CD4 Naive",
-  ident.2 = "CD14+ Monocytes",
-  test.use = 'wilcox',
-  min.pct = 0.1
-)
+::: callout-note
+## Exercise in Google Colab
 
-head(da_peaks)
+1.  Create a copy of the [Google colab notebook part 14](https://colab.research.google.com/drive/1cCfT3HTSUiTfqF11EkuxCzlHs1obdQHs?usp=sharing) on your one drive.
+2.  Run the exercise.
+:::
 
-plot1 <- VlnPlot(
-  object = pbmc,
-  features = rownames(da_peaks)[1],
-  pt.size = 0.1,
-  idents = c("CD4 Naive","CD14+ Monocytes")
-)
-plot2 <- FeaturePlot(
-  object = pbmc,
-  features = rownames(da_peaks)[1],
-  pt.size = 0.1
-)
+## References
 
-plot1 | plot2
-```
+-   Signac tutorial - [Analyzing PBMC scATAC-seq (Signac tutorial)](https://stuartlab.org/signac/articles/pbmc_vignette)
+-   Signac tutorial - [Analyzing PBMC scATAC-seq](https://rpubs.com/qshenfeng/signac_pbmc10k)
