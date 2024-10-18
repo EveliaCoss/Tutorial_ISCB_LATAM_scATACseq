@@ -138,6 +138,7 @@ library(Signac)
 library(EnsDb.Hsapiens.v86)
 library(dplyr)
 library(ggplot2)
+library(glmGamPoi)
 
 # the 10x hdf5 file contains both data types.
 inputdata.10x <- Read10X_h5("/brahms/hartmana/vignette_data/pbmc_cellranger_arc_2/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5")

@@ -278,8 +278,8 @@ plot3 <- DimPlot(pbmc, label = T, group.by = "ident") + NoLegend() + ggtitle("sc
 plot1 + plot2 + plot3
 ```
 
-```{r save, echo=FALSE, message=FALSE}
-gc()
+```{r save,message=FALSE}
+gc() # free memory
 save(pbmc, file = "data/pbmc_edited.RData")
 ```
 

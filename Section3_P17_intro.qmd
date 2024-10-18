@@ -8,11 +8,7 @@ https://www.nature.com/articles/nature14590
 
 https://broadinstitute.github.io/2019_scWorkshop/cite-seq-and-scatac-seq.html
 
-# Building trajectories with Monocle 3
-
-Also you can construct cell trajectories with Monocle 3 using single-cell ATAC-seq data. Please see the [Monocle 3 website](https://cole-trapnell-lab.github.io/monocle3/) for information about installing Monocle 3.
-
-[![](https://stuartlab.org/signac/articles/monocle_files/figure-html/unnamed-chunk-18-2.png)](https://stuartlab.org/signac/articles/monocle)
+# 
 
 ## **References**
 

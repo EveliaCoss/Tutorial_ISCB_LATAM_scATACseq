@@ -33,7 +33,7 @@ Many of these slots are optional and do not need to be filled, but are only requ
 
 To add the DNA sequence motif information required for motif analyses, we can run the [`AddMotifs()`](https://stuartlab.org/signac/reference/addmotifs) function:
 
-```{r load packages, message=FALSE, warning=FALSE}
+```{r packages, message=FALSE, warning=FALSE}
 library(Signac)
 library(Seurat)
 # BiocManager::install("JASPAR2020")
@@ -42,34 +42,45 @@ library(JASPAR2020) # Data package for JASPAR database (version 2020)
 library(TFBSTools) # Software Package for Transcription Factor Binding Site (TFBS) Analysis
 library(BSgenome.Hsapiens.UCSC.hg38)
 library(patchwork)
+# BiocManager::install("motifmatchr")
+library(motifmatchr)
+library(GenomicRanges)
+# BiocManager::install("ggseqlogo")
+library(ggseqlogo)
 ```
 
-```{r load data, eval=FALSE}
+```{r load data}
 # load from Section 2 P14 - STEP: Find differentially accessible peaks between cell types, da_peaks
-load(file = "data/pbmc_edited.RData")
+load(file = "data/pbmc.RData") # from Practical 13
+# load(file = "data/pbmc_edited.RData")
+# Idents(pbmc) <- pbmc$predicted.id
 p1 <- DimPlot(pbmc, label = TRUE, pt.size = 0.1) + NoLegend()
 p1
 ```
 
-```{r add info, eval=FALSE}
+```{r add info, warning=FALSE}
 # Get a list of motif position frequency matrices from the JASPAR database
 pfm <- getMatrixSet(
     x = JASPAR2020,
     opts = list(species = "Homo sapiens", all_versions = FALSE)
 )
 
-# Scan the DNA sequence of each peak for the presence of each motif
-motif.matrix <- CreateMotifMatrix(
-    features = granges(pbmc$peaks),
-    pwm = pfm,
-    genome = 'hg38',
-    use.counts = FALSE
+# add motif information
+pbmc <- AddMotifs(
+  object = pbmc,
+  genome = BSgenome.Hsapiens.UCSC.hg38,
+  pfm = pfm
 )
-dim(motif.matrix)
-as.matrix(motif.matrix[1:10,1:10])
 ```
 
-To facilitate motif analysis in `Signac`, we have created the `Motif` class to store all the required information, including a list of position weight matrices (PWMs) or position frequency matrices (PFMs) and a motif occurrence matrix. Here, the [`AddMotifs()`](https://stuartlab.org/signac/reference/addmotifs) function constructs a `Motif` object and adds it to our mouse brain dataset, along with other information such as the base composition of each peak. A motif object can be added to any Seurat assay using the [`SetAssayData()`](https://mojaveazure.github.io/seurat-object/reference/AssayData.html) function. See the [object interaction vignette](https://stuartlab.org/signac/articles/data_structures) for more information.
+To facilitate motif analysis in Signac, we have created the `Motif` class to store all the required information, including a list of position weight matrices (PWMs) or position frequency matrices (PFMs) and a motif occurrence matrix. Here, the [`AddMotifs()`](https://stuartlab.org/signac/reference/addmotifs) function constructs a `Motif` object and adds it to our mouse brain dataset, along with other information such as the base composition of each peak. A motif object can be added to any Seurat assay using the [`SetAssayData()`](https://mojaveazure.github.io/seurat-object/reference/AssayData.html) function. See the [object interaction vignette](https://stuartlab.org/signac/articles/data_structures) for more information.
+
+Cluster composition shows many clusters unique to the whole blood dataset:
+
+```{r count table}
+count_table <- table(pbmc@meta.data$seurat_clusters, pbmc@meta.data$orig.ident)
+count_table
+```
 
 ### Step 2: **Identifying enriched motifs /** Finding overrepresented motifs
 
@@ -79,40 +90,35 @@ Here, we find differentially accessible peaks between Pvalb and Sst inhibitory i
 
 We then perform a **hypergeometric test to test the probability of observing the motif** at the given frequency by chance, comparing with a background set of peaks matched for GC content.
 
-```{r, eval=FALSE}
-# Create a new Mofif object to store the results
-motif <- CreateMotifObject(
-    data = motif.matrix,
-    pwm = pfm
-)
-
-# Add the Motif object to the assay
-pbmc <- SetAssayData(
-    object = pbmc,
-    assay = 'peaks',
-    slot = 'motifs',
-    new.data = motif
-)
-pbmc$peaks@motifs
-
-# Calculate statistics for each peak: GC content, length, dinucleotide frequencies etc.
-# These are used in the test of motif enrichment
-pbmc$peaks <- RegionStats(object = pbmc$peaks, genome = BSgenome.Hsapiens.UCSC.hg19)
-
-# Find differentially accessible peaks in cluster 0 compared to cluster 1
+```{r FindMarkers, eval=FALSE}
+# Find differentially accessible peaks in cluster 0 compared to cluster 1 (~1h 7m)
 da_peaks <- FindMarkers(
     object = pbmc,
-    ident.1 = "0",
-    ident.2 = "1",
+    #ident.1 = 'CD14+ Monocytes',
+    #ident.2 = 'pre-B cell',
+    ident.1 = '0',
+    ident.2 = '1',
     only.pos = TRUE,
     min.pct = 0.05,
     test.use = 'LR',
     latent.vars = 'nCount_peaks'
 )
+```
 
+```{r top peaks,,eval=FALSE}
 # Get the top differentially accessible peaks, with lowest p-values
-top.da.peak <- rownames(da_peaks[da_peaks$p_val < 1e-20 & da_peaks$pct.1 > 0.2,  ])
+top.da.peak <- rownames(da_peaks[da_peaks$p_val < 0.005 & da_peaks$pct.1 > 0.2, ])
+```
 
+```{r save, eval=FALSE}
+# save
+save(da_peaks, file = "data/pbmc_markers.RData")
+# save information
+save(pbmc, top.da.peak, file = "data/pbmc_motifs.RData")
+```
+
+```{r enriched motifs}
+load(file = "data/pbmc_motifs.RData")
 # Find motifs enriched in these top differentially accessible peaks
 enriched.motifs <- FindMotifs(
     object = pbmc,
@@ -121,20 +127,14 @@ enriched.motifs <- FindMotifs(
 head(enriched.motifs)
 ```
 
-https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html#motif-analysis
-
-https://stuartlab.org/signac/articles/motif_vignette
-
-We can also plot the position weight matrices for the motifs, so we can visualize the different motif sequences.
-
-```{r, eval=FALSE}
+```{r graph motifs}
 MotifPlot(
   object = pbmc,
   motifs = head(rownames(enriched.motifs))
 )
 ```
 
-#### **Step 3: Motif activity scores**
+### **Step 3: Motif activity scores**
 
 We can also compute a per-cell motif activity score by running [chromVAR](https://greenleaflab.github.io/chromVAR/index.html). The motif activity score for a motif M is based on the number of reads mapping to peaks with motif M, after normalization correction for various biases: GC content, average number of reads mapping across all cells etc. You can read more about chromVar [here](https://www.nature.com/articles/nmeth.4401). Motif activity scores allow us to visualize motif activities per cell.
 
@@ -148,18 +148,27 @@ It is also possible to directly test for differential activity scores between ce
 This takes a while to run (around 5 minutes on Uppmax).
 :::
 
-```{r, eval=FALSE}
+```{r load packages}
+# BiocManager::install("chromVAR")
+library(chromVAR)
+```
+
+```{r chromvar, eval=FALSE}
 # Use chromVAR to calculate the motif activities of all motifs in all cells.
-pbmc <- RunChromVAR(
+chromvar_pbmc <- RunChromVAR(
     object = pbmc,
     genome = BSgenome.Hsapiens.UCSC.hg38,
     verbose = TRUE
 )
 
+DefaultAssay(chromvar_pbmc) <- 'chromvar'
+
 # Look at results
 pbmc$chromvar
 GetAssayData(pbmc$chromvar)[1:10,1:3]
+```
 
+```{r , eval=FALSE}
 # Have a look at the activitiy of the FOS motif, which has id MA0476.1
 DefaultAssay(pbmc) <- 'chromvar'
 FeaturePlot(
@@ -195,9 +204,17 @@ MotifPlot(
 )
 ```
 
+# Building trajectories with Monocle 3
+
+Also you can construct cell trajectories with Monocle 3 using single-cell ATAC-seq data. Please see the [Monocle 3 website](https://cole-trapnell-lab.github.io/monocle3/) for information about installing Monocle 3.
+
+[![](https://stuartlab.org/signac/articles/monocle_files/figure-html/unnamed-chunk-18-2.png)](https://stuartlab.org/signac/articles/monocle)
+
 # Transcription factor footprinting
 
-https://stuartlab.org/signac/articles/footprint
+For this step we'll use the dataset introduced and pre-processed in the [trajectory building vignette](https://stuartlab.org/signac/articles/monocle).
+
+[![](https://stuartlab.org/signac/articles/footprint_files/figure-html/unnamed-chunk-6-1.png)](https://stuartlab.org/signac/articles/footprint)
 
 ```{r information}
 sessionInfo()
@@ -207,4 +224,5 @@ sessionInfo()
 
 -   Signac - tutorial [Motif analysis with Signac](https://stuartlab.org/signac/articles/motif_vignette)
 -   Epigenomic workshop 2024 - [Motif analysis](https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html)
+-   Signac - tutorial [Building trajectories with Monocle 3](https://stuartlab.org/signac/articles/monocle)
 -   Signac - tutorial [Transcription factor footprinting](https://stuartlab.org/signac/articles/footprint)
