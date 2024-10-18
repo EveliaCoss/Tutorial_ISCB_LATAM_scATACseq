@@ -224,7 +224,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Section2_P15_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Multimodal analysis and Integration</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -432,7 +432,7 @@ Note
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>end <span class="sc">-</span> start</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 13.86905 mins</code></pre>
+<pre><code>Time difference of 14.57489 mins</code></pre>
 </div>
 </div>
 <p>Before:</p>
@@ -566,8 +566,8 @@ Note
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  12418522  663.3   33923381  1811.8   53005282  2830.8
-Vcells 781627810 5963.4 1375216326 10492.1 1363593522 10403.4</code></pre>
+Ncells  12421494  663.4   33927756  1812.0   53012118  2831.2
+Vcells 781633956 5963.4 1375246804 10492.4 1363602136 10403.5</code></pre>
 </div>
 </div>
 </section>
@@ -655,8 +655,8 @@ Dimensional reduction to perform when finding anchors. Options are:</p>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  12479518  666.5   33923381  1811.8   53005282  2830.8
-Vcells 784162891 5982.7 1375216326 10492.1 1372394404 10470.6</code></pre>
+Ncells  12482514  666.7   33927756  1812.0   53012118  2831.2
+Vcells 784169077 5982.8 1375246804 10492.4 1372406672 10470.7</code></pre>
 </div>
 </div>
 <p><strong>Check plot</strong></p>
@@ -775,11 +775,19 @@ GTCACCTGTCAGGCTC-1                 0.025835081</code></pre>
 </div>
 </div>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gc</span>() <span class="co"># free memory</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  12536033  669.5   33923381  1811.8   53005282  2830.8
-Vcells 910228372 6944.5 1656854019 12640.8 1425576862 10876.3</code></pre>
+Ncells  12538994  669.7   33927756  1812.0   53012118  2831.2
+Vcells 910234497 6944.6 1656861375 12640.9 1425584654 10876.4</code></pre>
 </div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(pbmc, <span class="at">file =</span> <span class="st">"data/pbmc_edited.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 </section>
@@ -790,29 +798,29 @@ Vcells 910228372 6944.5 1656854019 12640.8 1425576862 10876.3</code></pre>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"remotes"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">'remotes'</span>)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">'immunogenomics/presto'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"remotes"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">'remotes'</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">'immunogenomics/presto'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>For sparse data like scATAC-seq, it is necessary to adjust the <code>min.pct</code> parameter of the <code>FindMarkers()</code> function to lower values, as the default value (0.1) is designed for scRNA-seq data. Here we will focus on comparing Naive CD4 cells and CD14 monocytes, but any groups of cells can be compared using these methods. We can also visualize these marker peaks on a violin plot, feature plot, dot plot, heat map, or any&nbsp;<a href="https://satijalab.org/seurat/articles/visualization_vignette.html">visualization tool in Seurat</a>.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(presto)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># change back to working with peaks instead of gene activities</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">'peaks'</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="co"># wilcox is the default option for test.use</span></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>da_peaks <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ident.1 =</span> <span class="st">"CD4 Naive"</span>,</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">ident.2 =</span> <span class="st">"CD14+ Monocytes"</span>,</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">test.use =</span> <span class="st">'wilcox'</span>,</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.pct =</span> <span class="fl">0.1</span></span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(da_peaks)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(presto)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="co"># change back to working with peaks instead of gene activities</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">'peaks'</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="co"># wilcox is the default option for test.use</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>da_peaks <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ident.1 =</span> <span class="st">"CD4 Naive"</span>,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">ident.2 =</span> <span class="st">"CD14+ Monocytes"</span>,</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">test.use =</span> <span class="st">'wilcox'</span>,</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.pct =</span> <span class="fl">0.1</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(da_peaks)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                          p_val avg_log2FC pct.1 pct.2 p_val_adj
@@ -825,27 +833,27 @@ chr17-82126458-82127377       0   5.017039 0.699 0.042         0</code></pre>
 </div>
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># save</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(da_peaks, <span class="at">file =</span> <span class="st">"data/da_peaks.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># save</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(da_peaks, <span class="at">file =</span> <span class="st">"data/da_peaks.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We visualize the results of the differential accessibility test using a violin plot and over the UMAP projection.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">VlnPlot</span>(</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">rownames</span>(da_peaks)[<span class="dv">1</span>],</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="fl">0.1</span>,</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">idents =</span> <span class="fu">c</span>(<span class="st">"CD4 Naive"</span>,<span class="st">"CD14+ Monocytes"</span>)</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> <span class="fu">FeaturePlot</span>(</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">rownames</span>(da_peaks)[<span class="dv">1</span>],</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="fl">0.1</span></span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>plot1 <span class="sc">|</span> plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">VlnPlot</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">rownames</span>(da_peaks)[<span class="dv">1</span>],</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="fl">0.1</span>,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">idents =</span> <span class="fu">c</span>(<span class="st">"CD4 Naive"</span>,<span class="st">"CD14+ Monocytes"</span>)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> <span class="fu">FeaturePlot</span>(</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">features =</span> <span class="fu">rownames</span>(da_peaks)[<span class="dv">1</span>],</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pt.size =</span> <span class="fl">0.1</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>plot1 <span class="sc">|</span> plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Section2_P14_intro_files/figure-html/plot-1.png" class="img-fluid" width="672"></p>
@@ -855,13 +863,13 @@ chr17-82126458-82127377       0   5.017039 0.699 0.042         0</code></pre>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>open_cd4naive <span class="ot">&lt;-</span> <span class="fu">rownames</span>(da_peaks[da_peaks<span class="sc">$</span>avg_log2FC <span class="sc">&gt;</span> <span class="dv">3</span>, ])</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>open_cd14mono <span class="ot">&lt;-</span> <span class="fu">rownames</span>(da_peaks[da_peaks<span class="sc">$</span>avg_log2FC <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">3</span>, ])</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>closest_genes_cd4naive <span class="ot">&lt;-</span> <span class="fu">ClosestFeature</span>(pbmc, <span class="at">regions =</span> open_cd4naive)</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>closest_genes_cd14mono <span class="ot">&lt;-</span> <span class="fu">ClosestFeature</span>(pbmc, <span class="at">regions =</span> open_cd14mono)</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="co"># results</span></span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(closest_genes_cd4naive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>open_cd4naive <span class="ot">&lt;-</span> <span class="fu">rownames</span>(da_peaks[da_peaks<span class="sc">$</span>avg_log2FC <span class="sc">&gt;</span> <span class="dv">3</span>, ])</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>open_cd14mono <span class="ot">&lt;-</span> <span class="fu">rownames</span>(da_peaks[da_peaks<span class="sc">$</span>avg_log2FC <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">3</span>, ])</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>closest_genes_cd4naive <span class="ot">&lt;-</span> <span class="fu">ClosestFeature</span>(pbmc, <span class="at">regions =</span> open_cd4naive)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>closest_genes_cd14mono <span class="ot">&lt;-</span> <span class="fu">ClosestFeature</span>(pbmc, <span class="at">regions =</span> open_cd14mono)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="co"># results</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(closest_genes_cd4naive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                          tx_id    gene_name         gene_id   gene_biotype
@@ -888,7 +896,7 @@ ENST00000509332        0</code></pre>
 </div>
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(closest_genes_cd14mono)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(closest_genes_cd14mono)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                          tx_id     gene_name         gene_id   gene_biotype
@@ -914,24 +922,24 @@ ENSE00001389095 exon chr9-129752887-129753047 chr9-129776928-129777838    23880<
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clusterProfiler)</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(org.Hs.eg.db)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(enrichplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clusterProfiler)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(org.Hs.eg.db)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(enrichplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>cd4naive_ego <span class="ot">&lt;-</span> <span class="fu">enrichGO</span>(<span class="at">gene =</span> closest_genes_cd4naive<span class="sc">$</span>gene_id, <span class="co"># like DEG</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">keyType =</span> <span class="st">"ENSEMBL"</span>, </span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">OrgDb =</span> org.Hs.eg.db, <span class="co"># organism</span></span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">ont =</span> <span class="st">"BP"</span>, <span class="co"># Biological process</span></span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">pAdjustMethod =</span> <span class="st">"BH"</span>, <span class="co"># Benjamini-Hochberg (BH)</span></span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">pvalueCutoff =</span> <span class="fl">0.05</span>,</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">qvalueCutoff =</span> <span class="fl">0.05</span>,</span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">readable =</span> <span class="cn">TRUE</span>) <span class="co"># Convert the gene identifiers (ENSEMBL) to readable gene names.</span></span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(cd4naive_ego,<span class="at">showCategory =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>cd4naive_ego <span class="ot">&lt;-</span> <span class="fu">enrichGO</span>(<span class="at">gene =</span> closest_genes_cd4naive<span class="sc">$</span>gene_id, <span class="co"># like DEG</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">keyType =</span> <span class="st">"ENSEMBL"</span>, </span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">OrgDb =</span> org.Hs.eg.db, <span class="co"># organism</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">ont =</span> <span class="st">"BP"</span>, <span class="co"># Biological process</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">pAdjustMethod =</span> <span class="st">"BH"</span>, <span class="co"># Benjamini-Hochberg (BH)</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">pvalueCutoff =</span> <span class="fl">0.05</span>,</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">qvalueCutoff =</span> <span class="fl">0.05</span>,</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">readable =</span> <span class="cn">TRUE</span>) <span class="co"># Convert the gene identifiers (ENSEMBL) to readable gene names.</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(cd4naive_ego,<span class="at">showCategory =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Section2_P14_intro_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
@@ -940,16 +948,16 @@ ENSE00001389095 exon chr9-129752887-129753047 chr9-129776928-129777838    23880<
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>cd14mono_ego <span class="ot">&lt;-</span> <span class="fu">enrichGO</span>(<span class="at">gene =</span> closest_genes_cd14mono<span class="sc">$</span>gene_id,</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">keyType =</span> <span class="st">"ENSEMBL"</span>,</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">OrgDb =</span> org.Hs.eg.db,</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">ont =</span> <span class="st">"BP"</span>,</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">pAdjustMethod =</span> <span class="st">"BH"</span>,</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">pvalueCutoff =</span> <span class="fl">0.05</span>,</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">qvalueCutoff =</span> <span class="fl">0.05</span>,</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">readable =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(cd14mono_ego,<span class="at">showCategory =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>cd14mono_ego <span class="ot">&lt;-</span> <span class="fu">enrichGO</span>(<span class="at">gene =</span> closest_genes_cd14mono<span class="sc">$</span>gene_id,</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">keyType =</span> <span class="st">"ENSEMBL"</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">OrgDb =</span> org.Hs.eg.db,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">ont =</span> <span class="st">"BP"</span>,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">pAdjustMethod =</span> <span class="st">"BH"</span>,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">pvalueCutoff =</span> <span class="fl">0.05</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">qvalueCutoff =</span> <span class="fl">0.05</span>,</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">readable =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(cd14mono_ego,<span class="at">showCategory =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="Section2_P14_intro_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
@@ -963,7 +971,7 @@ ENSE00001389095 exon chr9-129752887-129753047 chr9-129776928-129777838    23880<
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">SortIdents</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">SortIdents</span>(pbmc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Creating pseudobulk profiles for 13 variables across 165376 features</code></pre>
@@ -979,16 +987,16 @@ ENSE00001389095 exon chr9-129752887-129753047 chr9-129776928-129777838    23880<
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># find DA peaks overlapping gene of interest</span></span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>regions_highlight <span class="ot">&lt;-</span> <span class="fu">subsetByOverlaps</span>(<span class="fu">StringToGRanges</span>(open_cd4naive), <span class="fu">LookupGeneCoords</span>(pbmc, <span class="st">"CD4"</span>))</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="fu">CoveragePlot</span>(</span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="st">"CD4"</span>,</span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">region.highlight =</span> regions_highlight,</span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.upstream =</span> <span class="dv">1000</span>,</span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.downstream =</span> <span class="dv">1000</span></span>
-<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># find DA peaks overlapping gene of interest</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>regions_highlight <span class="ot">&lt;-</span> <span class="fu">subsetByOverlaps</span>(<span class="fu">StringToGRanges</span>(open_cd4naive), <span class="fu">LookupGeneCoords</span>(pbmc, <span class="st">"CD4"</span>))</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="fu">CoveragePlot</span>(</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="st">"CD4"</span>,</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">region.highlight =</span> regions_highlight,</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.upstream =</span> <span class="dv">1000</span>,</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">extend.downstream =</span> <span class="dv">1000</span></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 22 rows containing missing values or values outside the scale range
@@ -1019,7 +1027,7 @@ ENSE00001389095 exon chr9-129752887-129753047 chr9-129776928-129777838    23880<
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.4.1 (2024-06-14 ucrt)
@@ -1046,12 +1054,12 @@ attached base packages:
 other attached packages:
  [1] enrichplot_1.24.4         org.Hs.eg.db_3.19.1      
  [3] clusterProfiler_4.12.6    presto_1.0.0             
- [5] data.table_1.16.0         Rcpp_1.0.13              
+ [5] data.table_1.16.2         Rcpp_1.0.13              
  [7] future_1.34.0             EnsDb.Hsapiens.v86_2.99.0
  [9] ensembldb_2.28.1          AnnotationFilter_1.28.0  
 [11] GenomicFeatures_1.56.0    AnnotationDbi_1.66.0     
-[13] Biobase_2.64.0            patchwork_1.2.0          
-[15] ggplot2_3.5.1             GenomicRanges_1.56.1     
+[13] Biobase_2.64.0            patchwork_1.3.0.9000     
+[15] ggplot2_3.5.1             GenomicRanges_1.56.2     
 [17] GenomeInfoDb_1.40.1       IRanges_2.38.1           
 [19] S4Vectors_0.42.1          BiocGenerics_0.50.0      
 [21] Seurat_5.1.0              SeuratObject_5.0.2       
@@ -1073,10 +1081,10 @@ loaded via a namespace (and not attached):
  [25] Rsamtools_2.20.0            yulab.utils_0.1.7          
  [27] gson_0.1.0                  DOSE_3.30.5                
  [29] R.utils_2.12.3              parallelly_1.38.0          
- [31] limma_3.60.6                rstudioapi_0.16.0          
+ [31] limma_3.60.6                rstudioapi_0.17.0          
  [33] RSQLite_2.3.7               gridGraphics_0.5-1         
  [35] generics_0.1.3              BiocIO_1.14.0              
- [37] ica_1.0-3                   spatstat.random_3.3-1      
+ [37] ica_1.0-3                   spatstat.random_3.3-2      
  [39] dplyr_1.1.4                 GO.db_3.19.1               
  [41] Matrix_1.7-0                ggbeeswarm_0.7.2           
  [43] fansi_1.0.6                 abind_1.4-8                
@@ -1089,25 +1097,25 @@ loaded via a namespace (and not attached):
  [57] lattice_0.22-6              cowplot_1.1.3              
  [59] KEGGREST_1.44.1             pillar_1.9.0               
  [61] knitr_1.48                  fgsea_1.30.0               
- [63] rjson_0.2.22                future.apply_1.11.2        
+ [63] rjson_0.2.23                future.apply_1.11.2        
  [65] codetools_0.2-20            fastmatch_1.1-4            
  [67] leiden_0.4.3.1              glue_1.7.0                 
  [69] ggfun_0.1.6                 spatstat.univar_3.0-1      
  [71] treeio_1.28.0               vctrs_0.6.5                
  [73] png_0.1-8                   spam_2.10-0                
  [75] gtable_0.3.5                cachem_1.1.0               
- [77] xfun_0.45                   S4Arrays_1.4.1             
+ [77] xfun_0.48                   S4Arrays_1.4.1             
  [79] mime_0.12                   tidygraph_1.3.1            
  [81] survival_3.6-4              RcppRoll_0.3.1             
  [83] statmod_1.5.0               fitdistrplus_1.2-1         
  [85] ROCR_1.0-11                 nlme_3.1-164               
- [87] ggtree_3.12.0               bit64_4.0.5                
+ [87] ggtree_3.12.0               bit64_4.5.2                
  [89] RcppAnnoy_0.0.22            irlba_2.3.5.1              
  [91] vipor_0.4.7                 KernSmooth_2.23-24         
  [93] colorspace_2.1-1            DBI_1.2.3                  
  [95] ggrastr_1.0.2               tidyselect_1.2.1           
- [97] bit_4.0.5                   compiler_4.4.1             
- [99] curl_5.2.2                  httr2_1.0.5                
+ [97] bit_4.5.0                   compiler_4.4.1             
+ [99] curl_5.2.3                  httr2_1.0.5                
 [101] DelayedArray_0.30.1         plotly_4.10.4              
 [103] shadowtext_0.1.4            rtracklayer_1.64.0         
 [105] scales_1.3.0                lmtest_0.9-40              
@@ -1129,13 +1137,13 @@ loaded via a namespace (and not attached):
 [137] stringi_1.8.4               ggraph_2.2.1               
 [139] zlibbioc_1.50.0             MASS_7.3-60.2              
 [141] plyr_1.8.9                  parallel_4.4.1             
-[143] listenv_0.9.1               ggrepel_0.9.5              
+[143] listenv_0.9.1               ggrepel_0.9.6              
 [145] deldir_2.0-4                Biostrings_2.72.1          
 [147] graphlayouts_1.2.0          splines_4.4.1              
 [149] tensor_1.5                  igraph_2.0.3               
-[151] spatstat.geom_3.3-2         RcppHNSW_0.6.0             
+[151] spatstat.geom_3.3-3         RcppHNSW_0.6.0             
 [153] reshape2_1.4.4              XML_3.99-0.17              
-[155] evaluate_1.0.0              tweenr_2.0.3               
+[155] evaluate_1.0.1              tweenr_2.0.3               
 [157] httpuv_1.6.15               RANN_2.6.2                 
 [159] tidyr_1.3.1                 purrr_1.0.2                
 [161] polyclip_1.10-7             scattermore_1.2            

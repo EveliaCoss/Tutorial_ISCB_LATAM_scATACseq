@@ -299,14 +299,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#the-motif-class" id="toc-the-motif-class" class="nav-link" data-scroll-target="#the-motif-class"><span class="header-section-number">9.0.1</span> The <code>Motif</code> Class</a></li>
   <li><a href="#step-1-adding-motif-information-to-the-seurat-object" id="toc-step-1-adding-motif-information-to-the-seurat-object" class="nav-link" data-scroll-target="#step-1-adding-motif-information-to-the-seurat-object"><span class="header-section-number">9.0.2</span> Step 1: Adding motif information to the Seurat object</a></li>
-  <li><a href="#step-2-identifying-enriched-motifs-finding-overrepresented-motifs" id="toc-step-2-identifying-enriched-motifs-finding-overrepresented-motifs" class="nav-link" data-scroll-target="#step-2-identifying-enriched-motifs-finding-overrepresented-motifs"><span class="header-section-number">9.0.3</span> Step 2: <strong>Identifying enriched motifs /</strong> Finding overrepresented motifs</a>
-  <ul class="collapse">
-  <li><a href="#step-3-motif-activity-scores" id="toc-step-3-motif-activity-scores" class="nav-link" data-scroll-target="#step-3-motif-activity-scores"><strong>Step 3: Motif activity scores</strong></a></li>
+  <li><a href="#step-2-identifying-enriched-motifs-finding-overrepresented-motifs" id="toc-step-2-identifying-enriched-motifs-finding-overrepresented-motifs" class="nav-link" data-scroll-target="#step-2-identifying-enriched-motifs-finding-overrepresented-motifs"><span class="header-section-number">9.0.3</span> Step 2: <strong>Identifying enriched motifs /</strong> Finding overrepresented motifs</a></li>
+  <li><a href="#step-3-motif-activity-scores" id="toc-step-3-motif-activity-scores" class="nav-link" data-scroll-target="#step-3-motif-activity-scores"><span class="header-section-number">9.0.4</span> <strong>Step 3: Motif activity scores</strong></a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#transcription-factor-footprinting" id="toc-transcription-factor-footprinting" class="nav-link" data-scroll-target="#transcription-factor-footprinting"><span class="header-section-number">10</span> Transcription factor footprinting</a>
+  <li><a href="#building-trajectories-with-monocle-3" id="toc-building-trajectories-with-monocle-3" class="nav-link" data-scroll-target="#building-trajectories-with-monocle-3"><span class="header-section-number">10</span> Building trajectories with Monocle 3</a></li>
+  <li><a href="#transcription-factor-footprinting" id="toc-transcription-factor-footprinting" class="nav-link" data-scroll-target="#transcription-factor-footprinting"><span class="header-section-number">11</span> Transcription factor footprinting</a>
   <ul>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">10.1</span> References</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">11.1</span> References</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -366,17 +365,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install("TFBSTools")</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TFBSTools) <span class="co"># Software Package for Transcription Factor Binding Site (TFBS) Analysis</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BSgenome.Hsapiens.UCSC.hg38)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install("motifmatchr")</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(motifmatchr)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GenomicRanges)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install("ggseqlogo")</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggseqlogo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load from Section 2 P14 - STEP: Find differentially accessible peaks between cell types, da_peaks</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"data/pbmc_edited.RData"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">pt.size =</span> <span class="fl">0.1</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"data/pbmc.RData"</span>) <span class="co"># from Practical 13</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># load(file = "data/pbmc_edited.RData")</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Idents(pbmc) &lt;- pbmc$predicted.id</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(pbmc, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">pt.size =</span> <span class="fl">0.1</span>) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output-display">
+<p><img src="Section3_P16_intro_files/figure-html/load data-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 <div class="cell">
 <details open="">
@@ -387,18 +396,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">opts =</span> <span class="fu">list</span>(<span class="at">species =</span> <span class="st">"Homo sapiens"</span>, <span class="at">all_versions =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Scan the DNA sequence of each peak for the presence of each motif</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>motif.matrix <span class="ot">&lt;-</span> <span class="fu">CreateMotifMatrix</span>(</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> <span class="fu">granges</span>(pbmc<span class="sc">$</span>peaks),</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">pwm =</span> pfm,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">genome =</span> <span class="st">'hg38'</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">use.counts =</span> <span class="cn">FALSE</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(motif.matrix)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">as.matrix</span>(motif.matrix[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># add motif information</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">AddMotifs</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome =</span> BSgenome.Hsapiens.UCSC.hg38,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">pfm =</span> pfm</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Building motif matrix</code></pre>
 </div>
-<p>To facilitate motif analysis in <code>Signac</code>, we have created the&nbsp;<code>Motif</code>&nbsp;class to store all the required information, including a list of position weight matrices (PWMs) or position frequency matrices (PFMs) and a motif occurrence matrix. Here, the&nbsp;<a href="https://stuartlab.org/signac/reference/addmotifs"><code>AddMotifs()</code></a>&nbsp;function constructs a&nbsp;<code>Motif</code>&nbsp;object and adds it to our mouse brain dataset, along with other information such as the base composition of each peak. A motif object can be added to any Seurat assay using the&nbsp;<a href="https://mojaveazure.github.io/seurat-object/reference/AssayData.html"><code>SetAssayData()</code></a>&nbsp;function. See the&nbsp;<a href="https://stuartlab.org/signac/articles/data_structures">object interaction vignette</a>&nbsp;for more information.</p>
+<div class="cell-output cell-output-stderr">
+<pre><code>Finding motif positions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Creating Motif object</code></pre>
+</div>
+</div>
+<p>To facilitate motif analysis in Signac, we have created the&nbsp;<code>Motif</code>&nbsp;class to store all the required information, including a list of position weight matrices (PWMs) or position frequency matrices (PFMs) and a motif occurrence matrix. Here, the&nbsp;<a href="https://stuartlab.org/signac/reference/addmotifs"><code>AddMotifs()</code></a>&nbsp;function constructs a&nbsp;<code>Motif</code>&nbsp;object and adds it to our mouse brain dataset, along with other information such as the base composition of each peak. A motif object can be added to any Seurat assay using the&nbsp;<a href="https://mojaveazure.github.io/seurat-object/reference/AssayData.html"><code>SetAssayData()</code></a>&nbsp;function. See the&nbsp;<a href="https://stuartlab.org/signac/articles/data_structures">object interaction vignette</a>&nbsp;for more information.</p>
+<p>Cluster composition shows many clusters unique to the whole blood dataset:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>count_table <span class="ot">&lt;-</span> <span class="fu">table</span>(pbmc<span class="sc">@</span>meta.data<span class="sc">$</span>seurat_clusters, pbmc<span class="sc">@</span>meta.data<span class="sc">$</span>orig.ident)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>count_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    
+     SeuratProject
+  0           2217
+  1           1173
+  2           1022
+  3            877
+  4            696
+  5            615
+  6            582
+  7            510
+  8            485
+  9            397
+  10           343
+  11           234
+  12           147
+  13           127
+  14           127
+  15            30
+  16            29
+  17            29
+  18             9</code></pre>
+</div>
+</div>
 </section>
 <section id="step-2-identifying-enriched-motifs-finding-overrepresented-motifs" class="level3" data-number="9.0.3">
 <h3 data-number="9.0.3" class="anchored" data-anchor-id="step-2-identifying-enriched-motifs-finding-overrepresented-motifs"><span class="header-section-number">9.0.3</span> Step 2: <strong>Identifying enriched motifs /</strong> Finding overrepresented motifs</h3>
@@ -408,61 +454,97 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new Mofif object to store the results</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>motif <span class="ot">&lt;-</span> <span class="fu">CreateMotifObject</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> motif.matrix,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">pwm =</span> pfm</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the Motif object to the assay</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">SetAssayData</span>(</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">assay =</span> <span class="st">'peaks'</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">slot =</span> <span class="st">'motifs'</span>,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">new.data =</span> motif</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>peaks<span class="sc">@</span>motifs</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate statistics for each peak: GC content, length, dinucleotide frequencies etc.</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># These are used in the test of motif enrichment</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>peaks <span class="ot">&lt;-</span> <span class="fu">RegionStats</span>(<span class="at">object =</span> pbmc<span class="sc">$</span>peaks, <span class="at">genome =</span> BSgenome.Hsapiens.UCSC.hg19)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Find differentially accessible peaks in cluster 0 compared to cluster 1</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>da_peaks <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.1 =</span> <span class="st">"0"</span>,</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.2 =</span> <span class="st">"1"</span>,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">only.pos =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.pct =</span> <span class="fl">0.05</span>,</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">test.use =</span> <span class="st">'LR'</span>,</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">latent.vars =</span> <span class="st">'nCount_peaks'</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the top differentially accessible peaks, with lowest p-values</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>top.da.peak <span class="ot">&lt;-</span> <span class="fu">rownames</span>(da_peaks[da_peaks<span class="sc">$</span>p_val <span class="sc">&lt;</span> <span class="fl">1e-20</span> <span class="sc">&amp;</span> da_peaks<span class="sc">$</span>pct<span class="fl">.1</span> <span class="sc">&gt;</span> <span class="fl">0.2</span>,  ])</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Find motifs enriched in these top differentially accessible peaks</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>enriched.motifs <span class="ot">&lt;-</span> <span class="fu">FindMotifs</span>(</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> top.da.peak</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(enriched.motifs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find differentially accessible peaks in cluster 0 compared to cluster 1 (~1h 7m)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>da_peaks <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#ident.1 = 'CD14+ Monocytes',</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#ident.2 = 'pre-B cell',</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.1 =</span> <span class="st">'0'</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.2 =</span> <span class="st">'1'</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">only.pos =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.pct =</span> <span class="fl">0.05</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">test.use =</span> <span class="st">'LR'</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">latent.vars =</span> <span class="st">'nCount_peaks'</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html#motif-analysis</p>
-<p>https://stuartlab.org/signac/articles/motif_vignette</p>
-<p>We can also plot the position weight matrices for the motifs, so we can visualize the different motif sequences.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">MotifPlot</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">motifs =</span> <span class="fu">head</span>(<span class="fu">rownames</span>(enriched.motifs))</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the top differentially accessible peaks, with lowest p-values</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>top.da.peak <span class="ot">&lt;-</span> <span class="fu">rownames</span>(da_peaks[da_peaks<span class="sc">$</span>p_val <span class="sc">&lt;</span> <span class="fl">0.005</span> <span class="sc">&amp;</span> da_peaks<span class="sc">$</span>pct<span class="fl">.1</span> <span class="sc">&gt;</span> <span class="fl">0.2</span>, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="step-3-motif-activity-scores" class="level4">
-<h4 class="anchored" data-anchor-id="step-3-motif-activity-scores"><strong>Step 3: Motif activity scores</strong></h4>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># save</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(da_peaks, <span class="at">file =</span> <span class="st">"data/pbmc_markers.RData"</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># save information</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(pbmc, top.da.peak, <span class="at">file =</span> <span class="st">"data/pbmc_motifs.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"data/pbmc_motifs.RData"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Find motifs enriched in these top differentially accessible peaks</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>enriched.motifs <span class="ot">&lt;-</span> <span class="fu">FindMotifs</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> top.da.peak</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Selecting background regions to match input sequence characteristics</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Matching GC.percent distribution</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Testing motif enrichment in 9842 regions</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(enriched.motifs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>            motif observed background percent.observed percent.background
+MA1513.1 MA1513.1     2242       4158         22.77992            10.3950
+MA1653.1 MA1653.1     4400      12048         44.70636            30.1200
+MA0599.1 MA0599.1     4388      12464         44.58443            31.1600
+MA1650.1 MA1650.1     1336       2517         13.57448             6.2925
+MA1564.1 MA1564.1     2822       7097         28.67303            17.7425
+MA0162.4 MA0162.4     2380       5688         24.18208            14.2200
+         fold.enrichment        pvalue motif.name      p.adjust
+MA1513.1        2.191431  0.000000e+00      KLF15  0.000000e+00
+MA1653.1        1.484275 1.089845e-276     ZNF148 3.449361e-274
+MA0599.1        1.430823 1.261107e-231       KLF5 2.660937e-229
+MA1650.1        2.157247 1.557382e-221     ZBTB14 2.464558e-219
+MA1564.1        1.616065 1.728909e-216        SP9 2.188799e-214
+MA0162.4        1.700568 5.025079e-212       EGR1 5.301458e-210</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">MotifPlot</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> pbmc,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">motifs =</span> <span class="fu">head</span>(<span class="fu">rownames</span>(enriched.motifs))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `&lt;scale&gt;` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+of ggplot2 3.3.4.
+ℹ The deprecated feature was likely used in the ggseqlogo package.
+  Please report the issue at &lt;https://github.com/omarwagih/ggseqlogo/issues&gt;.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="Section3_P16_intro_files/figure-html/graph motifs-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="step-3-motif-activity-scores" class="level3" data-number="9.0.4">
+<h3 data-number="9.0.4" class="anchored" data-anchor-id="step-3-motif-activity-scores"><span class="header-section-number">9.0.4</span> <strong>Step 3: Motif activity scores</strong></h3>
 <p>We can also compute a per-cell motif activity score by running <a href="https://greenleaflab.github.io/chromVAR/index.html">chromVAR</a>. The motif activity score for a motif M is based on the number of reads mapping to peaks with motif M, after normalization correction for various biases: GC content, average number of reads mapping across all cells etc. You can read more about chromVar <a href="https://www.nature.com/articles/nmeth.4401">here</a>. Motif activity scores allow us to visualize motif activities per cell.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -494,27 +576,40 @@ Caution
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use chromVAR to calculate the motif activities of all motifs in all cells.</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">RunChromVAR</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">genome =</span> BSgenome.Hsapiens.UCSC.hg38,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at results</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>chromvar</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">GetAssayData</span>(pbmc<span class="sc">$</span>chromvar)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Have a look at the activitiy of the FOS motif, which has id MA0476.1</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">'chromvar'</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">FeaturePlot</span>(</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> <span class="st">"MA0476.1"</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.cutoff =</span> <span class="st">'q10'</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.cutoff =</span> <span class="st">'q90'</span>,</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">pt.size =</span> <span class="fl">0.1</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install("chromVAR")</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(chromVAR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use chromVAR to calculate the motif activities of all motifs in all cells.</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>chromvar_pbmc <span class="ot">&lt;-</span> <span class="fu">RunChromVAR</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">genome =</span> BSgenome.Hsapiens.UCSC.hg38,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(chromvar_pbmc) <span class="ot">&lt;-</span> <span class="st">'chromvar'</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at results</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>pbmc<span class="sc">$</span>chromvar</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="fu">GetAssayData</span>(pbmc<span class="sc">$</span>chromvar)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Have a look at the activitiy of the FOS motif, which has id MA0476.1</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(pbmc) <span class="ot">&lt;-</span> <span class="st">'chromvar'</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">FeaturePlot</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> <span class="st">"MA0476.1"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.cutoff =</span> <span class="st">'q10'</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.cutoff =</span> <span class="st">'q90'</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">pt.size =</span> <span class="fl">0.1</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We can also directly test for differential activity scores between cell types. This tends to give similar results as performing an enrichment test on differentially accessible peaks between the cell types (shown above).</p>
@@ -522,34 +617,47 @@ Caution
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look for motifs that have differential activity between clusters 0 and 1.</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>differential.activity <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.1 =</span> <span class="st">'0'</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.2 =</span> <span class="st">'1'</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">only.pos =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">test.use =</span> <span class="st">'LR'</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.pct =</span> <span class="fl">0.2</span>,</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">latent.vars =</span> <span class="st">'nCount_peaks'</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="fu">MotifPlot</span>(</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">motifs =</span> <span class="fu">head</span>(<span class="fu">rownames</span>(differential.activity)),</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">assay =</span> <span class="st">'peaks'</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look for motifs that have differential activity between clusters 0 and 1.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>differential.activity <span class="ot">&lt;-</span> <span class="fu">FindMarkers</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.1 =</span> <span class="st">'0'</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ident.2 =</span> <span class="st">'1'</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">only.pos =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">test.use =</span> <span class="st">'LR'</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.pct =</span> <span class="fl">0.2</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">latent.vars =</span> <span class="st">'nCount_peaks'</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">MotifPlot</span>(</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">object =</span> pbmc,</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">motifs =</span> <span class="fu">head</span>(<span class="fu">rownames</span>(differential.activity)),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">assay =</span> <span class="st">'peaks'</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 </section>
+<section id="building-trajectories-with-monocle-3" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Building trajectories with Monocle 3</h1>
+<p>Also you can construct cell trajectories with Monocle 3 using single-cell ATAC-seq data. Please see the <a href="https://cole-trapnell-lab.github.io/monocle3/">Monocle 3 website</a> for information about installing Monocle 3.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://stuartlab.org/signac/articles/monocle"><img src="https://stuartlab.org/signac/articles/monocle_files/figure-html/unnamed-chunk-18-2.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
 </section>
-<section id="transcription-factor-footprinting" class="level1" data-number="10">
-<h1 data-number="10"><span class="header-section-number">10</span> Transcription factor footprinting</h1>
-<p>https://stuartlab.org/signac/articles/footprint</p>
+<section id="transcription-factor-footprinting" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Transcription factor footprinting</h1>
+<p>For this step we’ll use the dataset introduced and pre-processed in the&nbsp;<a href="https://stuartlab.org/signac/articles/monocle">trajectory building vignette</a>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://stuartlab.org/signac/articles/footprint"><img src="https://stuartlab.org/signac/articles/footprint_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.4.1 (2024-06-14 ucrt)
@@ -574,15 +682,17 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] patchwork_1.2.0                   BSgenome.Hsapiens.UCSC.hg38_1.4.5
- [3] BSgenome_1.72.0                   rtracklayer_1.64.0               
- [5] BiocIO_1.14.0                     Biostrings_2.72.1                
- [7] XVector_0.44.0                    GenomicRanges_1.56.1             
- [9] GenomeInfoDb_1.40.1               IRanges_2.38.1                   
-[11] S4Vectors_0.42.1                  BiocGenerics_0.50.0              
-[13] TFBSTools_1.42.0                  JASPAR2020_0.99.10               
-[15] Seurat_5.1.0                      SeuratObject_5.0.2               
-[17] sp_2.1-4                          Signac_1.14.0                    
+ [1] chromVAR_1.26.0                   ggseqlogo_0.2                    
+ [3] motifmatchr_1.26.0                patchwork_1.3.0.9000             
+ [5] BSgenome.Hsapiens.UCSC.hg38_1.4.5 BSgenome_1.72.0                  
+ [7] rtracklayer_1.64.0                BiocIO_1.14.0                    
+ [9] Biostrings_2.72.1                 XVector_0.44.0                   
+[11] GenomicRanges_1.56.2              GenomeInfoDb_1.40.1              
+[13] IRanges_2.38.1                    S4Vectors_0.42.1                 
+[15] BiocGenerics_0.50.0               TFBSTools_1.42.0                 
+[17] JASPAR2020_0.99.10                Seurat_5.1.0                     
+[19] SeuratObject_5.0.2                sp_2.1-4                         
+[21] Signac_1.14.0                    
 
 loaded via a namespace (and not attached):
   [1] RcppAnnoy_0.0.22            splines_4.4.1              
@@ -603,73 +713,76 @@ loaded via a namespace (and not attached):
  [31] zlibbioc_1.50.0             Rtsne_0.17                 
  [33] R.utils_2.12.3              purrr_1.0.2                
  [35] RCurl_1.98-1.16             pracma_2.4.4               
- [37] GenomeInfoDbData_1.2.12     ggrepel_0.9.5              
+ [37] GenomeInfoDbData_1.2.12     ggrepel_0.9.6              
  [39] irlba_2.3.5.1               listenv_0.9.1              
  [41] spatstat.utils_3.1-0        seqLogo_1.70.0             
  [43] goftest_1.2-3               RSpectra_0.16-2            
- [45] annotate_1.82.0             spatstat.random_3.3-1      
+ [45] annotate_1.82.0             spatstat.random_3.3-2      
  [47] fitdistrplus_1.2-1          parallelly_1.38.0          
  [49] leiden_0.4.3.1              codetools_0.2-20           
  [51] DelayedArray_0.30.1         RcppRoll_0.3.1             
- [53] tidyselect_1.2.1            UCSC.utils_1.0.0           
- [55] matrixStats_1.4.0           spatstat.explore_3.3-2     
- [57] GenomicAlignments_1.40.0    jsonlite_1.8.8             
- [59] progressr_0.14.0            ggridges_0.5.6             
- [61] survival_3.6-4              tools_4.4.1                
- [63] TFMPvalue_0.0.9             ica_1.0-3                  
- [65] Rcpp_1.0.13                 glue_1.7.0                 
- [67] gridExtra_2.3               SparseArray_1.4.8          
- [69] xfun_0.45                   MatrixGenerics_1.16.0      
- [71] dplyr_1.1.4                 fastmap_1.2.0              
- [73] fansi_1.0.6                 caTools_1.18.3             
- [75] digest_0.6.36               R6_2.5.1                   
- [77] mime_0.12                   colorspace_2.1-1           
- [79] GO.db_3.19.1                scattermore_1.2            
- [81] poweRlaw_0.80.0             gtools_3.9.5               
- [83] tensor_1.5                  spatstat.data_3.1-2        
- [85] RSQLite_2.3.7               R.methodsS3_1.8.2          
- [87] utf8_1.2.4                  tidyr_1.3.1                
- [89] generics_0.1.3              data.table_1.16.0          
- [91] httr_1.4.7                  htmlwidgets_1.6.4          
- [93] S4Arrays_1.4.1              uwot_0.2.2                 
- [95] pkgconfig_2.0.3             gtable_0.3.5               
- [97] blob_1.2.4                  lmtest_0.9-40              
- [99] htmltools_0.5.8.1           dotCall64_1.1-1            
-[101] scales_1.3.0                Biobase_2.64.0             
-[103] png_0.1-8                   spatstat.univar_3.0-1      
-[105] knitr_1.48                  rstudioapi_0.16.0          
-[107] tzdb_0.4.0                  rjson_0.2.22               
-[109] reshape2_1.4.4              curl_5.2.2                 
-[111] nlme_3.1-164                zoo_1.8-12                 
-[113] cachem_1.1.0                stringr_1.5.1              
-[115] KernSmooth_2.23-24          parallel_4.4.1             
-[117] miniUI_0.1.1.1              AnnotationDbi_1.66.0       
-[119] restfulr_0.0.15             pillar_1.9.0               
-[121] grid_4.4.1                  vctrs_0.6.5                
-[123] RANN_2.6.2                  promises_1.3.0             
-[125] xtable_1.8-4                cluster_2.1.6              
-[127] evaluate_1.0.0              readr_2.1.5                
-[129] cli_3.6.2                   compiler_4.4.1             
-[131] Rsamtools_2.20.0            rlang_1.1.3                
-[133] crayon_1.5.3                future.apply_1.11.2        
-[135] plyr_1.8.9                  stringi_1.8.4              
-[137] viridisLite_0.4.2           deldir_2.0-4               
-[139] BiocParallel_1.38.0         munsell_0.5.1              
-[141] lazyeval_0.2.2              spatstat.geom_3.3-2        
-[143] Matrix_1.7-0                RcppHNSW_0.6.0             
-[145] hms_1.1.3                   bit64_4.0.5                
-[147] future_1.34.0               ggplot2_3.5.1              
-[149] KEGGREST_1.44.1             shiny_1.9.1                
-[151] SummarizedExperiment_1.34.0 ROCR_1.0-11                
-[153] igraph_2.0.3                memoise_2.0.1              
-[155] fastmatch_1.1-4             bit_4.0.5                  </code></pre>
+ [53] DT_0.33                     tidyselect_1.2.1           
+ [55] UCSC.utils_1.0.0            farver_2.1.2               
+ [57] matrixStats_1.4.0           spatstat.explore_3.3-2     
+ [59] GenomicAlignments_1.40.0    jsonlite_1.8.8             
+ [61] progressr_0.14.0            ggridges_0.5.6             
+ [63] survival_3.6-4              tools_4.4.1                
+ [65] TFMPvalue_0.0.9             ica_1.0-3                  
+ [67] Rcpp_1.0.13                 glue_1.7.0                 
+ [69] gridExtra_2.3               SparseArray_1.4.8          
+ [71] xfun_0.48                   MatrixGenerics_1.16.0      
+ [73] dplyr_1.1.4                 withr_3.0.1                
+ [75] fastmap_1.2.0               fansi_1.0.6                
+ [77] caTools_1.18.3              digest_0.6.36              
+ [79] R6_2.5.1                    mime_0.12                  
+ [81] colorspace_2.1-1            GO.db_3.19.1               
+ [83] scattermore_1.2             poweRlaw_0.80.0            
+ [85] gtools_3.9.5                tensor_1.5                 
+ [87] spatstat.data_3.1-2         RSQLite_2.3.7              
+ [89] R.methodsS3_1.8.2           utf8_1.2.4                 
+ [91] tidyr_1.3.1                 generics_0.1.3             
+ [93] data.table_1.16.2           httr_1.4.7                 
+ [95] htmlwidgets_1.6.4           S4Arrays_1.4.1             
+ [97] uwot_0.2.2                  pkgconfig_2.0.3            
+ [99] gtable_0.3.5                blob_1.2.4                 
+[101] lmtest_0.9-40               htmltools_0.5.8.1          
+[103] dotCall64_1.1-1             scales_1.3.0               
+[105] Biobase_2.64.0              png_0.1-8                  
+[107] spatstat.univar_3.0-1       knitr_1.48                 
+[109] rstudioapi_0.17.0           tzdb_0.4.0                 
+[111] rjson_0.2.23                reshape2_1.4.4             
+[113] curl_5.2.3                  nlme_3.1-164               
+[115] zoo_1.8-12                  cachem_1.1.0               
+[117] stringr_1.5.1               KernSmooth_2.23-24         
+[119] parallel_4.4.1              miniUI_0.1.1.1             
+[121] AnnotationDbi_1.66.0        restfulr_0.0.15            
+[123] pillar_1.9.0                grid_4.4.1                 
+[125] vctrs_0.6.5                 RANN_2.6.2                 
+[127] promises_1.3.0              xtable_1.8-4               
+[129] cluster_2.1.6               evaluate_1.0.1             
+[131] readr_2.1.5                 cli_3.6.2                  
+[133] compiler_4.4.1              Rsamtools_2.20.0           
+[135] rlang_1.1.3                 crayon_1.5.3               
+[137] future.apply_1.11.2         labeling_0.4.3             
+[139] plyr_1.8.9                  stringi_1.8.4              
+[141] viridisLite_0.4.2           deldir_2.0-4               
+[143] BiocParallel_1.38.0         munsell_0.5.1              
+[145] lazyeval_0.2.2              spatstat.geom_3.3-3        
+[147] Matrix_1.7-0                RcppHNSW_0.6.0             
+[149] hms_1.1.3                   bit64_4.5.2                
+[151] future_1.34.0               ggplot2_3.5.1              
+[153] KEGGREST_1.44.1             shiny_1.9.1                
+[155] SummarizedExperiment_1.34.0 ROCR_1.0-11                
+[157] igraph_2.0.3                memoise_2.0.1              
+[159] fastmatch_1.1-4             bit_4.5.0                  </code></pre>
 </div>
 </div>
-<section id="references" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="references"><span class="header-section-number">10.1</span> References</h2>
+<section id="references" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="references"><span class="header-section-number">11.1</span> References</h2>
 <ul>
 <li>Signac - tutorial <a href="https://stuartlab.org/signac/articles/motif_vignette">Motif analysis with Signac</a></li>
 <li>Epigenomic workshop 2024 - <a href="https://nbis-workshop-epigenomics.readthedocs.io/en/latest/content/tutorials/scAtacSeq/lab-sc_atac_seq.html">Motif analysis</a></li>
+<li>Signac - tutorial <a href="https://stuartlab.org/signac/articles/monocle">Building trajectories with Monocle 3</a></li>
 <li>Signac - tutorial <a href="https://stuartlab.org/signac/articles/footprint">Transcription factor footprinting</a></li>
 </ul>
 
