@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Evelia Coss and Diego Ramirez">
-<meta name="dcterms.date" content="2024-10-11">
+<meta name="dcterms.date" content="2024-10-17">
 
 <title>Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice</title>
 <style>
@@ -188,7 +188,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Section2_P15_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Multimodal analysis and Integration</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -240,18 +240,6 @@ ul.task-list li input[type="checkbox"] {
 </li>
       </ul>
   </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">References</span></a>
-  </div>
-</li>
     </ul>
     </div>
 </nav>
@@ -288,7 +276,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 11, 2024</p>
+      <p class="date">October 17, 2024</p>
     </div>
   </div>
   
@@ -448,12 +436,30 @@ ul.task-list li input[type="checkbox"] {
 <li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file.</p></li>
 <li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi">fragments file index</a>: Fragments file index.</p></li>
 </ul>
+<p>Google Colab - <a href="https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing">Practical 13</a></p>
 <p>🔷 <strong>Section 2 - Practical 14</strong></p>
-<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of</p>
+<p>For this tutorial, we will use the results from Practical 13, where we analyzed a single-cell ATAC-seq dataset of <a href="https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0">human peripheral blood mononuclear cells (PBMCs)</a>. Additionally, we will use the pre-processed Seurat object available <a href="https://signac-objects.s3.amazonaws.com/pbmc_10k_v3.rds">here</a>.</p>
+<ul>
+<li>Download the file previously generated in the previous practice (Practical 13). If you did not download it (“pbmc.RData”) then download it by clicking&nbsp;<a href="https://www.google.com/url?q=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F11SUSYlnfxrGj8qJjhVoo8ZnA2_keuvfI%2Fview%3Fusp%3Dsharing">here</a>&nbsp;and upload the file to google colab.</li>
+</ul>
+<p>Google Colab - <a href="https://colab.research.google.com/drive/1cCfT3HTSUiTfqF11EkuxCzlHs1obdQHs?usp=sharing">Practical 14</a></p>
 <p>🔷 <strong>Section 2 - Practical 15</strong></p>
-<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of</p>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of <a href="https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-3-k-1-standard-2-0-0">human peripheral blood mononuclear cells (PBMCs) (3K)</a> provided by 10x Genomics (Cell Ranger ARC 2.0.0). The following files are used in this course, all available through the 10x Genomics website:</p>
+<ul>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_raw_feature_bc_matrix.h5">Raw data</a>: Filtered peak barcode matrix.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_atac_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_atac_fragments.tsv.gz.tbi">fragments file index</a>: Fragments file index.</p></li>
+</ul>
+<p>Google Colab - <a href="https://colab.research.google.com/drive/1QzCOMi4z8lW3r7qqx7FD6_YfSezHRbTW?usp=sharing">Practical 15</a></p>
 <p>🔷 <strong>Section 3 - Practical 16</strong></p>
-<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of</p>
+<p>For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of <a href="https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0">human peripheral blood mononuclear cells (PBMCs)</a> provided by 10x Genomics (Next GEM v1.1). The following files are used in this course, all available through the 10x Genomics website:</p>
+<ul>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_filtered_peak_bc_matrix.h5">Raw data</a>: Filtered peak barcode matrix.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_singlecell.csv">Metadata</a>: Per-barcode fragment counts &amp; metrics.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz">fragments file</a>: Barcoded and aligned fragment file.</p></li>
+<li><p>The <a href="https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi">fragments file index</a>: Fragments file index.</p></li>
+</ul>
+<p>Google Colab - <a href="https://colab.research.google.com/drive/1r4UGJ3dCRi2svSiCiW087wpLtyG2fMiv?usp=sharing">Practical 16</a></p>
 </div>
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <ul>
@@ -467,7 +473,7 @@ ul.task-list li input[type="checkbox"] {
 </ul></li>
 <li><p><strong>From Github:</strong></p>
 <ul>
-<li>seurat-data and sceasy</li>
+<li>SeuratData, presto and sceasy</li>
 </ul></li>
 </ul>
 </div>

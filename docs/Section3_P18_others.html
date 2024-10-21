@@ -30,7 +30,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./summary.html" rel="next">
 <link href="./Section3_P17_retos.html" rel="prev">
 <link href="./JAGUAR_logo.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
@@ -187,7 +186,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./Section2_P15_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Analyses and scRNA-seq Integration</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><strong>Practical 15:</strong> Multimodal analysis and Integration</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -239,25 +238,22 @@ ul.task-list li input[type="checkbox"] {
 </li>
       </ul>
   </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">References</span></a>
-  </div>
-</li>
     </ul>
     </div>
 </nav>
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#gene-regulatory-network-reconstruction" id="toc-gene-regulatory-network-reconstruction" class="nav-link active" data-scroll-target="#gene-regulatory-network-reconstruction"><span class="header-section-number">12.1</span> Gene regulatory network reconstruction</a>
+  <ul>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">12.1.1</span> References</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -285,8 +281,31 @@ ul.task-list li input[type="checkbox"] {
 <figcaption class="figure-caption">Overview of the scATAC-seq analysis steps.</figcaption>
 </figure>
 </div>
+<section id="gene-regulatory-network-reconstruction" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="gene-regulatory-network-reconstruction"><span class="header-section-number">12.1</span> Gene regulatory network reconstruction</h2>
+<p>In the previous section, we demonstrated how to integrate RNA and ATAC assays to identify cell type heterogeneity and explore <em>cis</em>- and <em>trans</em>-regulatory elements important for cell identity. Another approach is to focus on <strong>gene relationships</strong>, specifically the regulatory interactions between TFs and <em>cis</em>-regulatory elements that <strong>control target gene transcription</strong>—this is known as <strong>gene regulatory network (GRN) analysis</strong>.&nbsp;</p>
+<p>One of the early approaches involves <strong>checking expression correlations between genes to build a co-expression network</strong>, followed by the identification of co-expression modules. These modules contain genes thought to be co-regulated, and their regulators can be identified through methods like TF binding motif enrichment analysis. A well-known example is <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559">WGCNA</a> (Weighted Gene Coexpression Network Analysis), commonly used in bulk transcriptome analysis.</p>
+<p>Another approach treats the expression of a <strong>gene as a function of its regulators’ (mostly TFs) expression</strong>. The goal is to fit a linear or non-linear regression model using the target gene expression as the response and the expression of all possible regulators as covariates. This is followed by statistical tests to determine <strong>significant contributions from covariates or uses regularization for feature selection.</strong> Examples include methods like <a href="https://bioconductor.org/packages/devel/bioc/html/GENIE3.html">GENIE3</a> and <a href="https://academic.oup.com/bioinformatics/article/35/12/2159/5184284">GRNBoost2</a>, which have also proven applicable to single-cell transcriptomic data.</p>
+<p>While these methods provide valuable insights into regulatory mechanisms, they rely solely on the expression of <strong>TFs and target genes,</strong> overlooking the biological requirement that the target gene must contain a binding motif for a TF at its <em>cis</em>-regulatory elements (promoter or enhancers). <strong>To enhance biological relevance, pipelines now integrate both expression data and TF binding site predictions.</strong> <a href="https://scenic.aertslab.org/">SCENIC</a>, developed by the Aerts lab, adds a filtering step after using GRNBoost2 to infer the raw network, removing interactions lacking corresponding TF binding motifs at the gene’s promoter. <a href="https://morris-lab.github.io/CellOracle.documentation/">CellOracle</a> takes a different approach by identifying putative TFs via motif searching at promoters and enhancers, using public or ATAC-seq data, and then applying a regularized regression model with only TFs that have predicted binding motifs. Further details are available in their <a href="https://www.biorxiv.org/content/10.1101/2020.02.17.947416v3">respective</a> publications.</p>
+<p>With scMultiome data, we can quantitatively incorporate chromatin accessibility profiles into GRN inference, which is the rationale behind <a href="https://quadbiolab.github.io/Pando/">Pando</a>. Pando first scans for TF binding motifs at each peak in the ATAC assay, applying further filtering based on sequence conservation and public regulatory element databases (e.g., ENCODE). For each gene, it builds a linear regression model that considers the expression of TFs with predicted binding sites as well as their interaction with the peak accessibility at those binding sites. More details can be found in the <a href="https://www.biorxiv.org/content/10.1101/2021.08.24.457460v1">biorxiv preprint</a>. In the next part of this tutorial, we will briefly demonstrate how to run Pando on scMultiome data to identify potential TF targets.</p>
+<dl>
+<dt>Pando</dt>
+<dd>
+<p>Pando had a major upgrade to change its defined data structure, which was to avoid possible effect by any major change to the data structure of Seurat objects in the future. The following tutorial session has therefore been updated to adapt to the changes.</p>
+</dd>
+</dl>
+<section id="references" class="level3" data-number="12.1.1">
+<h3 data-number="12.1.1" class="anchored" data-anchor-id="references"><span class="header-section-number">12.1.1</span> References</h3>
+<ul>
+<li><a href="https://github.com/quadbio/scMultiome_analysis_vignette/blob/main/Tutorial.md#section-3-gene-regulatory-network-reconstruction">Tutorial of single-cell RNA-ATAC multiomic sequencing data analysis in R</a></li>
+<li><a href="https://cellgeni.github.io/notebooks/html/new-10kPBMC-Integration.html">Dataset integration using Seurat and other Rtools</a></li>
+<li><a href="https://www.bioconductor.org/packages/devel/bioc/vignettes/cicero/inst/doc/website.html#visualizing-accessibility-across-pseudotime">Single Cell ATAC-seq Analysis with Cicero</a></li>
+<li><a href="https://github.com/lebf3/Links_models_multomic/tree/main">Major cell-types in multiomic single-nucleus datasets impact statistical modeling of links between regulatory sequences and target genes</a></li>
+</ul>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -644,9 +663,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./summary.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Summary</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

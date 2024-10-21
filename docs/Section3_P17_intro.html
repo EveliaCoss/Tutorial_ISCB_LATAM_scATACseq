@@ -261,10 +261,12 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#cite-seq-and-scatac-seq" id="toc-cite-seq-and-scatac-seq" class="nav-link active" data-scroll-target="#cite-seq-and-scatac-seq"><span class="header-section-number">11</span> CITE-seq and scATAC-seq</a></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><span class="header-section-number">12</span> </a>
+  <li><a href="#the-number-of-cells-in-each-cell-type-biases-the-null-distributions-and-statistics-of-the-z-scores-method" id="toc-the-number-of-cells-in-each-cell-type-biases-the-null-distributions-and-statistics-of-the-z-scores-method" class="nav-link active" data-scroll-target="#the-number-of-cells-in-each-cell-type-biases-the-null-distributions-and-statistics-of-the-z-scores-method"><span class="header-section-number">10.1</span> The number of cells in each cell-type biases the null distributions and statistics of the Z-scores method</a></li>
+  <li><a href="#single-cell-lineage-determination" id="toc-single-cell-lineage-determination" class="nav-link" data-scroll-target="#single-cell-lineage-determination"><span class="header-section-number">10.2</span> Single cell lineage determination</a></li>
+  <li><a href="#single-cell-chromatin-accessibility-reveals-principles-of-regulatory-variation" id="toc-single-cell-chromatin-accessibility-reveals-principles-of-regulatory-variation" class="nav-link" data-scroll-target="#single-cell-chromatin-accessibility-reveals-principles-of-regulatory-variation"><span class="header-section-number">10.3</span> <strong>Single-cell chromatin accessibility reveals principles of regulatory variation</strong></a></li>
+  <li><a href="#cite-seq-and-scatac-seq" id="toc-cite-seq-and-scatac-seq" class="nav-link" data-scroll-target="#cite-seq-and-scatac-seq"><span class="header-section-number">11</span> CITE-seq and scATAC-seq</a>
   <ul>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">12.1</span> <strong>References</strong></a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">11.1</span> <strong>References</strong></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -274,7 +276,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="install" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title"><strong>Practical 17:</strong> Exploring results (graphs)</span></span></h1>
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title"><strong>Practical 17:</strong> Exploring results (graphs)</span></h1>
 </div>
 
 
@@ -289,23 +291,47 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<div class="quarto-figure quarto-figure-center">
+<section id="the-number-of-cells-in-each-cell-type-biases-the-null-distributions-and-statistics-of-the-z-scores-method" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="the-number-of-cells-in-each-cell-type-biases-the-null-distributions-and-statistics-of-the-z-scores-method"><span class="header-section-number">10.1</span> The number of cells in each cell-type biases the null distributions and statistics of the Z-scores method</h2>
+<p>This study compares Z-scores, derived from the Pearson R value of cis-links between ATACseq peaks and nearby genes, to their matched trans-link null distribution. After analyzing PBMC multiomic data, significant differences were found between the Pearson R coefficients and Z-scores for many peak-gene links. An example is an ATACseq peak near the <em>NOD2</em> gene, correlated with monocytes (R = 0.12), but showing no significant link using Z-scores (P = 0.07). However, a significant link was found with <em>SNX20</em> (P = 0.02). Bimodal null distributions for trans-peaks at the <em>NOD2</em> locus make Z-scores inaccurate. Excluding specific cell-type peaks leads to a unimodal distribution, highlighting the impact of peak selection on Z-scores.</p>
+<div id="fig-example1" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><a href="https://www.nature.com/articles/nature14590"><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1038%2Fnature14590/MediaObjects/41586_2015_Article_BFnature14590_Fig4_HTML.jpg?as=webp" class="img-fluid figure-img"></a></p>
+<p><a href="https://www.nature.com/articles/s41598-023-31040-w/figures/1"><img src="img/Figure1_example.png" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;10.1: The Z-scores method misses candidate regulatory sequences linked to NOD2 expression in peripheral blood mononuclear cells (PBMC). (A) The Z-scores model matches an ATACseq peak for GC content and coverage with ATACseq peaks in trans to create a scaled null distribution, producing Z-scores for each trans-links and the tested peak. (B) ATACseq tracks at the NOD2 locus identified in PBMC. The grey areas (labeled 1–2-3) highlight the top three ATACseq peaks correlations with NOD2 expression using the simple Pearson R method. Peak #1 (chr16-50,684,843–50,685,984) includes an eQTL for NOD2 that is also associated with leprosy and Crohn’s disease by GWAS. The loops highlighted in the “Links” row are identified using the Z-score method (P-value &lt; 0.05); we note that there is no significant link between peak chr16-50,684,843–50,685,984 (peak #1) and NOD2. Loops are drawn from the middle of the ATACseq peaks to the transcription start site of the correlated gene(s). In the right column, we showed (top to bottom) RNAseq UMAP of cell-type annotations, SNX20 expression density, NOD2 expression density, and chr16-50,684,843–50,685,984 ATACseq accessibility density. The violin plots represent NOD2 expression levels in each cell-type. Leblanc &amp; Lettre, et al.&nbsp;2023. Scientific reports.</figcaption>
 </figure>
 </div>
-<p>https://www.nature.com/articles/nature14590</p>
+</section>
+<section id="single-cell-lineage-determination" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="single-cell-lineage-determination"><span class="header-section-number">10.2</span> Single cell lineage determination</h2>
+<div id="fig-lupus-example" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://insight.jci.org/articles/view/93009"><img src="https://df6sxcketz7bb.cloudfront.net/manuscripts/93000/93009/medium/jci.insight.93009.f3.jpg" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;10.2: Lineage determination of single cells from skin, kidney, and peripheral blood mononuclear cells (PBMCs). (A) Clustering of cells (n = 899) by t-distributed stochastic neighbor embedding (t-SNE). Cells are colored based on tissue of origin from skin (blue), kidney cells (red), and PBMCs (yellow). (B) Six distinct clusters generated by t-SNE plotting. (C) Differentially expressed genes across 6 cell clusters. In this heat map, rows correspond to individual genes found to be selectively upregulated in individual clusters (P &lt; 0.01). (D) Violin plots demonstrating expression of lineage markers that indicate the identity of the clusters generated by t-SNE plotting. Der, et al.&nbsp;2017. JCI insight.</figcaption>
+</figure>
+</div>
+</section>
+<section id="single-cell-chromatin-accessibility-reveals-principles-of-regulatory-variation" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="single-cell-chromatin-accessibility-reveals-principles-of-regulatory-variation"><span class="header-section-number">10.3</span> <strong>Single-cell chromatin accessibility reveals principles of regulatory variation</strong></h2>
+<div id="fig-epigenomic" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://www.nature.com/articles/nature14590"><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1038%2Fnature14590/MediaObjects/41586_2015_Article_BFnature14590_Fig4_HTML.jpg?as=webp" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Figure&nbsp;10.3: Structured cis-variability across single epigenomes. a, Per-cell deviations of expected fragments across a region within chromosome 1, For display, only large deviation cells are shown (n = 186 cells). b, Pearson correlation coefficient representing chromosome compartment signal of interaction frequency from a chromatin conformation capture assay (left, analysis carried out of data from ref. 27) or doubly correlated normalized deviations of scATAC-seq (right) from chromosome 1. Data in white represents masked regions due to highly repetitive regions. c, Permuted cis-correlation map for chromosome 1 (analysed identically to b). d, Box highlights a representative region depicting long-range covariability. Buenrostro, et al.&nbsp;2015. Nature</figcaption>
+</figure>
+</div>
+</section>
 <section id="cite-seq-and-scatac-seq" class="level1" data-number="11">
 <h1 data-number="11"><span class="header-section-number">11</span> CITE-seq and scATAC-seq</h1>
-<p>https://broadinstitute.github.io/2019_scWorkshop/cite-seq-and-scatac-seq.html</p>
-</section>
-<section id="section" class="level1" data-number="12">
-<h1 data-number="12"><span class="header-section-number">12</span> </h1>
-<section id="references" class="level2" data-number="12.1">
-<h2 data-number="12.1" class="anchored" data-anchor-id="references"><span class="header-section-number">12.1</span> <strong>References</strong></h2>
+<p>To learn more about how the antibody barcode matrix is computationally generated from the sequencing data, please visit&nbsp;<a href="https://hoohm.github.io/CITE-seq-Count/">CITE-seq-Count</a>.&nbsp;To learn more about CITE-seq and feature barcoding, please visit the <a href="https://cite-seq.com/">CITE-seq site.</a></p>
+<section id="references" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="references"><span class="header-section-number">11.1</span> <strong>References</strong></h2>
 <ul>
 <li>Signac - tutorial <a href="https://stuartlab.org/signac/articles/monocle">Building trajectories with Monocle 3</a></li>
 <li>Signac - tutorial <a href="https://stuartlab.org/signac/1.13.0/articles/visualization">Visualization of genomic regions</a></li>
+<li>Leblanc &amp; Lettre, et al.&nbsp;2023. <a href="https://www.nature.com/articles/s41598-023-31040-w">Major cell-types in multiomic single-nucleus datasets impact statistical modeling of links between regulatory sequences and target genes</a>. Scientific reports</li>
+<li>Buenrostro, et al.&nbsp;2015. <a href="https://www.nature.com/articles/nature14590">Single-cell chromatin accessibility reveals principles of regulatory variation</a>. Nature.</li>
+<li>Orr Ashenber, et al.&nbsp;Tutorial. <a href="https://broadinstitute.github.io/2019_scWorkshop/">Analysis of single cell RNA-seq data</a></li>
+<li>Der, et al.&nbsp;2017.<a href="https://insight.jci.org/articles/view/93009">Single cell RNA sequencing to dissect the molecular heterogeneity in lupus nephritis</a> JCI insight.</li>
+<li><a href="https://broadinstitute.github.io/2019_scWorkshop/cite-seq-and-scatac-seq.html">CITE-seq and scATAC-seq tutorial.</a></li>
 </ul>
 
 
