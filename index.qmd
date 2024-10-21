@@ -91,17 +91,41 @@
 
     -   The [fragments file index](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi): Fragments file index.
 
+    Google Colab - [Practical 13](https://colab.research.google.com/drive/1o-2mHth0v4zvTxSxI6y_RQBKNiw50QlK?usp=sharing)
+
     🔷 **Section 2 - Practical 14**
 
-    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of
+    For this tutorial, we will use the results from Practical 13, where we analyzed a single-cell ATAC-seq dataset of [human peripheral blood mononuclear cells (PBMCs)](https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0). Additionally, we will use the pre-processed Seurat object available [here](https://signac-objects.s3.amazonaws.com/pbmc_10k_v3.rds).
+
+    -   Download the file previously generated in the previous practice (Practical 13). If you did not download it ("pbmc.RData") then download it by clicking [here](https://www.google.com/url?q=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F11SUSYlnfxrGj8qJjhVoo8ZnA2_keuvfI%2Fview%3Fusp%3Dsharing) and upload the file to google colab.
+
+    Google Colab - [Practical 14](https://colab.research.google.com/drive/1cCfT3HTSUiTfqF11EkuxCzlHs1obdQHs?usp=sharing)
 
     🔷 **Section 2 - Practical 15**
 
-    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of
+    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of [human peripheral blood mononuclear cells (PBMCs) (3K)](https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-3-k-1-standard-2-0-0) provided by 10x Genomics (Cell Ranger ARC 2.0.0). The following files are used in this course, all available through the 10x Genomics website:
+
+    -   The [Raw data](https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_raw_feature_bc_matrix.h5): Filtered peak barcode matrix.
+
+    -   The [fragments file](https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_atac_fragments.tsv.gz): Barcoded and aligned fragment file.
+
+    -   The [fragments file index](https://cf.10xgenomics.com/samples/cell-arc/2.0.0/pbmc_granulocyte_sorted_3k/pbmc_granulocyte_sorted_3k_atac_fragments.tsv.gz.tbi): Fragments file index.
+
+    Google Colab - [Practical 15](https://colab.research.google.com/drive/1QzCOMi4z8lW3r7qqx7FD6_YfSezHRbTW?usp=sharing)
 
     🔷 **Section 3 - Practical 16**
 
-    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of
+    For this tutorial, we will be analyzing a single-cell ATAC-seq dataset of [human peripheral blood mononuclear cells (PBMCs)](https://www.10xgenomics.com/datasets/1-k-peripheral-blood-mononuclear-cells-pbm-cs-from-a-healthy-donor-next-gem-v-1-1-1-1-standard-1-1-0) provided by 10x Genomics (Next GEM v1.1). The following files are used in this course, all available through the 10x Genomics website:
+
+    -   The [Raw data](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_filtered_peak_bc_matrix.h5): Filtered peak barcode matrix.
+
+    -   The [Metadata](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_singlecell.csv): Per-barcode fragment counts & metrics.
+
+    -   The [fragments file](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz): Barcoded and aligned fragment file.
+
+    -   The [fragments file index](https://cf.10xgenomics.com/samples/cell-atac/1.1.0/atac_pbmc_1k_nextgem/atac_pbmc_1k_nextgem_fragments.tsv.gz.tbi): Fragments file index.
+
+    Google Colab - [Practical 16](https://colab.research.google.com/drive/1r4UGJ3dCRi2svSiCiW087wpLtyG2fMiv?usp=sharing)
 
     ### About packages 📚
 
@@ -115,5 +139,5 @@
 
     -   **From Github:**
 
-        -   seurat-data and sceasy
+        -   SeuratData, presto and sceasy
     :::

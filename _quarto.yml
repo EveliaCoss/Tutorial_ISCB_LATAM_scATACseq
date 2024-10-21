@@ -6,7 +6,7 @@ book:
   title: "Analyzing PBMCs Single Cell ATAC- Seq (scATAC-Seq) and Multiome data: Theory and practice"
   # output-file: "WCS_scATACseq_book"
   author: "Evelia Coss and Diego Ramirez"
-  date: "10/11/2024"
+  date: "10/17/2024"
   page-navigation: true
   chapters:
     - index.qmd
@@ -28,8 +28,6 @@ book:
         - Section3_P17_intro.qmd
         - Section3_P17_retos.qmd    
         - Section3_P18_others.qmd
-    - summary.qmd
-    - references.qmd
   # Information
   repo-url: https://github.com/EveliaCoss/Tutorial_ISCB_LATAM_scATACseq # link de Github
   sharing: [twitter, facebook, linkedin]

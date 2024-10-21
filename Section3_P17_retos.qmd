@@ -1,3 +1,11 @@
 # Exercises {#install .setup style="blue"}
 
-## 
+## Data visualization methods in Seurat
+
+You can visualize your Seurat results in various ways depending on the analysis you want to highlight. To get started, you can download the Seurat object from the 2,700 PBMC tutorial available on [SeuratData](https://github.com/satijalab/seurat-data).
+
+Reference to this [tutorial](https://satijalab.org/seurat/articles/visualization_vignette.html) for detailed guidance.
+
+## **A spatially resolved single cell genomic atlas of the adult human** 
+
+You can explore the behavior of public datasets using [*Cellxgene*](https://cellxgene.cziscience.com/datasets). It provides interactive visualizations that help you examine and analyze single-cell data easily.
